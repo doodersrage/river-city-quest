@@ -20,6 +20,13 @@ const SONGS={
     lead:'E5 E5 G5 E5 F#5 E5 D5 B4 | E5 E5 G5 E5 A5 G5 F#5 D5 | C5 C5 E5 C5 D5 C5 B4 G4 | B4 - D#5 - F#5 - B5 -',
     bass:'E2 E3 E2 E3 E2 E3 E2 E3 | E2 E3 E2 E3 D2 D3 D2 D3 | C2 C3 C2 C3 C2 C3 C2 C3 | B1 B2 B1 B2 B1 B2 B1 B2',
     drum:'k h s h k k s h'},
+  night:{bpm:72,lt:'triangle',lv:.05,
+    lead:'E5 - - - C5 - - - | D5 - B4 - G4 - - - | C5 - - - A4 - - - | B4 - - - - - - - | E5 - - - G5 - - - | F5 - E5 - D5 - - - | C5 - B4 - A4 - - - | A4 - - - - - . .',
+    bass:'A2 . . . E3 . . . | G2 . . . D3 . . . | F2 . . . C3 . . . | E2 . . . B2 . . . | A2 . . . E3 . . . | D2 . . . A2 . . . | E2 . . . B2 . . . | A2 . . . . . . .',drum:''},
+  forge:{bpm:108,
+    lead:'E4 - E4 G4 - E4 A4 - | G4 - E4 - D4 - E4 - | E4 - E4 G4 - E4 B4 - | A4 - G4 - F#4 - E4 - | C5 - B4 - A4 - G4 - | A4 - G4 - F#4 - D4 - | E4 - E4 G4 - E4 A4 - | B4 - - - E4 - . .',
+    bass:'E2 E2 . E2 E2 . E2 . | E2 E2 . E2 D2 . D2 . | E2 E2 . E2 E2 . E2 . | E2 E2 . E2 B1 . B1 . | A1 A1 . A1 A1 . A1 . | D2 D2 . D2 D2 . D2 . | E2 E2 . E2 E2 . E2 . | B1 B1 . B1 E2 . . .',
+    drum:'k . s . k k s .'},
   win:{bpm:120,
     lead:'C5 - E5 - G5 - C6 - | B5 - G5 - E5 - G5 - | A5 - F5 - C5 - A5 - | G5 - - - - - - - | F5 - A5 - C6 - A5 - | G5 - E5 - C5 - E5 - | D5 - G5 - B5 - D6 - | C6 - - - - - . .',
     bass:'C3 . G3 . C3 . G3 . | E3 . B2 . E3 . B2 . | F2 . C3 . F2 . C3 . | G2 . D3 . G2 . D3 . | F2 . C3 . F2 . C3 . | C3 . G3 . C3 . G3 . | G2 . D3 . G2 . D3 . | C3 . G2 . C3 . . .',
@@ -34,8 +41,8 @@ function musicVolume(on){if(mus&&mus.gain&&ac)mus.gain.gain.setTargetAtTime(on?1
 function wantSong(){
   if(mode=='title')return'title';if(mode=='win')return'win';if(!cur)return'';
   if(enemies.some(e=>e.boss))return'boss';
-  if(cur.ow)return cur.ay==3?'south':'city';
-  return cur.lit?'city':'dungeon';
+  if(cur.ow)return typeof dark=='function'&&dark()>.6?'night':cur.ay==3?'south':'city';
+  return cur.lit?'city':cur.area=='tredegar'?'forge':'dungeon';
 }
 function voice(f,t,len,type,vol){const o=ac.createOscillator(),gn=ac.createGain();o.type=type;o.frequency.value=f;
   gn.gain.setValueAtTime(0,t);gn.gain.linearRampToValueAtTime(vol,t+.01);gn.gain.setValueAtTime(vol,t+len*.7);gn.gain.linearRampToValueAtTime(0,t+len*.97);
@@ -58,10 +65,26 @@ function musicTick(){
   const dt=60/s.bpm/2;
   while(mus.next<ac.currentTime+.15){const t=mus.next,i=mus.step;
     if(musicOn){
-      const l=s.L[i%s.L.length];if(l&&l!='-'&&l!='.')voice(noteHz(l),t,dt*holdLen(s.L,i%s.L.length),'square',.022);
+      const l=s.L[i%s.L.length];if(l&&l!='-'&&l!='.')voice(noteHz(l),t,dt*holdLen(s.L,i%s.L.length),s.lt||'square',s.lv||.022);
       const b=s.B[i%s.B.length];if(b&&b!='-'&&b!='.')voice(noteHz(b),t,dt*holdLen(s.B,i%s.B.length)*.9,'triangle',.07);
       if(s.D.length){const d=s.D[i%s.D.length];if(d=='k'||d=='s'||d=='h')drum(d,t);}}
     mus.next+=dt;mus.step=(i+1)%Math.max(s.L.length,s.B.length);}
 }
 function pickSong(){}
-setInterval(()=>{try{musicTick();}catch(e){}},25);
+/* weather and night ambience: looped noise through filters, plus crickets */
+var amb={};
+function noiseBuf(){if(!mus.noise2){const b=ac.createBuffer(1,ac.sampleRate*2,ac.sampleRate),d=b.getChannelData(0);let l=0;for(let i=0;i<d.length;i++){const w=Math.random()*2-1;l=l*.97+w*.03;d[i]=w*.6+l*4;}mus.noise2=b;}return mus.noise2;}
+function ambTick(){
+  if(!ac||ac.state!='running'||!mus.gain)return;
+  if(!amb.rain){const mk=(type,freq,q)=>{const s=ac.createBufferSource(),f=ac.createBiquadFilter(),gn=ac.createGain();s.buffer=noiseBuf();s.loop=true;f.type=type;f.frequency.value=freq;f.Q.value=q;gn.gain.value=0;s.connect(f);f.connect(gn);gn.connect(mus.gain);s.start();return{f,gn};};
+    amb.rain=mk('highpass',1200,.5);amb.wind=mk('lowpass',380,6);amb.t=0;}
+  amb.t+=.025;const on=typeof mode!='undefined'&&mode=='play'&&cur&&cur.ow&&st,w=on?st.wx:'clear',k=on?st.wxk:0,now=ac.currentTime;
+  amb.rain.gn.gain.setTargetAtTime(w=='rain'?.05*k:0,now,.5);
+  const gust=.55+.45*Math.sin(amb.t*.7)*Math.sin(amb.t*.23);
+  amb.wind.gn.gain.setTargetAtTime((w=='snow'||w=='fog')?.06*k*gust:0,now,.4);amb.wind.f.frequency.setTargetAtTime(260+240*gust,now,.3);
+  if(on&&musicOn&&dark()>.6&&w!='rain'&&w!='snow'&&Math.random()<.025)for(let i=0;i<3;i++){const t=now+i*.07,o=ac.createOscillator(),gn=ac.createGain();o.type='sine';o.frequency.value=4300+Math.random()*300;
+    gn.gain.setValueAtTime(0,t);gn.gain.linearRampToValueAtTime(.006,t+.01);gn.gain.linearRampToValueAtTime(0,t+.04);o.connect(gn);gn.connect(mus.gain);o.start(t);o.stop(t+.05);}
+}
+function splashSfx(v,dl){if(!ac||!musicOn||ac.state!='running')return;try{const s=ac.createBufferSource(),f=ac.createBiquadFilter(),gn=ac.createGain(),t=ac.currentTime+(dl||0);s.buffer=noiseBuf();f.type='bandpass';f.frequency.setValueAtTime(1800,t);f.frequency.exponentialRampToValueAtTime(400,t+.25);
+  gn.gain.setValueAtTime(.12*(v||1),t);gn.gain.exponentialRampToValueAtTime(.001,t+.3);s.connect(f);f.connect(gn);gn.connect(ac.destination);s.start(t);s.stop(t+.32);}catch(e){}}
+setInterval(()=>{try{musicTick();ambTick();}catch(e){}},25);

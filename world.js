@@ -39,6 +39,9 @@ const LORE=[
 ['trail',`Virginia Capital Trail`,`This paved trail runs about 52 miles along the James from Richmond to Jamestown, linking Virginia's capital today with its first one.`],
 ['shockoe',`Shockoe Bottom`,`Richmond's oldest business district grew up along Shockoe Creek. Main Street Station, with its tall clock tower, opened here in 1901.`],
 ['slavetrail',`The Richmond Slave Trail`,`Before the Civil War, Shockoe Bottom held one of the largest slave markets in the United States. Lumpkin's Jail stood a few blocks from here. The Richmond Slave Trail marks the route enslaved people were forced to walk, so that they are remembered.`],
+['ponypasture',`Pony Pasture`,`Part of the James River Park System, Pony Pasture is a stretch of riverbank beside wide, rocky rapids. People come to wade, tube and fish, and to watch for herons and bald eagles.`],
+['ancarrow',`Ancarrow's Landing`,`A boat landing on the south bank in Manchester. The Richmond Slave Trail begins here, tracing the route enslaved people were forced to walk into the city.`],
+['bateau',`James River Bateaux`,`Before railroads, long flat-bottomed bateaux carried tobacco and other goods down the James to Richmond. A festival still poles replica bateaux down the river every summer.`],
 ['stonehouse',`The Old Stone House`,`The Poe Museum's Old Stone House dates to the mid-1700s and is the oldest house still standing in Richmond. In 1824 a 15-year-old Edgar Allan Poe stood in an honor guard outside it when Lafayette came to visit.`],
 ['poe',`Poe in Richmond`,`Edgar Allan Poe grew up in Richmond and later edited the Southern Literary Messenger here. As a teenager he swam about six miles of the James against the tide, a feat he was proud of all his life.`],
 ['goldbugtale',`The Gold-Bug`,`Poe's 1843 story "The Gold-Bug" follows a man who cracks a secret code to find Captain Kidd's buried treasure. It was one of his most popular stories while he was alive.`],
@@ -115,6 +118,7 @@ const NPC={
   ranger:{who:'Park Ranger',hat:C3('#6a5a2a','#4a3e18','#9a8a50'),shirt:C3('#4a6a3a','#2e4624','#6a9058'),talk:'ranger'},
   conductor:{who:'Old Conductor',hat:C3('#2e4a8a','#1c2e5a','#4a6ab0'),shirt:C3('#2e4a8a','#1c2e5a','#4a6ab0'),talk:'chal',chal:'trolley'},
   naturalist:{who:'Naturalist',hat:C3('#6a8a3a','#4a6a24','#8aac5a'),shirt:C3('#c8b48c','#9a8660','#e4d4b0'),talk:'naturalist'},
+  historian:{who:'River Historian',hat:C3('#8a5a2b','#5e3a18','#b07c48'),shirt:C3('#2e4a8a','#1c2e5a','#4a6ab0'),talk:'historian'},
   painter:{who:'Mural Painter',hat:C3('#3ac2e8','#1a8ab0','#8ae0f8'),shirt:C3('#f08030','#b85a18','#ffb868'),talk:'painter',chal:'murals'}
 };
 const N=k=>Object.assign({},NPC[k]);
@@ -209,17 +213,26 @@ ow(3,2,"Rocketts Landing",{base:'n',pal:[BRICK2],rows:[
   enT:['crab','crab','crab'],readsL:['rocketts','trail'],doorsL:[{to:'boathouse:0,0'}],chestsL:['coins50'],lm:[{art:'steamboat',x:7,y:15,w:7,h:2}]});
 ow(1,3,"Forest Hill Park",{base:'.',pal:[STONE],rows:[
 'T32','T .30 T','T .3 X7 .20 T','T .3 X7 .5 @ .14 T','T .3 X7 .6 M .13 T','T .3 X3 D X3 .20 T','T .2 b3 .14 r5 .6 T','T .2 b*b .14 r . & . r .6 T','T .2 b3 .14 r2 v r2 .6 T',
-'T .4 @ .8 ! .17','T .3 X3 .3 K22','T .29 ? .','T .2 w8 .21','T .2 w8 .4 Y .15 T','T .2 w8 .20 T','T .2 w8 .6 ! .13 T','T .2 w8 .3 @ .16 T','T .14 i .3 i .11 T','T .8 ! .21 T','T b3 .27 T','T $ b2 .27 T','T32'],
+'. .4 @ .8 ! .17','T .3 X3 .3 K22','T .29 ? .','T .2 w8 .21','T .2 w8 .4 Y .15 T','T .2 w8 .20 T','T .2 w8 .6 ! .13 T','T .2 w8 .3 @ .16 T','T .14 i .3 i .11 T','T .8 ! .21 T','T b3 .27 T','T $ b2 .27 T','T32'],
   npcs:[N('ranger'),N('conductor'),F('My great-grandmother rode the roller coaster here for a nickel.','The lake used to freeze over in winter. Everyone went skating.')],
   enT:['squirrel','goose','squirrel'],readsL:['foresthill','!carousel'],doorsL:[{to:'stonehouse:0,0'}],itemsL:[{id:'carkey',kind:'carkey'}],chestsL:['coins50'],
   lm:[{art:'stonehouse',x:4,y:2,w:7,h:4,read:'foresthill'},{art:'trolley',x:4,y:10,w:3,h:1}]});
 ow(2,3,"Manchester",{base:'p',pal:[BRICK,STEEL],rows:[
 'w14 ~4 w8 f4 w2','w14 ~4 w8 =4 w2','w14 ~4 w8 =4 w2','U3 e U5 e U4 p4 U2 e U5 =4 U2','B s5 M s7 p4 s4 @ s3 M s4 B','B s2 l s5 l s4 p4 s4 l s4 l s3 B',
-'B s2 B6 s5 p4 s B11 s B','B s2 B6 s5 p4 s B11 s B','B s2 B2 D B3 s5 p4 s B4 e B6 s B','p31 B','p6 ! p17 ! p6 B','p13 @ p17 B','p31 B','B s3 q s9 p4 s9 q s3 B',
+'B s2 B6 s5 p4 s B11 s B','B s2 B6 s5 p4 s B11 s B','B s2 B2 D B3 s5 p4 s B4 e B6 s B','p31 B','p6 ! p17 ! p7','p13 @ p18','p32','B s3 q s9 p4 s9 q s3 B',
 'B s2 B6 s5 p4 s B11 s B','B s2 B6 s5 p4 s B11 s B','B s2 B6 s5 p4 s B4 e B6 s B','B s13 p4 s7 ! s5 B','B s3 ` s9 p4 s13 B','B b3 s10 p4 s13 B','B $ b2 s10 p4 s13 B','B32'],
   npcs:[N('painter'),F('Manchester was its own city until 1910. Some folks here still say it is.','The floodwall keeps the James out when it rises. Mostly.')],
   enT:['rat','scooter','rat'],readsL:['manchester','mayo'],doorsL:[{to:'studio:0,0'}],chestsL:['coins50'],cars:[{y:12,dir:1}]});
 
+ow(0,3,"Pony Pasture",{base:'.',rows:['TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT','TwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwT','TwwwwrrwwwwwwwwnnnnwwwwwwwrwwwwT','Tww~~~wwwwwwwwwn&n+wwwwwwwwwwwwT','Twwwwwwwwwwwwwwnnnnwww~~~wwwwwwT','TwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwT','TwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwT','TnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnT','Tnn..M.....T......+......T....nT','T.......@.......!.......,,,,....','T..TT.......rrr.........,,,,...T','T...T.......v&r....@...........T','T...........rrr.....!..........T','T..b..TT.........ssssssss.....`T','T..........................T...T','T..TTT......!.........T.......$T','T..T.T................bb.......T','T.....@........................T','T..............!...............T','T....TT...........TT........TT.T','T..............................T','TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT'],
+  npcs:[F('The rapids out there are gentle enough to wade. Mostly.','Herons fish off those rocks every morning. Bald eagles too, if you\'re patient.'),
+    F('A bateau oar washed up on that sandbar. Too far to wade. You\'d need some way to reach it.','Somebody piled rocks over something by the trail. Looked like a long wooden pole.'),
+    F('Forest Hill Park is just east of here. Manchester and the river landing are past that.','Fish bite better on gray days, I swear it.')],
+  enT:['goose','squirrel','goose','crab'],readsL:['ponypasture'],itemsL:[{id:'oar',kind:'part'},{id:'pole',kind:'part'}],chestsL:['coins50']});
+ow(3,3,"Ancarrow's Landing",{base:'.',rows:['wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww','wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww','wwwwwwwwwwwwwwwwwwwwwn&n+wwwwwww','wwwwww==wwwwwwwwwwwwwnnnnwwwwwww','wwwwww==wwwwwwwwwwwwwwwwwwwwwwww','wwwwww==wwwwwwwwwwwwwwwwwwwwwwww','wwwwww==wwwwwwwwwwwwwwwwwwwwwwww','rnnnnn==nnnnnnnnnnnnnnnnnnnnnnnr','rn..M.......@...........+.....nr','r..............................r','pppppppppppp..........!......TTr','pppppppppppp....@..............r','pppppppppppp...................r','rrrr....M.......bbb......!.....r','r.......T.......b$b............r','r...TT..........bbb.....@......r','r..!...........................r','r.......TT.........TT..........r','r..`...........!...............r','r....TT..................TT....r','r..............................r','rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr'],
+  npcs:[F('This is where the boats go in. Fishermen, kayakers, everybody.','On a clear day you can see the whole skyline from the ramp.'),N('historian'),
+    F('Shad and catfish run right up to this landing in spring.','If you see a sturgeon out there, holler. They\'re coming back to the James.')],
+  enT:['crab','rat','crab','goose'],readsL:['ancarrow','slavetrail'],itemsL:[{id:'tiller',kind:'part'}],chestsL:['coins50']});
 /* ---------- buildings and caves ---------- */
 room('bank',0,0,'St. Luke Penny Savings Bank',{entry:true,feats:[['V',3,4,10,1]],
   npcs:[{tx:7,ty:3,who:'Teller',hat:C3('#3a3a54','#24243a','#5a5a7a'),shirt:C3('#e8e4dc','#b0aca4','#ffffff'),talk:'teller'}]});

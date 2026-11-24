@@ -102,6 +102,8 @@ const KSIC={};for(const k in KEYCOL){const c=mkCanvas(12,12),x=c.getContext('2d'
 IC.hook=mkSpr(["....kkk.....","...kYzYk....","....kzk.....","....kNk.....","....kNk.....","....kNk.....",".kk.kNk.kk..","kIk.kNk.kIk.","kIk.kNk.kIk.",".kIkkNkkIk..","..kIIIIIk...","...kkkkk...."]);
 IC.rod=mkSpr(["..........kk",".........kNk","........kNk.",".......kNk..","......kNk...",".....kNk.q..","....kuk..q..","...kuk...q..","..kUk...krk.",".kUk....kwk.","kUk......k..",".k.........."]);
 IC.frog=mkSpr(["..kk....kk..",".kwek..kwek.",".kDDkkkkDDk.","kDDDDDDDDDDk","kDTTTTTTTTDk",".kDTTTTTTDk.","kDkkDDDDkkDk","kk..kkkk..kk"],{D:'#2f7a3c',T:'#68b854'});
+IC.oar=mkSpr(["..........kk",".........kuk","........kuk.",".......kuk..","......kuk...",".....kuk....","....kuk.....","..kkuk......",".kAAk.......","kAAAk.......","kAAk........",".kk........."]);
+IC.lure=mkSpr(["....kk......","...kYk......","...kk.......","..kkYYk.....",".kYLYYzk....","kYLYYYzzk...","kYYYzzzk....",".kzzzzk.....","..kkkk.k....","......kk.k..",".......kkk..","............"]);
 IC.card=mkSpr(["..kkkkkkkk..","..kYYYYYYk..","..kYqqqqYk..","..kYqiiqYk..","..kYqiiqYk..","..kYqqqqYk..","..kYYYYYYk..","..kYkkkkYk..","..kYYYYYYk..","..kkkkkkkk..","............","............"]);
 IC.fish=mkSpr(["............","............","....kkkk....","..kkqqqqkk.k",".kqwkqqqqqkk",".kqqqqqqqqqk","..kQQQQQQkkk","...kkkkkk..k","............","............","............","............"]);
 const ITEMS=[
@@ -118,12 +120,12 @@ const ITEMS=[
 /* ---------- state ---------- */
 let mode='title',frame=0,fade=0,dlg=null,trans=null,menu=null,shop=null,cur,curId,enemies=[],shots=[],picks=[],parts=[],bombs=[],bug=null,st,p,winT=0;
 let hook=null,fish=null,hitstop=0,hurtT=0,chal=null,cars=[],birds=[],banner='',bannerT=0,toastMsg='',toastT=0,shake=0,needSave=false,titleSel=0,saveData=null;
-function newState(){return{coins:0,got:{},f:{},keys:{},lore:{},vis:{},items:{},ammo:{balls:0,powder:0},cap:{balls:30,powder:10},eq:null,bottle:0,shield:0,ret:null,dent:null,ow:[2,1],kills:0,pieces:0,trade:null,kayak:0,pins:{},gold:0,clock:4500,time:0,wx:'clear',wxT:2400,wxk:0,wxNext:null,snow:0,cards:{},fish:{},frogs:0};}
+function newState(){return{coins:0,got:{},f:{},keys:{},lore:{},vis:{},items:{},ammo:{balls:0,powder:0},cap:{balls:30,powder:10},eq:null,bottle:0,shield:0,ret:null,dent:null,ow:[2,1],kills:0,pieces:0,trade:null,kayak:0,pins:{},gold:0,clock:4500,time:0,wx:'clear',wxT:2400,wxk:0,wxNext:null,snow:0,cards:{},fish:{},frogs:0,ng:0,ach:{},splits:{},nightKills:0,lure:0,rush:null};}
 function newPlayer(){return{x:136,y:120,dir:0,hp:6,max:6,inv:0,atk:0,kt:0,kx:0,ky:0,moving:false,charging:false,charge:0,spin:0,dash:0,trail:[],hold:null};}
 const HPS={foreman:9,rat:1,squirrel:1,goose:2,scooter:2,crab:2,bat:1,ghost:2,raven:7,vampire:14,turtle:8,wraith:6,bell:8};
 const FLY={bat:1,ghost:1,raven:1,vampire:1,wraith:1,bell:1};
 const BOSS={foreman:1,raven:1,vampire:1,turtle:1,wraith:1,bell:1};
-function mk(type,x,y){return{type,x,y,hp:HPS[type],vx:0,vy:0,t:rnd(30),flash:0,kt:0,kx:0,ky:0,f:1,stuck:false,gone:false,stun:0,state:type=='bell'?'float':'walk',st:0,vis:0,z:type=='bell'?40:0,boss:!!BOSS[type]};}
+function mk(type,x,y){const hp=HPS[type]*(st&&st.ng?2:1);return{type,x,y,hp,mhp:hp,vx:0,vy:0,t:rnd(30),flash:0,kt:0,kx:0,ky:0,f:1,stuck:false,gone:false,stun:0,state:type=='bell'?'float':'walk',st:0,vis:0,z:type=='bell'?40:0,boss:!!BOSS[type]};}
 const nKeys=()=>KEYS4.filter(k=>st.got[k]).length;
 const MW=()=>cur.w*TS,MH=()=>cur.h*TS;
 function updCam(){cam.x=clamp(Math.round(p.x-W/2),0,Math.max(0,MW()-W));cam.y=clamp(Math.round(p.y-PH/2),0,Math.max(0,MH()-PH));}
@@ -170,7 +172,7 @@ function runJob(){
 }
 function pump(ms){const t0=performance.now();let n=0;while(jobs.length&&(n++<1||performance.now()-t0<ms)){if(!runJob())break;}}
 function load(id){
-  cur=SC[id];curId=id;enemies=[];shots=[];picks=[];parts=[];bombs=[];bug=null;hook=null;fish=null;fade=10;
+  cur=SC[id];curId=id;enemies=[];shots=[];picks=[];parts=[];bombs=[];bug=null;hook=null;fish=null;hitstop=0;fade=10;
   refresh();
   blocks=[];cur.g0.forEach((r,y)=>r.forEach((c,x)=>{if(c=='#')blocks.push({tx:x,ty:y,x:x*TS,y:y*TS,mv:0,dx:0,dy:0});}));
   if(st.f['sw:'+id]){const sw=[];cur.g0.forEach((r,y)=>r.forEach((c,x)=>{if(c=='^')sw.push([x,y]);}));blocks.forEach((b,i)=>{if(sw[i]){b.tx=sw[i][0];b.ty=sw[i][1];b.x=b.tx*TS;b.y=b.ty*TS;}});}
@@ -189,6 +191,7 @@ function load(id){
   if(cur.bossT&&st.f['boss:'+id]){if(cur.reward&&!st.got[cur.reward])picks.push({x:112,y:80,kind:'keystone',id:cur.reward,life:1e9});
     if(!st.got['hc:'+id]&&cur.bossT!='vampire')picks.push({x:144,y:80,kind:'container',id:'hc:'+id,life:1e9});}
   banner=cur.name;bannerT=100;needSave=true;prefetch();
+  if(cur.bossT&&!st.f['boss:'+id]&&!st.rush&&!st.f['intro:'+id]&&BOSSINTRO[cur.bossT]){st.f['intro:'+id]=1;say(BOSSINTRO[cur.bossT],null,cur.name);}
   if(typeof pickSong=='function')pickSong();
 }
 const push={n:0,dir:-1};
@@ -216,7 +219,7 @@ function learn(id){if(!LOREM[id]||st.lore[id])return;st.lore[id]=1;toast('Journa
 /* ---------- save ---------- */
 let saveSlot=1;try{saveSlot=+localStorage.getItem('rcq-slot')||1;}catch(e){}
 const saveKey=n=>n==1?'rcq-save-2':'rcq-save-2-s'+n;
-function save(){try{localStorage.setItem(saveKey(saveSlot),JSON.stringify({st,max:p.max,at:curId,x:p.x,y:p.y}));localStorage.setItem('rcq-slot',saveSlot);}catch(e){}}
+function save(){if(st&&st.rush)return;try{localStorage.setItem(saveKey(saveSlot),JSON.stringify({st,max:p.max,at:curId,x:p.x,y:p.y}));localStorage.setItem('rcq-slot',saveSlot);}catch(e){}}
 function readSave(n){try{const d=JSON.parse(localStorage.getItem(saveKey(n||saveSlot))||'null');return d&&d.st&&SC[d.at]?d:null;}catch(e){return null;}}
 function newGame(){st=newState();p=newPlayer();load('ow:2,1');p.x=7*TS+8;p.y=8*TS+8;p.dir=2;mode='play';
   say(['A cold fog has rolled up off the James, and the gas lamps of Richmond are going dark.','The archivist by the Capitol wants a word. Walk up and press A to talk.']);}
@@ -234,7 +237,7 @@ const JING=[[523,.09],[659,.09],[784,.09],[1047,.24]],SECRET=[[784,.07],[740,.07
 /* ---------- dialog ---------- */
 function say(lines,cb,head,choices){
   const pages=[];
-  for(const s of lines){const ls=wrap(s,27);for(let i=0;i<ls.length;i+=4)pages.push(ls.slice(i,i+4));}
+  const cw=OPT.big?21:27,lp=OPT.big?3:4;for(const s of lines){const ls=wrap(s,cw);for(let i=0;i<ls.length;i+=lp)pages.push(ls.slice(i,i+lp));}
   dlg={pages,i:0,n:0,cb:cb||null,head:head||'',choices:choices||null,sel:0};
 }
 function dlgUpdate(){
@@ -351,13 +354,21 @@ const TALK={
     if(!st.f.painter){st.f.painter=1;st.coins+=30;needSave=true;tune(JING);return offer(n,['You paddled over in this fog? Brave. Here, the mural fund can spare 30 coins.']);}
     return offer(n,['Murals all along these walls. Manchester\'s been painting itself for years.']);},
   chal(n){return offer(n,[]);},
+  historian(){learn('ancarrow');
+    if(st.f.bateau)return['The bateau is drying out by the ramp. Come see her launch some summer.','That golden lure brings the big ones up. Try it in the James at night.'];
+    const n=['oar','pole','tiller'].filter(q=>st.got[q]).length;
+    if(n==3){st.f.bateau=1;learn('bateau');st.lure=1;st.coins=Math.min(999,st.coins+50);needSave=true;p.hold={ic:IC.lure,t:90};tune(JING);
+      return['The oar, the pole and the tiller! She\'ll float again.','Before railroads, bateaux like this one carried tobacco down the James. You\'ve helped save a piece of that.',
+        'Take my Golden Lure and 50 coins. Fish bite faster for it, and sturgeon can\'t resist it.',...give('hc')];}
+    return['Before railroads, long flat-bottomed bateaux carried tobacco and flour down the James.','I\'m rebuilding one, but the river scattered the parts: an oar, a pole and a tiller.',
+      n?'You\'ve found '+n+' of 3. Keep looking!':'Try Pony Pasture, west of Forest Hill Park. And look out on the island off this landing.'];},
   naturalist(){
     if(st.f.frogsDone)return['The frog count is in the record books, thanks to you.','Come back on a rainy night. You never know what turns up.'];
     if(st.frogs>=5){st.f.frogsDone=1;st.coins=Math.min(999,st.coins+40);const got=awardCard('maymont',true);needSave=true;tune(JING);
       return['Five frogs! Wonderful. I\'ll count them and let them go by the lake.','Here are 40 coins for your trouble'+(got?', and a Maymont card for your collection.':'.')];}
     return['I\'m counting frogs for Maymont. They mostly come out when it rains, near the water.','Could you catch five for me? Just walk into them.'+(st.frogs?' You have '+st.frogs+' so far.':''),
       st.wx=='rain'?'It\'s raining right now. Go look!':'Wait for a rainy day, then check around the ponds and the river.'];},
-  folk(n){n.li=(n.li||0)+1;return[n.lines[(n.li-1)%n.lines.length]];},
+  folk(n){n.li=(n.li||0)+1;const c=folkContext();if(c&&n.li%2==0)return[c];return[n.lines[(n.li-1)%n.lines.length]];},
   docent(){return['The eggs in these cases were made for the Russian royal family.','Read the plaque on each case. A Virginian collector left them to the museum.'];},
   shop(){shop={cur:0,msg:'What can I get you?'};return null;},
   keeper(){learn('vampire');
@@ -438,8 +449,9 @@ function moveE(e,dx,dy){
 const front=d=>[p.x+DX[p.dir]*d,p.y+DY[p.dir]*d];
 function hurt(d,sx,sy){
   if(p.inv>0||p.dash>0||p.hp<=0)return;
-  p.hp-=d;p.inv=50;hurtT=12;hitstop=4;const dx=p.x-sx,dy=p.y-sy,l=Math.hypot(dx,dy)||1;p.kx=dx/l*2.5;p.ky=dy/l*2.5;p.kt=8;p.atk=0;p.charging=false;p.spin=0;sfx(140,.18,'sawtooth');
+  if(st.ng)d++;p.hp-=d;p.inv=50;hurtT=OPT.calm?0:12;hitstop=4;const dx=p.x-sx,dy=p.y-sy,l=Math.hypot(dx,dy)||1;p.kx=dx/l*2.5;p.ky=dy/l*2.5;p.kt=8;p.atk=0;p.charging=false;p.spin=0;sfx(140,.18,'sawtooth');
   burst(p.x,p.y-4,6,['#e83048','#ffffff'],1.6,2);
+  if(p.hp<=0&&st.rush){p.hp=0;const n=st.rush.i;st.rush.over=1;say(['The fog takes you.','Boss rush over: you beat '+n+' of '+RUSH.length+'.'],()=>{mode='title';titleInit();});return;}
   if(p.hp<=0){p.hp=0;bug=null;
     say(['The fog takes you...',st.dent?'You come to at the entrance.':'You wake by the fountain in Capitol Square.'],()=>{
       p.hp=p.max;p.kt=0;p.inv=60;if(st.dent){load(st.dent);p.x=128;p.y=8*TS+6;p.dir=2;}else{load('ow:2,1');p.x=7*TS+8;p.y=8*TS+8;p.dir=2;}updCam();});}
@@ -518,9 +530,14 @@ function hitEnemy(e,dmg,src,kx,ky){
 }
 function kill(e){
   if(e.chal&&chal)chalProgress();
-  st.kills++;sfx(90,.2,'sawtooth',.06);hitstop=e.boss?12:5;parts.push({ring:1,x:e.x,y:e.y-4,vx:0,vy:0,life:16,max:16,c:'#ffffff',s:0});for(let i=0;i<8;i++){const a=i*.785;parts.push({x:e.x+Math.cos(a)*4,y:e.y-4+Math.sin(a)*4,vx:Math.cos(a)*1.1,vy:Math.sin(a)*1.1-.2,life:20,max:20,c:i&1?'#d8d8e8':'#a8a8c0',s:4});}burst(e.x,e.y-2,e.boss?22:10,['#ffffff','#d8d8e8','#a8a8c0'],e.boss?2.2:1.3,3);
-  if(e.type=='vampire'){enemies=[];shots=[];st.f['boss:'+curId]=1;st.f.won=1;needSave=true;
-    say(['The pale thing shrieks and comes apart like wet newspaper.','Above you the fog thins. One by one the lamps along Broad Street come back on.','Richmond is safe. Somebody owes you a ginger beer.'],()=>{mode='win';winT=0;});return;}
+  st.kills++;if(e.night)st.nightKills=(st.nightKills||0)+1;sfx(90,.2,'sawtooth',.06);hitstop=e.boss?12:5;parts.push({ring:1,x:e.x,y:e.y-4,vx:0,vy:0,life:16,max:16,c:'#ffffff',s:0});for(let i=0;i<8;i++){const a=i*.785;parts.push({x:e.x+Math.cos(a)*4,y:e.y-4+Math.sin(a)*4,vx:Math.cos(a)*1.1,vy:Math.sin(a)*1.1-.2,life:20,max:20,c:i&1?'#d8d8e8':'#a8a8c0',s:4});}burst(e.x,e.y-2,e.boss?22:10,['#ffffff','#d8d8e8','#a8a8c0'],e.boss?2.2:1.3,3);
+  if(e.boss&&st.rush){enemies=[];shots=[];bombs=[];st.rush.i++;tune(JING);
+    if(st.rush.i>=RUSH.length){const t=st.time;let best=0;try{best=+localStorage.getItem('rcq-rush')||0;if(!best||t<best)localStorage.setItem('rcq-rush',t);}catch(_){}
+      say(['Boss rush cleared in '+fmtTime(t)+'!',best&&best<t?'Best: '+fmtTime(best)+'.':'That\'s a new best time!'],()=>{mode='title';titleInit();},'Boss Rush');}
+    else say(['Down! '+(RUSH.length-st.rush.i)+' to go.'],()=>loadRush(st.rush.i),'Boss Rush');return;}
+  if(e.boss){st.splits=st.splits||{};if(!st.splits[cur.area])st.splits[cur.area]=st.time;}
+  if(e.type=='vampire'){enemies=[];shots=[];st.f['boss:'+curId]=1;st.f.won=1;if(st.ng)st.f.ngWon=1;needSave=true;
+    say(['The pale thing shrieks and comes apart like wet newspaper.','Above you the fog thins. One by one the lamps along Broad Street come back on.','Richmond is safe. Somebody owes you a ginger beer.','By morning the fog has burned off the James. Every lamp from Church Hill to Carytown is lit.','The archivist adds one last story to the journal. It\'s yours.'],()=>{mode='win';winT=0;checkAch();},'Engine 231');return;}
   if(e.boss){st.f['boss:'+curId]=1;st.f['clr:'+curId]=1;enemies=[];shots=[];bombs=[];refresh();
     if(cur.reward)picks.push({x:112,y:80,kind:'keystone',id:cur.reward,life:1e9});picks.push({x:144,y:80,kind:'container',id:'hc:'+curId,life:1e9});
     tune(JING);const bc=BOSSCARD[e.type],nc=bc&&awardCard(bc,true);say(BOSSTXT[e.type].concat(nc?['You found a landmark card: '+CARDM[bc].name+'!']:[]),null,cur.name);needSave=true;return;}
@@ -533,7 +550,9 @@ function kill(e){
 function collect(k){
   switch(k.kind){
     case'token':case'flag':burst(k.x,k.y,6,['#fff2a8','#ffffff'],1.4,2);chalProgress();break;
-    case'frog':st.frogs++;sfx(1400,.05,'triangle');burst(k.x,k.y,5,['#68b854','#ffffff'],1.2,1);toast(st.frogs>=5&&!st.f.frogsDone?'Five frogs! Take them to the naturalist in Byrd Park.':'Caught a frog! ('+Math.min(st.frogs,5)+'/5)');needSave=true;break;
+    case'part':{st.got[k.id]=1;p.hold={ic:IC.oar,t:90};tune(JING);needSave=true;const n=['oar','pole','tiller'].filter(q=>st.got[q]).length;
+      say(['You found the bateau '+k.id+'! ('+n+' of 3)',n<3?'The river historian at Ancarrow\'s Landing will want it.':'That\'s every part! Take them to the historian at Ancarrow\'s Landing.'],null,'Bateau Part');break;}
+    case'frog':st.frogs++;sfx(1400,.05,'triangle');if(typeof splashSfx=='function')splashSfx(.4);burst(k.x,k.y,5,['#68b854','#ffffff'],1.2,1);toast(st.frogs>=5&&!st.f.frogsDone?'Five frogs! Take them to the naturalist in Byrd Park.':'Caught a frog! ('+Math.min(st.frogs,5)+'/5)');needSave=true;break;
     case'coin':st.coins=Math.min(999,st.coins+1);sfx(1200,.05);burst(k.x,k.y,3,['#fff2a8'],1,1);break;
     case'heart':p.hp=Math.min(p.max,p.hp+2);sfx(800,.1,'triangle');break;
     case'ballpk':st.ammo.balls=Math.min(st.cap.balls,st.ammo.balls+3);sfx(1000,.05);break;
@@ -593,7 +612,7 @@ function useItem(){
     case'hook':if(hook)break;hook={x:p.x,y:p.y-4,dx:DX[p.dir],dy:DY[p.dir],d:0,st:'out',carry:[]};sfx(900,.06,'square',.03);break;
     case'rod':{const [fx,fy]=front(20),t=tileAt(fx,fy);if(t!='w'&&t!='~'){toast('Face open water to cast.');sfx(150,.06);break;}
       if(enemies.some(e=>!e.gone&&Math.hypot(e.x-p.x,e.y-p.y)<60)){toast('Too much commotion to fish.');break;}
-      fish={ph:'wait',t:80+rnd(160),x:fx,y:fy,ten:0,dist:0,sp:null,run:0};sfx(700,.08,'triangle');break;}
+      fish={ph:'wait',t:Math.round((80+rnd(160))*(st.lure?.55:1)),x:fx,y:fy,ten:0,dist:0,sp:null,run:0};sfx(700,.08,'triangle');if(typeof splashSfx=='function')splashSfx(.6,.18);break;}
     case'shoes':if(p.dash>0)break;p.dash=20;p.trail=[];sfx(300,.15,'sawtooth',.03);break;
     case'bottle':if(st.bottle){st.bottle=0;p.hp=p.max;tune([[523,.08],[659,.08],[784,.15]],'triangle');burst(p.x,p.y-8,10,['#f8a030','#ffffff'],1.2,2);toast('Ahh. Every heart refilled.');needSave=true;}
       else toast('The bottle is empty. The brewer refills it.');break;
@@ -621,7 +640,7 @@ function updHold(){for(const d in hold)hold[d]=keys[d]?hold[d]+1:0;}
 const nav=d=>hold[d]==1||(hold[d]>18&&hold[d]%5==0);
 function update(){
   frame++;pollPad();updHold();
-  if(mode=='play'&&st&&!menu&&!trans){st.clock++;st.time++;wxTick();}
+  if(mode=='play'&&st&&!menu&&!trans){st.clock++;st.time++;wxTick();if(frame%60==0&&!st.rush)checkAch();}
   if(fade>0)fade--;if(bannerT>0)bannerT--;if(toastT>0)toastT--;if(shake>0)shake--;
   if(p&&p.hold&&--p.hold.t<=0)p.hold=null;
   if(mode=='title')titleUpdate();
@@ -635,7 +654,7 @@ function update(){
   else if(dlg)dlgUpdate();
   else if(fish)fishUpdate();
   else if(press.menu){menu={tab:0,cur:Math.max(0,ITEMS.findIndex(i=>i.id==st.eq)),jc:0,jt:0,rd:null};sfx(880,.05);}
-  else if(hitstop>0){hitstop--;for(const q of parts)if(q.ring)q.life--;}
+  else if(hitstop>0){hitstop--;for(const q of parts)if(q.ring)q.life--;if(hurtT>0)hurtT--;return;}
   else play();
   if(hurtT>0)hurtT--;
   for(const k in press)press[k]=0;
@@ -749,7 +768,7 @@ function menuUpdate(){
   const m=menu;
   if(press.menu){menu=null;sfx(600,.05);return;}
   if(m.rd){if(press.a){m.rd.pg++;sfx(700,.03);if(m.rd.pg>=m.rd.pages.length)m.rd=null;}else if(press.b)m.rd=null;return;}
-  if(press.b){m.tab=(m.tab+1)%5;sfx(760,.04);return;}
+  if(press.b){m.tab=(m.tab+1)%6;sfx(760,.04);return;}
   if(m.tab==0){
     if(nav('left')){m.cur=m.cur%4==0?m.cur+3:m.cur-1;sfx(600,.02);}
     if(nav('right')){m.cur=m.cur%4==3?m.cur-3:m.cur+1;sfx(600,.02);}
@@ -766,7 +785,7 @@ function menuUpdate(){
     if(nav('left'))m.cc=(m.cc+N-1)%N;if(nav('right'))m.cc=(m.cc+1)%N;if(nav('up'))m.cc=(m.cc+N-4)%N;if(nav('down'))m.cc=(m.cc+4)%N;
     if(press.a){const c=CARDS[m.cc];if(st.cards[c.id]){const ls=wrap(c.fact,28);m.rd={t:c.name,pages:[ls],pg:0};sfx(700,.03);}else sfx(150,.06);}
   }else{
-    if(nav('left'))m.tab=(m.tab+4)%5;else if(nav('right'))m.tab=(m.tab+1)%5;
+    if(nav('left'))m.tab=(m.tab+5)%6;else if(nav('right'))m.tab=(m.tab+1)%6;
   }
 }
 function shopUpdate(){
@@ -782,9 +801,9 @@ let tl={lv:0,saves:[]},capture=null;
 function titleInit(){tl={lv:0,saves:[1,2,3].map(n=>readSave(n))};titleSel=Math.max(0,Math.min(2,saveSlot-1));saveData=tl.saves[titleSel];}
 function titleOpts(){
   if(tl.lv==0)return tl.saves.map((d,i)=>'SLOT '+(i+1)+'  '+(d?(d.max/2)+' HEARTS  '+fmtTime(d.st.time||0):'- EMPTY -')).concat(['OPTIONS']);
-  if(tl.lv==1)return['CONTINUE','NEW GAME','BACK'];
+  if(tl.lv==1)return saveData&&saveData.st.f.won?['CONTINUE','NEW GAME+','BOSS RUSH','NEW GAME','BACK']:['CONTINUE','NEW GAME','BACK'];
   if(tl.lv==2)return['YES, ERASE IT','NO'];
-  if(tl.lv==3)return['SOUND: '+(musicOn?'ON':'OFF'),'TIMER: '+(OPT.timer?'ON':'OFF'),'CONTROLS','BACK'];
+  if(tl.lv==3)return['SOUND: '+(musicOn?'ON':'OFF'),'TIMER: '+(OPT.timer?'ON':'OFF'),'TEXT: '+(OPT.big?'BIG':'NORMAL'),'COLOR ASSIST: '+(OPT.assist?'ON':'OFF'),'CALM MODE: '+(OPT.calm?'ON':'OFF'),'BUTTONS: '+{S:'SMALL',M:'MEDIUM',L:'LARGE'}[OPT.bs],'CONTROLS','BACK'];
   return ACTS.map(a=>ACTN[a]+'  '+bindName(a)).concat(['RESET KEYS','BACK']);
 }
 function titleUpdate(){
@@ -792,14 +811,19 @@ function titleUpdate(){
   const o=titleOpts(),n=o.length;
   if(nav('up'))titleSel=(titleSel+n-1)%n;if(nav('down'))titleSel=(titleSel+1)%n;
   const go=(lv,sel)=>{tl.lv=lv;titleSel=sel||0;sfx(760,.05);};
-  if(press.b){if(tl.lv==1||tl.lv==3)go(0,tl.lv==3?3:saveSlot-1);else if(tl.lv==2)go(1,1);else if(tl.lv==4)go(3,2);return;}
+  if(press.b){if(tl.lv==1||tl.lv==3)go(0,tl.lv==3?3:saveSlot-1);else if(tl.lv==2)go(1,0);else if(tl.lv==4)go(3,6);return;}
   if(!(press.a||press.menu))return;
   const sel=titleSel;
   if(tl.lv==0){if(sel==3){go(3);return;}saveSlot=sel+1;saveData=tl.saves[sel];if(saveData)go(1);else{sfx(660,.15,'triangle');newGame();}}
-  else if(tl.lv==1){if(sel==0){sfx(660,.15,'triangle');continueGame(saveData);}else if(sel==1)go(2,1);else go(0,saveSlot-1);}
-  else if(tl.lv==2){if(sel==0){sfx(660,.15,'triangle');newGame();}else go(1,1);}
-  else if(tl.lv==3){if(sel==0)setSound(!musicOn);else if(sel==1){OPT.timer=!OPT.timer;try{localStorage.setItem('rcq-timer',OPT.timer?'1':'0');}catch(e){}sfx(880,.05);}else if(sel==2)go(4);else go(0,3);}
-  else{if(sel<ACTS.length){capture=ACTS[sel];sfx(990,.05);}else if(sel==ACTS.length){CUST={};try{localStorage.removeItem('rcq-keys');}catch(e){}sfx(880,.05);}else go(3,2);}
+  else if(tl.lv==1){const o2=titleOpts()[sel];
+    if(o2=='CONTINUE'){sfx(660,.15,'triangle');continueGame(saveData);}else if(o2=='NEW GAME+'){sfx(660,.15,'triangle');newGamePlus(saveData);}
+    else if(o2=='BOSS RUSH'){sfx(660,.15,'triangle');startRush();}else if(o2=='NEW GAME')go(2,1);else go(0,saveSlot-1);}
+  else if(tl.lv==2){if(sel==0){sfx(660,.15,'triangle');newGame();}else go(1,0);}
+  else if(tl.lv==3){if(sel==0)setSound(!musicOn);
+    else if(sel<6){if(sel==1)OPT.timer=!OPT.timer;else if(sel==2)OPT.big=!OPT.big;else if(sel==3)OPT.assist=!OPT.assist;else if(sel==4)OPT.calm=!OPT.calm;else OPT.bs={S:'M',M:'L',L:'S'}[OPT.bs];
+      try{localStorage.setItem('rcq-timer',OPT.timer?'1':'0');}catch(e){}saveOpt();sfx(880,.05);}
+    else if(sel==6)go(4);else go(0,3);}
+  else{if(sel<ACTS.length){capture=ACTS[sel];sfx(990,.05);}else if(sel==ACTS.length){CUST={};try{localStorage.removeItem('rcq-keys');}catch(e){}sfx(880,.05);}else go(3,6);}
 }
 
 /* ---------- tile art ---------- */
@@ -1264,6 +1288,7 @@ function drawPick(k){
   const x=Math.round(k.x),y=Math.round(k.y),b=Math.round(Math.sin(frame/10)*1.5);
   if(k.kind=='coin'){shadow(x,y+5,3);D(COIN[(frame>>3)&1].r,x-4,y-5+b);}
   else if(k.kind=='heart'){shadow(x,y+5,3);g.drawImage(HEART,x-4,y-5+b);}
+  else if(k.kind=='part'){shadow(x,y+6,5);g.drawImage(IC.oar,x-6,y-8+b);if((frame>>3)&1)R(x+3,y-9+b,2,2,'#ffffff');}
   else if(k.kind=='frog'){shadow(x,y+3,4);const j=k.jump>0?Math.round(Math.sin(k.jump/10*Math.PI)*5):0;g.drawImage(IC.frog,x-6,y-6-j);}
   else if(k.kind=='ballpk'){shadow(x,y+5,3);g.drawImage(IC.ball,x-6,y-7+b);}
   else if(k.kind=='powpk'){shadow(x,y+5,3);g.drawImage(IC.keg,x-6,y-8+b);}
@@ -1349,7 +1374,8 @@ function drawHUD(){
   for(let i=0;i<p.max/2;i++){const f=clamp(p.hp-i*2,0,2),x=43+(i%7)*10,y=(i<7?2:12)-(low&&i==last&&(frame>>3)&1?1:0);g.drawImage(HEART0,x,y);if(f==2)g.drawImage(HEART,x,y);else if(f==1)g.drawImage(HEART,0,0,5,8,x,y,5,8);}
   D(COIN[0].r,116,2);mtext(st.coins,126,4,'#fff2a8');
   if(!cur.ow){g.drawImage(IC.key,113,10);mtext(st.keys[cur.area]||0,126,14,'#ffffff');}
-  KEYS4.forEach((k,i)=>{const x=146+i*13;if(st.got[k])g.drawImage(KSIC[k],x,3);else{R(x,3,12,12,'#080a18');R(x+1,4,10,10,'#2c3460');}});
+  KEYS4.forEach((k,i)=>{const x=146+i*13;if(st.got[k])g.drawImage(KSIC[k],x,3);else{R(x,3,12,12,'#080a18');R(x+1,4,10,10,'#2c3460');}if(OPT.assist)text('GIBZ'[i],x+6,5,'#ffffff',6,'center','#080a18');});
+  if(st.ng)text('+'+(st.ng>1?st.ng:''),40,15,'#f2c14e',6,'left','#080a18');
   drawClock(201,3);
   if(st.pieces%4){g.drawImage(IC.piece,146,15);mtext((st.pieces%4)+'/4',156,17,'#ffffff');}
   drawMini(216,2,36,19,false);
@@ -1367,7 +1393,7 @@ function drawDlg(){
   panel(x0,top,w,h);
   if(dlg.head){const hw=dlg.head.length*8+12;R(x0+8,top-7,hw,12,'#f4f4f8');R(x0+9,top-6,hw-2,10,'#6c1c2c');text(dlg.head,x0+14,top-5,'#fff2a8');}
   let left=dlg.n;const pg=dlg.pages[dlg.i];
-  pg.forEach((l,i)=>{const sh=l.slice(0,Math.max(0,left));left-=l.length;if(sh)text(sh,x0+10,top+10+i*12,'#ffffff',8,'left','#080c28');});
+  const fs=OPT.big?10:8,lh=OPT.big?15:12;pg.forEach((l,i)=>{const sh=l.slice(0,Math.max(0,left));left-=l.length;if(sh)text(sh,x0+10,top+9+i*lh,'#ffffff',fs,'left','#080c28');});
   if(dlg.choices&&dlg.i==dlg.pages.length-1&&left>=0){const k=dlg.choices.length,ph=k*13+10,py=top>HUD+20?top-ph-4:top+h+4;panel(x0,py,w,ph);
     dlg.choices.forEach((c,i)=>{if(i==dlg.sel)R(x0+6,py+5+i*13,w-12,12,'#2c3a8a');text((i==dlg.sel?'> ':'  ')+c,x0+10,py+7+i*13,'#ffffff',8,'left','#080c28');});return;}
   if(left>=0&&(frame>>4)&1){R(W-20,top+h-11,7,1,'#fff2a8');R(W-19,top+h-10,5,1,'#fff2a8');R(W-18,top+h-9,3,1,'#fff2a8');R(W-17,top+h-8,1,1,'#fff2a8');}
@@ -1375,14 +1401,14 @@ function drawDlg(){
 function drawBanner(){const w=banner.length*8+20,x=(W-w)/2|0,y=HUD+6;const a=Math.min(1,bannerT/20);g.globalAlpha=a*.85;R(x,y,w,16,'#080a18');g.globalAlpha=a;R(x,y+15,w,1,'#f2c14e');g.globalAlpha=1;
   if(a>.3)text(banner,W/2,y+4,'#fff2a8',8,'center','#1a1423');}
 function drawToast(){const w=Math.min(W-8,toastMsg.length*8+16),x=(W-w)/2|0,y=FH-22;R(x,y,w,16,'rgba(8,10,24,.9)');R(x,y,w,1,'#f2c14e');text(toastMsg,W/2,y+4,'#ffffff',8,'center');}
-const TABS=['ITEMS','GEAR','JOURNAL','CARDS','MAP'];
-const SHORT={'ow:0,0':["SCOTT'S",'ADDITION'],'ow:1,0':['BROAD','STREET'],'ow:2,0':['JACKSON','WARD'],'ow:3,0':['CHURCH','HILL'],'ow:0,1':['CARYTOWN',''],'ow:1,1':['THE FAN',''],'ow:2,1':['CAPITOL','SQUARE'],'ow:3,1':['SHOCKOE','BOTTOM'],'ow:0,2':['BYRD PARK','MAYMONT'],'ow:1,2':['HOLLYWOOD','CEMETERY'],'ow:2,2':['BELLE','ISLE'],'ow:3,2':['ROCKETTS','LANDING'],'ow:1,3':['FOREST','HILL'],'ow:2,3':['MANCHESTER','']};
+const TABS=['ITEMS','GEAR','JOURNAL','CARDS','AWARDS','MAP'];
+const SHORT={'ow:0,0':["SCOTT'S",'ADDITION'],'ow:1,0':['BROAD','STREET'],'ow:2,0':['JACKSON','WARD'],'ow:3,0':['CHURCH','HILL'],'ow:0,1':['CARYTOWN',''],'ow:1,1':['THE FAN',''],'ow:2,1':['CAPITOL','SQUARE'],'ow:3,1':['SHOCKOE','BOTTOM'],'ow:0,2':['BYRD PARK','MAYMONT'],'ow:1,2':['HOLLYWOOD','CEMETERY'],'ow:2,2':['BELLE','ISLE'],'ow:3,2':['ROCKETTS','LANDING'],'ow:1,3':['FOREST','HILL'],'ow:0,3':['PONY','PASTURE'],'ow:3,3':["ANCARROW'S",'LANDING'],'ow:2,3':['MANCHESTER','']};
 const OWKEY={'ow:2,2':'granite','ow:1,2':'iron','ow:3,1':'brick','ow:0,2':'bronze'};
 function drawMenu(){
   const m=menu;
   const gr=g.createLinearGradient(0,0,0,FH);gr.addColorStop(0,'#141e56');gr.addColorStop(1,'#070a22');g.fillStyle=gr;g.fillRect(0,0,W,FH);
   R(2,2,W-4,1,'#f4f4f8');R(2,FH-3,W-4,1,'#f4f4f8');R(2,2,1,FH-4,'#f4f4f8');R(W-3,2,1,FH-4,'#f4f4f8');
-  let tx=6;TABS.forEach((t,i)=>{const w=t.length*8+6;R(tx,6,w,13,i==m.tab?'#f2c14e':'#26306a');text(t,tx+3,9,i==m.tab?'#1a1423':'#aeb7c2');tx+=w+4;});
+  let tx=6;TABS.forEach((t,i)=>{const w=t.length*6+6;R(tx,6,w,13,i==m.tab?'#f2c14e':'#26306a');text(t,tx+3,10,i==m.tab?'#1a1423':'#aeb7c2',6);tx+=w+4;});
   R(6,21,W-12,1,'#4a58a8');
   if(m.rd){panel(8,26,W-16,150);text(m.rd.t,W/2,34,'#fff2a8',8,'center','#080c28');
     m.rd.pages[m.rd.pg].forEach((l,i)=>text(l,16,52+i*12,'#ffffff',8,'left','#080c28'));
@@ -1408,16 +1434,22 @@ function drawMenu(){
       [COIN[0].r.c,'Coins '+st.coins+'  Keys '+(cur.ow?'-':(st.keys[cur.area]||0)),'Small keys work where found.'],
       [st.items.kayak?IC.kayak:null,st.items.kayak?'Kayak':'???',st.items.kayak?'Paddle across whitewater.':'Someone on the river has one.'],
       q,[IC.pin,'Stories '+nLore()+'/'+LORE.length+'  Pins '+Object.keys(st.pins).length+'/'+NCHAL,st.gold?'Golden Paddle: double damage!':'Every pin earns a golden paddle.']];
-    rows.forEach(([ic,a,b],i)=>{const y=25+i*19;R(10,y,20,18,'#080a18');R(11,y+1,18,16,'#1c2660');
+    rows.forEach(([ic,a,b],i)=>{const y=24+i*18;R(10,y,20,18,'#080a18');R(11,y+1,18,16,'#1c2660');
       if(ic)g.drawImage(ic,14+(12-ic.width)/2|0,y+3+(12-ic.height)/2|0);
       if(i==2)KEYS4.forEach((k,j)=>{const x=150+j*16;if(st.got[k])g.drawImage(KSIC[k],x,y+3);else{R(x,y+3,12,12,'#080a18');R(x+1,y+4,10,10,'#2c3460');}});
       text(a,36,y+1,'#fff2a8',8,'left','#080c28');if(b)text(b,36,y+10,'#aeb7c2',8,'left','#080c28');});
-    text('B: next tab   MENU: close',W/2,FH-16,'#aeb7c2',8,'center');
+    R(8,170,W-16,1,'#4a58a8');wrap('NEXT: '+goal(),40).slice(0,2).forEach((l,i)=>text(l,10,174+i*9,'#fff2a8',6,'left','#080c28'));
   }else if(m.tab==2){
     text('Stories found '+nLore()+'/'+LORE.length,W/2,26,'#fff2a8',8,'center','#080c28');
     for(let i=0;i<11;i++){const j=m.jt+i;if(j>=LORE.length)break;const [id,t]=LORE[j],y=40+i*12,sel=j==m.jc,got=st.lore[id];
       if(sel)R(8,y-2,W-16,12,'#2c3a8a');text((sel?'> ':'  ')+(got?t:'- - - - - -'),12,y,got?'#ffffff':'#5a6496',8,'left','#080c28');}
     text('A: read   B: next tab',W/2,FH-16,'#aeb7c2',8,'center');
+  }else if(m.tab==4){
+    st.ach=st.ach||{};const n=ACH.filter(a=>st.ach[a[0]]).length;text('Awards '+n+'/'+ACH.length,W/2,25,'#fff2a8',8,'center','#080c28');
+    ACH.forEach(([id,name,desc],i)=>{const y=37+i*10,got=st.ach[id];R(10,y,7,7,got?'#f2c14e':'#26306a');if(got)R(12,y+2,3,3,'#fff2a8');
+      text(name,22,y,got?'#ffffff':'#7a84b6',6,'left','#080c28');text(desc,W-10,y,got?'#aeb7c2':'#5a6496',6,'right','#080c28');});
+    let rb=0;try{rb=+localStorage.getItem('rcq-rush')||0;}catch(e){}
+    text((rb?'Boss rush best '+fmtTime(rb)+'   ':'')+'B: next tab',W/2,FH-14,'#aeb7c2',6,'center');
   }else if(m.tab==3){
     const cc=m.cc||0;
     CARDS.forEach((c,i)=>{const x=12+(i%4)*60,y=26+(i/4|0)*38,own=st.cards[c.id],sel=i==cc;
@@ -1482,7 +1514,7 @@ function draw(){
       text('RIVER CITY',W/2+2,26,'#6a1c2c',16,'center');text('RIVER CITY',W/2,24,'#f2c14e',16,'center');
       text('QUEST',W/2+2,48,'#6a1c2c',16,'center');text('QUEST',W/2,46,'#fff2a8',16,'center');
       text('The Tunnel Under Church Hill',W/2,70,'#e8ecf8',8,'center','#1a1423');
-      const opts=titleOpts(),top=tl.lv==4?80:88,sp=tl.lv==4?11:13;
+      const opts=titleOpts(),top=tl.lv>=3?84:88,sp=opts.length>4?11:13;R(14,top-6,W-28,opts.length*sp+8,'rgba(8,10,24,.6)');
       opts.forEach((o,i)=>{const y=top+i*sp,sel=i==titleSel;if(sel){R(18,y-3,W-36,sp-1,'rgba(8,10,24,.78)');}text((sel?'> ':'  ')+o+(sel?' <':'  '),W/2,y,sel?'#ffffff':'#aeb7c2',8,'center','#1a1423');});
       const hint=capture?'Press a key for '+ACTN[capture]+'...':tl.lv==2?'Slot '+saveSlot+' will be erased.':tl.lv==4?'Arrows and Enter always work. Gamepads too.':tl.lv?'B: back':'Gamepad: A, X/B, Start';
       text(hint,W/2,FH-14,capture||tl.lv==2?'#f0a878':'#aeb7c2',8,'center','#1a1423');
@@ -1491,12 +1523,14 @@ function draw(){
       text('Richmond is safe.',W/2,58,'#ffffff',8,'center','#1a1423');
       text('Stories '+nLore()+'/'+LORE.length+'   Hearts '+p.max/2,W/2,76,'#e8ecf8',8,'center','#1a1423');
       text('Coins '+st.coins+'   Foes '+st.kills+'   Cards '+nCards()+'/'+CARDS.length,W/2,90,'#e8ecf8',8,'center','#1a1423');
-      text('Time '+fmtTime(st.time),W/2,102,'#fff2a8',8,'center','#1a1423');
-      if(winT>60&&(frame>>5)&1)text('PRESS A',W/2,120,'#ffffff',8,'center','#1a1423');
+      text('Time '+fmtTime(st.time)+(st.ng?'   NG+'+(st.ng>1?st.ng:''):''),W/2,102,'#fff2a8',8,'center','#1a1423');
+      const SPN={quarry:'Quarry',pyramid:'Pyramid',poe:'Poe',carillon:'Carillon',tredegar:'Tredegar',tunnel:'Tunnel'},sp=Object.keys(SPN).filter(k=>st.splits&&st.splits[k]).sort((a,b)=>st.splits[a]-st.splits[b]);
+      if(sp.length)R(0,129,W,10+((sp.length+1)>>1)*9,'rgba(8,10,24,.75)');sp.forEach((k,i)=>text(SPN[k]+' '+fmtTime(st.splits[k]),(i%2?W*3/4:W/4),134+(i>>1)*9,'#c8d0f0',6,'center','#1a1423'));
+      if(winT>60&&(frame>>5)&1)text('PRESS A',W/2,116,'#ffffff',8,'center','#1a1423');
     }
   }else if(menu){drawMenu();}
   else{
-    const sx=shake?rnd(3)-1:0,sy=shake?rnd(3)-1:0;
+    const sx=shake&&!OPT.calm?rnd(3)-1:0,sy=shake&&!OPT.calm?rnd(3)-1:0;
     g.save();g.beginPath();g.rect(0,HUD,W,PH);g.clip();g.translate(sx,HUD+sy);
     if(trans&&trans.iris&&trans.t<16)g.drawImage(trans.old,0,0);
     else if(trans&&!trans.fade&&!trans.iris){const k=trans.t/20,e=k*k*(3-2*k),ox=Math.round(trans.dx*W*e),oy=Math.round(trans.dy*PH*e);
@@ -1509,13 +1543,13 @@ function draw(){
     if(!cur.ow&&!irisOld)g.drawImage(vigC,0,0);
     if(trans&&trans.iris)drawIris();
     const b=enemies.find(e=>e.boss);
-    if(b){R(77,5,102,7,'#1a1423');R(78,6,100,5,'#3a1c30');R(78,6,Math.round(100*b.hp/HPS[b.type]),5,'#e83048');R(78,6,Math.round(100*b.hp/HPS[b.type]),1,'#f890a0');}
+    if(b){R(77,5,102,7,'#1a1423');R(78,6,100,5,'#3a1c30');R(78,6,Math.round(100*b.hp/(b.mhp||HPS[b.type])),5,'#e83048');R(78,6,Math.round(100*b.hp/(b.mhp||HPS[b.type])),1,'#f890a0');}
     if(hurtT>0){g.globalAlpha=hurtT/12*.35;R(0,0,W,PH,'#e83048');g.globalAlpha=1;}
     if(fade>0){g.globalAlpha=fade/10;R(0,0,W,PH,'#000');g.globalAlpha=1;}
     g.restore();
     drawHUD();
     if(fish&&!dlg)drawFishUI();
-    if(OPT.timer&&!dlg)text(fmtTime(st.time),W-3,FH-11,'#ffffff',8,'right','#1a1423');
+    if((OPT.timer||st.rush)&&!dlg)text(fmtTime(st.time),W-3,FH-11,'#ffffff',8,'right','#1a1423');
     if(chal&&chal.t!=null){const txt=chal.d.name+'  '+Math.ceil(chal.t/60)+'s  '+chal.got+'/'+chal.need,w=txt.length*8+16,x=(W-w)/2|0;
       R(x,HUD+4,w,16,'rgba(8,10,24,.88)');R(x,HUD+19,w,1,chal.t<300&&(frame>>3)&1?'#e83048':'#f2c14e');text(txt,W/2,HUD+8,'#ffffff',8,'center');}
     else if(bannerT>0&&!dlg&&!shop&&!(trans&&trans.iris&&trans.t<22))drawBanner();
@@ -1686,8 +1720,8 @@ const FISH=[
   {id:'bass',name:'largemouth bass',str:1.6,coins:6,w:()=>4,txt:'A fighter. Bass lurk along weedy edges.'},
   {id:'catfish',name:'blue catfish',str:2,coins:8,w:()=>dark()>.5?6:1,txt:'Blue catfish feed at night, and they get huge in the James.'},
   {id:'shad',name:'American shad',str:1.4,coins:6,w:()=>st.wx=='rain'?5:.3,txt:'Shad run up the James to spawn. Rain gets them moving.'},
-  {id:'sturgeon',name:'Atlantic sturgeon',str:2.6,coins:30,w:()=>riverHere()?(dark()>.5?.9:.45):0,txt:'An ancient, armored giant. Spotting one in the James is a big deal.'}];
-const riverHere=()=>(cur.ow&&cur.ay==2&&cur.ax>=1)||cur.area=='boathouse';
+  {id:'sturgeon',name:'Atlantic sturgeon',str:2.6,coins:30,w:()=>riverHere()?(dark()>.5?.9:.45)*(st.lure?3:1):0,txt:'An ancient, armored giant. Spotting one in the James is a big deal.'}];
+const riverHere=()=>(cur.ow&&((cur.ay==2&&cur.ax>=1)||(cur.ay==3&&cur.ax!=1&&cur.ax!=2)))||cur.area=='boathouse';
 function pickFish(){const ws=FISH.map(f=>f.w()),t=ws.reduce((a,b)=>a+b,0);let r=Math.random()*t;for(let i=0;i<FISH.length;i++){r-=ws[i];if(r<=0)return FISH[i];}return FISH[0];}
 function fishEnd(m){fish=null;toast(m);sfx(150,.1);}
 function fishUpdate(){
@@ -1701,7 +1735,7 @@ function fishUpdate(){
     if(press.a){f.dist-=3.2;f.ten+=f.run?15:8;sfx(400+Math.round(f.ten)*6,.03,'square',.02);}
     if(f.ten>=100){fishEnd('Snap! The line broke.');return;}
     if(f.dist>=72){fishEnd('It got away.');return;}
-    if(f.dist<=0){fish=null;st.fish[S.id]=(st.fish[S.id]||0)+1;st.coins=Math.min(999,st.coins+S.coins);p.hold={ic:IC.fish,t:90};tune(JING);needSave=true;
+    if(f.dist<=0){if(typeof splashSfx=='function')splashSfx(1);fish=null;st.fish[S.id]=(st.fish[S.id]||0)+1;st.coins=Math.min(999,st.coins+S.coins);p.hold={ic:IC.fish,t:90};tune(JING);needSave=true;
       const L=['You caught '+(/^[aeiou]/i.test(S.name)?'an ':'a ')+S.name+'!',S.txt+' (+'+S.coins+' coins)'];
       if(S.id=='sturgeon'&&awardCard('sturgeon',true))L.push('You earned the Atlantic Sturgeon card!');say(L,null,'Fishing');}}
 }
@@ -1716,14 +1750,16 @@ function drawFishUI(){
   const f=fish;
   if(f.ph!='reel'){const m=f.ph=='bite'?'BITE! Press A!':'Waiting for a bite...  B: stop';const w=m.length*8+14;R((W-w)/2|0,FH-22,w,14,'rgba(8,10,24,.85)');text(m,W/2,FH-19,f.ph=='bite'?'#fff2a8':'#ffffff',8,'center');return;}
   const x0=40,y0=FH-44,w=176;panel(x0,y0,w,38);
-  text('Tap A to reel',x0+8,y0+5,'#fff2a8',8,'left','#080c28');if(f.run&&(frame>>3)&1)text('RUNNING!',x0+w-8,y0+5,'#f890a0',8,'right','#080c28');
+  text('Tap A to reel',x0+8,y0+5,'#fff2a8',8,'left','#080c28');if(f.run&&(frame>>3)&1)text('RUNNING!',x0+w-8,y0+5,'#f890a0',8,'right','#080c28');else if(OPT.assist&&f.ten>75)text('EASY!',x0+w-8,y0+5,'#ffffff',8,'right','#080c28');
   R(x0+8,y0+17,w-44,6,'#080a18');R(x0+9,y0+18,Math.round((w-46)*Math.max(0,1-f.dist/72)),4,'#3ac2e8');
   R(x0+8,y0+27,w-44,6,'#080a18');const tc=f.ten>75?'#e83048':f.ten>50?'#f2c14e':'#58a848';R(x0+9,y0+28,Math.round((w-46)*Math.min(1,f.ten/100)),4,tc);
   text('FISH',x0+w-10,y0+17,'#ffffff',6,'right','#080c28');text('LINE',x0+w-10,y0+27,'#ffffff',6,'right','#080c28');
 }
 
 /* ---------- options, slots, controls, gamepad ---------- */
-const OPT={timer:false};try{OPT.timer=localStorage.getItem('rcq-timer')=='1';}catch(e){}
+const OPT={timer:false,big:false,assist:false,calm:false,bs:'M'};try{Object.assign(OPT,JSON.parse(localStorage.getItem('rcq-opt')||'{}'));if(localStorage.getItem('rcq-timer')=='1')OPT.timer=true;}catch(e){}
+function saveOpt(){try{localStorage.setItem('rcq-opt',JSON.stringify(OPT));}catch(e){}applyBtnSize();}
+function applyBtnSize(){try{const c=document.getElementById('controls');if(c&&c.style)c.style.zoom={S:.85,M:1,L:1.2}[OPT.bs]||1;}catch(e){}}
 const ACTS=['up','down','left','right','a','b','menu'],ACTN={up:'UP',down:'DOWN',left:'LEFT',right:'RIGHT',a:'A (paddle/talk)',b:'B (item)',menu:'MENU'};
 const DEFB={up:['w'],down:['s'],left:['a'],right:['d'],a:[' ','z','j'],b:['x','k'],menu:['i','m']};
 const FIXED={ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right',Enter:'menu',Escape:'menu'};
@@ -1740,6 +1776,69 @@ function pollPad(){
   const s={up:b(12)||ax[1]<-.5,down:b(13)||ax[1]>.5,left:b(14)||ax[0]<-.5,right:b(15)||ax[0]>.5,a:b(0),b:b(2)||b(1),menu:b(9)||b(8)||b(3)};
   for(const k in s){const v=!!s[k];if(v!==!!padPrev[k]){if(k!='menu')keys[k]=v?1:0;if(v&&(k=='a'||k=='b'||k=='menu'))press[k]=1;}padPrev[k]=v;}
 }
+
+/* ---------- story beats ---------- */
+const BOSSINTRO={
+  turtle:['Something huge stirs at the bottom of the quarry pond.','OLD SNAPPER surfaces, jaws first!'],
+  wraith:['Cold light gathers between the granite walls.','A WRAITH drifts out of the dark. Paddles pass right through it. Maybe its own magic won\'t.'],
+  raven:['A shape sits on the bust above the door, tapping, tapping...','THE RAVEN spreads its wings.'],
+  bell:['High in the tower, the great bell starts to swing on its own.','The BRONZE BELL comes for you!'],
+  foreman:['Gears grind. A furnace door bangs open.','THE IRON FOREMAN clanks to life. A paddle won\'t dent that armor.'],
+  vampire:['Engine 231 sits where the hill buried it, cold and silent.','Then something pale climbs out of the cab.']};
+const AREAHINT={'ow:1,2':'Hear that clanking? It comes from the old Tredegar works, down in the corner of the cemetery.','ow:0,2':'The naturalist by the lake is counting frogs. Rainy days are best for that.',
+  'ow:0,1':'The shop up the street sells fishing rods now. And card packs! My kid collects them.','ow:2,3':'Ancarrow\'s Landing is just east of here, down by the river. A historian there is building a boat.',
+  'ow:1,3':'West of the park is Pony Pasture, with rapids you can wade in.','ow:2,2':'You can fish off the bridge, you know. Bring a rod.'};
+function folkContext(){
+  const o=[],h=hour();
+  if(AREAHINT[curId])o.push(AREAHINT[curId]);
+  if(st.f.won)o.push('The lamps are back on all over town. People say it was you who did it!');
+  else if(nKeys()>0)o.push('Word is somebody\'s been finding the old tunnel keystones. '+nKeys()+' so far!');
+  if(dark()>.6)o.push(h<5?'Out at this hour? Watch for bats.':'Evening, friend. Bats come out after dark, so mind yourself.');
+  if(st.wx=='rain'&&st.wxk>.5)o.push('Rain like this brings the frogs out.');
+  if(st.wx=='snow'&&st.wxk>.5)o.push('Snow in Richmond! Two inches and the whole city shuts down.');
+  if(st.wx=='fog'&&st.wxk>.5)o.push('This fog is thick. Stay off the river.');
+  return o.length?o[rnd(o.length)]:null;
+}
+function goal(){
+  if(!st.items.lantern)return'Talk to the archivist beside the Capitol.';
+  if(!st.got.granite)return'Cross the footbridge south of Capitol Square to the Belle Isle quarry.';
+  if(!st.got.iron)return'Blast the rubble off the pyramid door in Hollywood Cemetery.';
+  if(!st.got.brick)return'Find the Poe Museum cellar in Shockoe Bottom.';
+  if(!st.got.bronze){if(st.got.carkey)return'Climb the Carillon in Byrd Park.';if(st.items.kayak)return'Paddle south to Forest Hill Park and look for the Carillon key.';
+    return st.trade=='melon'?'Someone hungry in the Fan might trade for that watermelon.':st.trade=='music'?'The organist at the Byrd Theatre would love that sheet music.':st.trade=='rivermap'?'The kayaker on Belle Isle wants that river map.':'Ask the Carillon caretaker in Byrd Park, then visit the melon vendor in Carytown.';}
+  if(!st.f.won)return'Take all four keystones to the tunnel on Church Hill.';
+  if(!st.f['boss:tredegar:0,0'])return'Explore Tredegar Iron Works, in the corner of Hollywood Cemetery.';
+  if(!st.f.bateau)return'Help the river historian at Ancarrow\'s Landing rebuild a bateau.';
+  if(!st.f.frogsDone)return'Count frogs for the naturalist in Byrd Park on a rainy day.';
+  if(nCards()<CARDS.length)return'Collect every landmark card ('+nCards()+'/'+CARDS.length+').';
+  return'Try for every award, or start New Game+ from the title screen.';
+}
+
+/* ---------- awards ---------- */
+const ACH=[
+  ['first','First Light','Get the gas lantern',()=>st.items.lantern],
+  ['keys','Keystone Keeper','Find all four keystones',()=>nKeys()>=4],
+  ['won','Fog Lifter','Beat the thing in the tunnel',()=>st.f.won],
+  ['iron','Iron Will','Beat the Iron Foreman',()=>st.f['boss:tredegar:0,0']],
+  ['pins','City Pinned','Win all 14 neighborhood pins',()=>Object.keys(st.pins).length>=NCHAL],
+  ['lore','Local Historian','Fill the whole journal',()=>nLore()>=LORE.length],
+  ['cards','Card Shark','Collect all 12 landmark cards',()=>nCards()>=CARDS.length],
+  ['angler','Angler','Catch all five kinds of fish',()=>FISH.every(f=>st.fish[f.id])],
+  ['bateau','Boat Builder','Rebuild the bateau',()=>st.f.bateau],
+  ['frogs','Frog Counter','Finish the frog count',()=>st.f.frogsDone],
+  ['hearts','Whole Heart','Find all eight heart pieces',()=>st.pieces>=8],
+  ['night','Night Watch','Beat 25 foes after dark',()=>(st.nightKills||0)>=25],
+  ['rich','Deep Pockets','Carry 999 coins',()=>st.coins>=999],
+  ['speed','Speedrunner','Beat the game in under an hour',()=>st.f.won&&st.time<216000],
+  ['ngplus','Again!','Beat New Game+',()=>st.f.ngWon]];
+function checkAch(){st.ach=st.ach||{};for(const [id,name,,ok] of ACH)if(!st.ach[id]&&ok()){st.ach[id]=1;needSave=true;toast('Award: '+name+'!');tune([[784,.08],[988,.08],[1319,.16]],'triangle');return;}}
+
+/* ---------- New Game+ and boss rush ---------- */
+const RUSH=['quarry:1,0','pyramid:1,1','poe:1,0','carillon:1,0','tredegar:0,0','tunnel:0,0'];
+function loadRush(i){load(RUSH[i]);p.x=128;p.y=8*TS+8;p.dir=2;p.hp=p.max;p.inv=60;updCam();toast('Boss '+(i+1)+' of '+RUSH.length);}
+function startRush(){st=newState();p=newPlayer();Object.assign(st.items,{lantern:1,balls:1,powder:1,bug:1,shoes:1,bottle:1,hook:1});st.bottle=1;st.shield=1;st.ammo.balls=50;st.ammo.powder=16;st.cap={balls:50,powder:16};
+  st.eq='hook';p.max=p.hp=20;st.rush={i:0};st.time=0;mode='play';loadRush(0);}
+function newGamePlus(d){const keep={cards:d.st.cards||{},fish:d.st.fish||{},ach:d.st.ach||{},ng:(d.st.ng||0)+1};newGame();Object.assign(st,keep);toast('New Game+: foes are tougher and hit harder.');needSave=true;}
 
 /* ---------- input ---------- */
 addEventListener('keydown',e=>{wake();
@@ -1770,6 +1869,7 @@ document.getElementById('menu').addEventListener('pointerdown',e=>{wake();press.
 cv.addEventListener('pointerdown',e=>{wake();if(mode!='play'||dlg||menu)press.a=1;e.preventDefault();});
 addEventListener('contextmenu',e=>e.preventDefault());
 
+applyBtnSize();
 /* ---------- loop ---------- */
 titleInit();
 let last=0,acc=0,paused=false;
@@ -1779,6 +1879,6 @@ function loop(t){
 }
 if(document.fonts&&document.fonts.load)document.fonts.load('8px "Press Start 2P"').catch(()=>{});
 requestAnimationFrame(t=>{last=t;loop(t);});
-window.__g={SC,LORE,CHAL,update,draw,keys,press,load,mk,say,give,newGame,refresh,explode,irisStart,kill,updCam,pump,CVC,get jobs(){return jobs},CARDS,FISH,actionOf,titleOpts,hour,dark,fmtTime,get hook(){return hook},get fish(){return fish},set fish(v){fish=v},get tl(){return tl},get titleSel(){return titleSel},set titleSel(v){titleSel=v},get slot(){return saveSlot},OPT,
+window.__g={goal,ACH,checkAch,RUSH,startRush,newGamePlus,folkContext,BOSSINTRO,get saveData(){return saveData},set saveData(v){saveData=v},SC,LORE,CHAL,update,draw,keys,press,load,mk,say,give,newGame,refresh,explode,irisStart,kill,updCam,pump,CVC,get jobs(){return jobs},CARDS,FISH,actionOf,titleOpts,hour,dark,fmtTime,get hook(){return hook},get fish(){return fish},set fish(v){fish=v},get tl(){return tl},get titleSel(){return titleSel},set titleSel(v){titleSel=v},get slot(){return saveSlot},OPT,
   get p(){return p},get st(){return st},get mode(){return mode},set mode(v){mode=v},get enemies(){return enemies},get dlg(){return dlg},set dlg(v){dlg=v},
   get cur(){return cur},get cam(){return cam},get blocks(){return blocks},get trans(){return trans},get menu(){return menu},set menu(v){menu=v},get shop(){return shop},set shop(v){shop=v},get picks(){return picks},get bug(){return bug},pause(v){paused=v},SOLID};
