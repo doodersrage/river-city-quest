@@ -22,6 +22,10 @@ Progress saves automatically in your browser. Choose CONTINUE on the title scree
 ## What's in it
 
 - **14 scrolling neighborhoods**, each a big map you explore in any direction: Scott's Addition, Broad Street, Jackson Ward, Church Hill, Carytown and the VMFA, the Fan, Capitol Square, Shockoe Bottom, Byrd Park and Maymont, Hollywood Cemetery, Belle Isle, Rocketts Landing, and south of the river, Manchester and Forest Hill Park.
+- **Landmarks drawn as themselves:** The Diamond's grandstand, the Broad Street department stores, the Hippodrome, St. John's Church, the Capitol and its bell tower, Main Street Station, the 17th Street Market, the Carillon, Maymont House, the granite pyramid, Monroe's tomb, the Belle Isle ruins, a steamboat at Rocketts, Forest Hill's Stone House and an old trolley.
+- **Street life:** townspeople who walk around and chat, buses and cars that stop for you, pigeons that scatter, gas lamps, benches, cafe tables and murals.
+- **A challenge in every neighborhood,** from shagging fly balls at The Diamond and lighting Church Hill's gas lamps to a Monument Avenue race, a Richmond history quiz and a mural hunt in Manchester. Each first win earns a city pin. Collect all 14 for a golden paddle.
+- **Places to walk into:** a taproom, the Miller & Rhoads Tea Room, the Hippodrome, St. John's, the Carytown shop, a Fan row house, Main Street Station, Maymont House, a Rocketts boathouse, the Stone House arcade and a Manchester art studio, plus a hidden chest in every neighborhood.
 - **Five dungeons** with small keys, locked doors, cracked walls, braziers, push-block puzzles and a boss each.
 - **Items for the B button:** Gas Lantern, Baseballs, Blasting Powder, the Gold-Bug, Running Shoes and Ginger Beer. The Cast-Iron Shield and the Kayak work on their own.
 - **A trading quest** across town that ends with a kayak for crossing the whitewater on the James.

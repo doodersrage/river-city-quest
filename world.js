@@ -49,7 +49,8 @@ const LORE=[
 const LOREM={};LORE.forEach(([id,t,s])=>LOREM[id]={t,s});
 const READX={'!engine':['C&O Engine 231','It sits right where the hill buried it in 1925, rusted and silent.'],
   '!organ':['The Mighty Wurlitzer','You press a key. The whole theatre hums.'],
-  '!carousel':['Carousel Horse','A painted wooden horse from the old amusement park, its paint long faded.']};
+  '!carousel':['Carousel Horse','A painted wooden horse from the old amusement park, its paint long faded.'],
+  '!arcade':['Penny Arcade','You drop in a penny. The machine whirs, a little card pops out: GOOD LUCK IN THE FOG.']};
 
 /* ---------- builders ---------- */
 const SC={},LINKS=[];let seedN=1;
@@ -64,7 +65,18 @@ const AST={
   bank:{lit:true,wood:true,fl:['#8a5a34','#6a4224','#a8744a'],wl:['#c8b48c','#8a7a5a','#e4d4b0']},
   byrd:{lit:true,fl:['#7a1c2c','#5a1020','#94303e'],wl:['#8a6a3a','#5e4420','#b08a52']},
   capitol:{lit:true,fl:['#d4d0c4','#b0aca0','#ece8dc'],wl:['#e4e0d4','#a8a498','#ffffff']},
-  vmfa:{lit:true,fl:['#2a2a3a','#1e1e2c','#3a3a4e'],wl:['#d8d4cc','#a8a49c','#f4f0e8']}
+  vmfa:{lit:true,fl:['#2a2a3a','#1e1e2c','#3a3a4e'],wl:['#d8d4cc','#a8a49c','#f4f0e8']},
+  tap:{lit:true,wood:true,fl:['#7a5434','#5a3c22','#966a44'],wl:['#8a4a3c','#5e2e24','#a8685a']},
+  tea:{lit:true,fl:['#9a8a6a','#7a6a4e','#b4a484'],wl:['#e8dcc0','#b4a684','#fbf0d8']},
+  hippo:{lit:true,fl:['#5a1020','#3a0814','#7a1c2c'],wl:['#d8a830','#9a7420','#f0c860']},
+  church:{lit:true,wood:true,fl:['#8a6a44','#6a4e30','#a4825a'],wl:['#f4f2ec','#c8c4b8','#ffffff']},
+  shop:{lit:true,wood:true,fl:['#8a5a34','#6a4224','#a8744a'],wl:['#5aa8a0','#3a7c76','#80c8c0']},
+  home:{lit:true,wood:true,fl:['#9a6a3a','#7a4e28','#b4844c'],wl:['#d87878','#a84c4c','#f0a0a0']},
+  station:{lit:true,fl:['#c8c0b0','#a8a090','#e0d8c8'],wl:['#b05a40','#7a3a28','#d07a60']},
+  mansion:{lit:true,wood:true,fl:['#6a3a2a','#4a2418','#8a5a44'],wl:['#5a7a5a','#3a5a3a','#7a9a7a']},
+  boat:{lit:true,wood:true,fl:['#a07848','#7a5834','#c09868'],wl:['#6a5a4a','#4a3e32','#8a7a6a']},
+  arcade:{lit:true,wood:true,fl:['#7a6a5a','#5e5044','#948270'],wl:['#9a9aa0','#6a6a74','#bcbcc4']},
+  studio:{lit:true,fl:['#8a8a90','#6a6a70','#a8a8ae'],wl:['#e8e4dc','#b0aca4','#ffffff']}
 };
 const AREAN={ow:'Richmond',quarry:'Belle Isle Quarry',pyramid:'The Pyramid',poe:'Poe Museum Cellar',tunnel:'Church Hill Tunnel',carillon:'The Carillon'};
 const C3=(a,b,c)=>[a,b,c];
@@ -80,97 +92,131 @@ function rle(r){return r.split(' ').filter(Boolean).map(t=>{const m=/^(\D)(\d+)$
 /* ---------- the city: 14 neighborhoods, each a 2x2-screen scrolling map ---------- */
 const NPC={
   brewer:{who:'Brewer',hat:C3('#2e9d6b','#1c6c48','#58c890'),shirt:C3('#c9a26b','#96743f','#e4c48f'),talk:'brewer'},
-  ballplayer:{who:'Ballplayer',hat:C3('#e83048','#a01c30','#f890a0'),shirt:C3('#f4f4f8','#b8bccc','#ffffff'),talk:'ballplayer'},
+  ballplayer:{who:'Ballplayer',hat:C3('#e83048','#a01c30','#f890a0'),shirt:C3('#f4f4f8','#b8bccc','#ffffff'),talk:'ballplayer',chal:'flies'},
   musician:{who:'Musician',hat:C3('#8a4fb0','#5c3080','#b07cd8'),shirt:C3('#f2c14e','#b88a20','#ffe08a'),talk:'musician'},
+  dancer:{who:'Tap Dancer',hat:C3('#2a2a34','#14141c','#4a4a58'),shirt:C3('#d94f70','#a02c4c','#f488a4'),talk:'chal',chal:'taps'},
   henry:{who:'Reenactor',hat:C3('#2a2a34','#14141c','#4a4a58'),shirt:C3('#6a3a2a','#4a2418','#8a5a44'),talk:'henry'},
+  lamplighter:{who:'Lamplighter',hat:C3('#3a3a54','#24243a','#5a5a7a'),shirt:C3('#4a6a8a','#2e4a66','#6a8aac'),talk:'chal',chal:'lamps'},
   shop:{who:'Shopkeeper',hat:C3('#d94f70','#a02c4c','#f488a4'),shirt:C3('#34c8b0','#1c8a7a','#74e4d0'),talk:'shop'},
-  vendor:{who:'Melon Vendor',hat:C3('#2e9d6b','#1c6c48','#58c890'),shirt:C3('#e83048','#a01c30','#f890a0'),talk:'vendor'},
-  runner:{who:'Runner',hat:C3('#f2c14e','#b88a20','#ffe08a'),shirt:C3('#e83048','#a01c30','#f890a0'),talk:'runner'},
+  vendor:{who:'Melon Vendor',hat:C3('#2e9d6b','#1c6c48','#58c890'),shirt:C3('#e83048','#a01c30','#f890a0'),talk:'vendor',chal:'melons'},
+  commuter:{who:'Commuter',hat:C3('#5a4a3a','#3a2e22','#7a6a5a'),shirt:C3('#2e4a8a','#1c2e5a','#4a6ab0'),talk:'chal',chal:'bus'},
+  runner:{who:'Runner',hat:C3('#f2c14e','#b88a20','#ffe08a'),shirt:C3('#e83048','#a01c30','#f890a0'),talk:'runner',chal:'tenk'},
   archivist:{who:'Archivist',hat:C3('#6a7088','#464a60','#9096ac'),shirt:C3('#8a5a2b','#5e3a18','#b07c48'),talk:'archivist'},
+  quizguide:{who:'Tour Guide',hat:C3('#2e4a8a','#1c2e5a','#4a6ab0'),shirt:C3('#f2c14e','#b88a20','#ffe08a'),talk:'chal',chal:'quiz'},
+  marketeer:{who:'Market Vendor',hat:C3('#e8d28a','#b09a54','#fff0b8'),shirt:C3('#6b7a4a','#4a5632','#909e6e'),talk:'chal',chal:'rats'},
   caretaker:{who:'Carillon Caretaker',hat:C3('#5a4a8a','#3a2e60','#8a7ab8'),shirt:C3('#c08840','#7a5420','#e8b070'),talk:'caretaker'},
+  fisher:{who:'Fisher',hat:C3('#6a5a2a','#4a3e18','#9a8a50'),shirt:C3('#3d63c8','#27428e','#7397ee'),talk:'chal',chal:'lures'},
   keeper:{who:'Cemetery Keeper',hat:C3('#4d5e3a','#34402a','#74885c'),shirt:C3('#6b7a4a','#4a5632','#909e6e'),talk:'keeper'},
+  watchman:{who:'Night Watchman',hat:C3('#2a2a34','#14141c','#4a4a58'),shirt:C3('#4a4a5e','#2e2e3e','#6a6a80'),talk:'chal',chal:'ghosts'},
   kayaker:{who:'Kayaker',hat:C3('#e8d28a','#b09a54','#fff0b8'),shirt:C3('#d8692a','#a04414','#f09458'),talk:'kayaker'},
+  volunteer:{who:'River Volunteer',hat:C3('#34c8b0','#1c8a7a','#74e4d0'),shirt:C3('#58a850','#2f7a3c','#90d070'),talk:'chal',chal:'cleanup'},
+  crabber:{who:'Crabber',hat:C3('#e8e4dc','#b0aca4','#ffffff'),shirt:C3('#d8692a','#a04414','#f09458'),talk:'chal',chal:'crabs'},
   ranger:{who:'Park Ranger',hat:C3('#6a5a2a','#4a3e18','#9a8a50'),shirt:C3('#4a6a3a','#2e4624','#6a9058'),talk:'ranger'},
-  painter:{who:'Mural Painter',hat:C3('#3ac2e8','#1a8ab0','#8ae0f8'),shirt:C3('#f08030','#b85a18','#ffb868'),talk:'painter'}
+  conductor:{who:'Old Conductor',hat:C3('#2e4a8a','#1c2e5a','#4a6ab0'),shirt:C3('#2e4a8a','#1c2e5a','#4a6ab0'),talk:'chal',chal:'trolley'},
+  painter:{who:'Mural Painter',hat:C3('#3ac2e8','#1a8ab0','#8ae0f8'),shirt:C3('#f08030','#b85a18','#ffb868'),talk:'painter',chal:'murals'}
 };
 const N=k=>Object.assign({},NPC[k]);
+const FOLKC=[[C3('#6a4020','#4a2c14','#8a5a30'),C3('#58a850','#2f7a3c','#90d070')],[C3('#f2c14e','#b88a20','#ffe08a'),C3('#3d63c8','#27428e','#7397ee')],
+  [C3('#1a1a24','#0c0c14','#3a3a48'),C3('#e83048','#a01c30','#f890a0')],[C3('#c8c8d0','#9a9aa4','#ececf4'),C3('#8a4fb0','#5c3080','#b07cd8')],
+  [C3('#d8692a','#a04414','#f09458'),C3('#e8e4dc','#b0aca4','#ffffff')],[C3('#3a2a20','#24180e','#5a4030'),C3('#f08098','#c05068','#ffb0c0')]];
+let folkN=0;
+const F=(...lines)=>{const c=FOLKC[folkN++%FOLKC.length];return{who:'Local',hat:c[0],shirt:c[1],talk:'folk',lines,wander:true};};
 
 ow(0,0,"Scott's Addition",{base:'p',pal:[STEEL,BRICK,STEEL,BRICK2],rows:[
-'B32','B f12 p6 B13','B f ....nn.... f p6 B13','B f ...n..n... f p6 B13','B f ..n....n.. f p6 B13','B f ...n..n... f p6 s12 B',
-'B f ....nn.... p7 s6 @ s5 B','B f .10 f @ p5 s6 M s5 B','B f12 p6 s12 B','B p31','B p6 ! p17 ! p6','B p31','B p31','B s13 p4 s13 B',
-'B B5 s B6 s p4 s b12 B','B B5 s B6 s p4 s b .10 b B','B B5 s B6 s p4 s b ...,,.!... b B','B B5 s B6 s p4 s b .,,....,,. b B',
-'B s13 p4 s b ....bbb... b B','B s13 p4 s b ....b*b... b B','B s13 p4 s b12 B','B14 p4 B14'],
-  npcs:[N('brewer'),N('ballplayer')],enT:['rat','scooter','rat'],readsL:['scotts']});
+'B32','B X12 p6 B13','B X12 p6 B13','B ..?..nn..?.. p6 B13','B .?.n....n.?. p6 B4 D B8','B ..n..?...n.. p6 susasasus`ss B',
+'B ...n.nn.n?.. p6 sasasas@ssss B','B ..?.....?... p6 s2 M s2 l s6 B','B f5 .. f5 @ p5 s12 B','B p31','B p6 ! p17 ! p6','B p10 @ p20','B p31',
+'B s2 l s5 l s4 p4 s4 l s5 l s2 B','B B5 s B6 s p4 s b12 B','B B5 s B6 s p4 s b .10 b B','B B5 s B6 s p4 s b ...,,.!... b B','B B5 s B6 s p4 s b .,,....,,. b B',
+'B s13 p4 s b ....bbb... b B','B b3 ` s9 p4 s b ....b*b... b B','B $ b2 s10 p4 s b12 B','B14 p4 B14'],
+  npcs:[F('Breweries everywhere you look in Scott\'s Addition. Old factories make good taprooms.','I can hear the crowd at The Diamond from my porch on game nights.'),N('ballplayer'),
+    F('This fog rolled in the night the lamps on Church Hill went out. Strange times.','Go easy on the rats. Well, not too easy.')],
+  enT:['rat','scooter','rat'],readsL:['scotts'],doorsL:[{to:'taproom:0,0'}],chestsL:['coins50'],lm:[{art:'grandstand',x:1,y:1,w:12,h:2,read:'diamond'}],cars:[{y:10,dir:1}]});
 ow(1,0,"Broad Street",{base:'p',pal:[BRICK,CREAM,['#8a8e9c','#62667a','#a8acba']],rows:[
-'B32','B14 s4 B14','B14 s ! s2 B14','B14 s4 B14','B14 s b2 s B14','B14 s4 B14','B14 s4 B14','B s13 M s16 B','B s30 B',
-'p32','K32','p6 ! p17 ! p7','p32','B s14 M s15 B','B s30 B',
-'B B12 s p4 s B12 B','B B12 s p4 s B12 B','B B12 s p4 s B12 B','B B12 s p4 s B12 B','B B12 s p4 s B12 B','B s13 p4 s13 B','B14 p4 B14'],
-  enT:['rat','scooter','scooter'],readsL:['broad','streetcar']});
+'B32','B X13 s $ s2 X13 B','B X13 s4 X13 B','B X13 s ! s2 X13 B','B X13 b4 X13 B','B X13 s4 X13 B','B X6 D X6 s4 X13 B',
+'B s2 l s4 t s2 M s3 @ s3 t s4 l s6 B','B s5 q s18 q s5 B','p32','K32','p6 ! p17 ! p7','p32','B s2 l s4 t s3 M s10 X3 s4 ? B','B s6 ` s16 ` s6 B',
+'B B12 s p4 s B12 B','B B12 s p4 s B12 B','B B12 s p4 s B12 B','B B12 s p4 s B12 B','B s2 u s3 u s3 l s2 p4 s2 l s3 u s3 u s2 B','B s3 @ s9 p4 s9 ! s3 B','B14 p4 B14'],
+  npcs:[N('commuter'),F('My grandmother had lunch at the Miller & Rhoads Tea Room every Christmas.','The streetcars are long gone, but the Pulse bus runs right down Broad.')],
+  enT:['rat','scooter','scooter','rat'],readsL:['broad','streetcar'],doorsL:[{to:'tearoom:0,0'}],chestsL:['coins50'],
+  lm:[{art:'store',x:1,y:1,w:13,h:6,read:'broad',c:'#c8b48c'},{art:'store',x:18,y:1,w:13,h:6,read:'broad',c:'#b0a8a0'},{art:'shelter',x:23,y:13,w:3,h:1}],cars:[{y:10,dir:1,kind:'bus'},{y:12,dir:-1}]});
 ow(2,0,"Jackson Ward",{base:'p',pal:[BRICK,BRICK2],rows:[
-'B32','B9 s11 B12','B9 s11 B12','B9 s3 @ s7 B12','B5 D B3 s11 B12','B s8 M s21 B','B s30 B','B s20 Q s9 B','B s19 Y s10 B',
-'p32','p5 ! p20 ! p5','p32','p32','B s13 p4 s13 B',
-'B B12 s p4 s B12 B','B B12 s p4 s B12 B','B B12 s p4 s B12 B','B B12 s p4 s B12 B',
-'B s13 p4 s13 B','B s3 b3 s7 p4 s7 ! s5 B','B s13 p4 s13 B','B14 p4 B14'],
-  npcs:[N('musician')],enT:['rat','scooter','rat'],readsL:['jward','bojangles','bojangles'],doorsL:[{to:'bank:0,0'}]});
+'B32','B B8 s2 l s7 X12 B','B B8 s10 X12 B','B B8 s3 @ s6 X12 B','B B4 D B3 s10 X5 D X6 B','B s8 M s7 ? s5 ? s7 B','B s2 t s4 t s4 t s4 t s4 t s7 B',
+'B s4 ? s15 Q s9 B','B s5 @ s13 Y s10 B','p32','p5 ! p20 ! p5','p12 @ p19','p20 ? p11','B s2 l s10 p4 s7 ? s2 l s2 B','B f3 s f8 s p4 s f8 s f3 B',
+'B B12 s p4 s B12 B','B B12 s p4 s B12 B','B B12 s p4 s B12 B','B s5 ? s7 p4 s13 B','B b3 s ` s8 p4 s7 ! s5 B','B $ b2 s10 p4 s13 B','B14 p4 B14'],
+  npcs:[N('musician'),N('dancer'),F('They called Second Street the Deuce. Every club on it had a band.','Mrs. Walker\'s house is just down the street. They keep it as a museum.')],
+  enT:['rat','scooter','rat'],readsL:['jward','bojangles','bojangles'],doorsL:[{to:'bank:0,0'},{to:'hippo:0,0'}],chestsL:['coins50'],
+  lm:[{art:'hippodrome',x:19,y:1,w:12,h:4,read:'jward'}],cars:[{y:9,dir:1}]});
 ow(3,0,"Church Hill",{base:'.',rows:[
-'T32','T r8 .14 T9','T r8 .8 C5 .9 T','T r % r D r4 .8 C5 .9 T','T .3 k .5 M .6 C5 .3 @ .5 T','T .3 k .12 C5 .9 T','T .3 k .26 T',
-'T .3 k .11 x . x . x . ! .8 T','T .15 x . x . x .10 T','.31 T','. ! .29 T','.31 T','.31 T','T .30 T',
-'T .4 ,4 .5 T2 .15 T','T .13 T2 .4 b6 .5 T','T .19 b.*..b .5 T','T .5 ! .13 b6 .5 T','T .25 M .4 T','T .30 T','T .30 T','T14 .4 T14'],
-  npcs:[N('henry')],enT:['bat','bat','bat'],readsL:['tunnel','names'],readsAt:{'18,7':'eliza'},readsT:{C:'stjohns'},
-  doorsL:[{to:'libby:0,0'},{to:'tunnel:0,1',need:'keystones'}]});
+'T32','T r8 .9 X6 .7 T','T r8 .9 X6 .7 T','T r % r D r4 .9 X6 .3 @ .3 T','T .3 k .3 l .4 M .4 X6 .7 T','T .3 k .13 X2 D X3 .7 T','T .3 k .12 l .13 T',
+'T .3 k .11 x . x . x . ! .8 T','T .15 x . x . x .3 l .6 T','.31 T','. ! .29 T','.9 @ .21 T','.31 T','T R13 S4 R13 T',
+'T .4 ,4 .22 T','T .3 l .15 b6 .5 T','T .19 b.*..b .5 T','T .5 ! .13 b6 .5 T','T .10 i .2 i .11 M .4 T','T b3 ` .17 l .8 T','T $ b2 .27 T','T14 .4 T14'],
+  npcs:[N('henry'),N('lamplighter')],enT:['bat','bat','bat'],readsL:['tunnel','names'],readsAt:{'18,7':'eliza'},
+  doorsL:[{to:'libby:0,0'},{to:'tunnel:0,1',need:'keystones'},{to:'stjohn:0,0'}],chestsL:['coins50'],lm:[{art:'church',x:18,y:1,w:6,h:5,read:'stjohns'}]});
 ow(0,1,"Carytown",{base:'s',awn:true,pal:[['#d8a048','#a87428','#f0c070'],['#5aa8a0','#3a7c76','#80c8c0'],['#d87878','#a84c4c','#f0a0a0'],BRICK],rows:[
-'B14 p4 B14','B . C10 .. p4 B14','B . C10 .. p4 B14','B . C10 .. p4 B14','B . C10 .. p4 B14','B . C10 .. p4 s13 B','B . C4 D C5 .. p4 s13 B',
-'B .4 ,4 .5 p4 s13 B','B s13 p4 s13 B','B p31','B p4 ! p26','B p31','B p31','B s13 p4 s13 B',
-'B B12 s p4 s B12 B','B B12 s p4 s B12 B','B B12 s p4 s B4 D B7 B','B s3 @ s9 p4 s7 @ s5 B','B s5 M s7 p4 s6 ! s6 B','B s13 p4 s13 B','B s2 ! s10 p4 s13 B','B14 p4 B14'],
-  npcs:[N('shop'),N('vendor')],enT:['scooter','scooter','rat'],readsL:['carytown'],doorsL:[{to:'vmfa:0,0'},{to:'byrd:0,0'}]});
+'B14 p4 B14','B . X11 .. p4 B13','B . X11 .. p4 B13','B . X11 .. p4 B13','B . X11 .. p4 s12 B','B . X5 D X5 .. p4 s2 @ s9 B','B .2 S7 .4 p4 s3 t s3 t s5 B',
+'B .4 ,4 .5 p4 s3 ? s9 B','B s3 l s4 ? s4 p4 s4 l s8 B','B p31','B p4 ! p10 @ p15','B p31','B p20 ? p10','B s2 l s4 q s5 p4 s5 q s4 l s2 B',
+'B B12 s p4 s X7 B5 B','B B12 s p4 s X7 B5 B','B B5 D B6 s p4 s X3 D X3 B5 B','B s2 a s a s2 ? s5 p4 s3 ? s3 @ s5 B','B s5 M s2 ? s4 p4 s6 ! s6 B','B b3 s3 u s6 p4 s3 ? s3 ` s5 B','B $ b2 ! s8 ? p4 s13 B','B14 p4 B14'],
+  npcs:[F('I come for the movies at the Byrd. Two dollars, and an organ before the show!','Every summer the whole street smells like watermelon.'),F('Have you seen the eggs at the art museum? Made for a Russian empress!'),N('vendor')],
+  enT:['scooter','rat','scooter'],readsL:['carytown'],doorsL:[{to:'vmfa:0,0'},{to:'shop:0,0'},{to:'byrd:0,0'}],chestsL:['coins50'],
+  lm:[{art:'vmfa',x:2,y:1,w:11,h:5,read:'faberge'},{art:'byrd',x:19,y:14,w:7,h:3,read:'byrd'}]});
 ow(1,1,"The Fan",{base:'.',pal:[CREAM,['#9ab8a0','#6c8c74','#bcd8c2'],BRICK,['#8aa0c8','#5e749c','#aec2e4']],rows:[
-'B14 p4 B14','B s13 p4 s13 B','B s B5 s B5 s p4 s B5 s B5 s B','B s B5 s B5 s p4 s B5 s B5 s B','B s B5 s B5 s p4 s B5 s B5 s B',
-'B s4 M s8 p4 s13 B','B .3 ! .9 p4 .8 @ .4 B','B s13 p4 s13 B','B s13 p4 s13 B',
-'p32','.6 , Y , .5 p4 .14','.14 p4 .5 ! .8','p32','B s13 p4 s13 B',
-'B s B5 s B5 s p4 s B5 s B5 s B','B s B5 s B5 s p4 s B5 s B5 s B','B s B5 s B5 s p4 s B5 s B5 s B',
-'B s13 p4 s13 B','B .3 ! .9 p4 . b7 .5 B','B .13 p4 . b ..*.. b .5 B','B .13 p4 . b7 .5 B','B14 p4 B14'],
-  npcs:[N('runner')],enT:['squirrel','squirrel','rat'],readsL:['fan','ashe']});
+'B14 p4 B14','B s5 @ s7 p4 s13 B','B s B5 s B5 s p4 s B5 s B5 s B','B s B5 s B5 s p4 s B5 s B5 s B','B s B5 s B5 s p4 s B5 s B5 s B',
+'B s t s4 M s4 t s p4 s t s4 t s4 t s B','B .3 ! .9 p4 .8 @ .4 B','B s13 p4 s13 B','B s3 l s9 p4 s9 l s3 B',
+'p32','.2 i .3 , Y , .2 i .2 p4 .5 i .8','. ? .12 p4 .5 ! .8','p32','B s3 l s9 p4 s9 l s3 B',
+'B s B5 s B5 s p4 s B5 s B5 s B','B s B5 s B5 s p4 s B5 s B5 s B','B s B2 D B2 s B5 s p4 s B5 s B5 s B',
+'B s2 u s u s u s6 p4 s4 @ s8 B','B .3 ! .9 p4 . b7 .5 B','B b2 ` .10 p4 . b ..*.. b .5 B','B $ b .11 p4 . b7 .5 B','B14 p4 B14'],
+  npcs:[F('Every porch on this block has a cat on it. I have counted.','The streets fan out from Monroe Park. Hence the name!'),N('runner'),F('My dog loves Monument Avenue. So many statues to sniff. Well, fewer now.')],
+  enT:['squirrel','squirrel','rat'],readsL:['fan','ashe'],doorsL:[{to:'rowhouse:0,0'}],chestsL:['coins50'],cars:[{y:9,dir:-1}]});
 ow(2,1,"Capitol Square",{base:'.',rows:[
-'f14 p4 f14','f .13 p4 .13 f','f . T .2 B2 .7 p4 .2 C8 .3 f','f .4 B2 .7 p4 .2 C8 .3 f','f .4 B2 .7 p4 .2 C8 .3 f','f .13 p4 .2 C8 .3 f',
-'f .13 p4 .2 C3 D C4 .3 f','f .6 @ .6 p4 .4 M .8 f','f .13 p4 .13 f','p32','p32','p32','p32','f .13 p4 .13 f',
-'f . T .3 w4 .4 p4 .3 ,4 .6 f','f .5 w4 .4 p4 .3 ,4 . Y .4 f','f .5 w4 .4 p4 .13 f','f .13 p4 .9 T .3 f','f .2 T .10 p4 .13 f',
-'f .13 p4 .13 f','f .13 p4 .13 f','f14 p4 f14'],
-  npcs:[N('archivist')],enT:[],readsL:['capitol','civilrights'],doorsL:[{to:'capitol:0,0'}]});
+'f14 p4 f14','f .2 T . X2 .7 p4 X10 .3 f','f .4 X2 .7 p4 X10 .3 f','f .4 X2 .2 ` .4 p4 X10 .3 f','f .4 X2 .7 p4 X10 .3 f','f .13 p4 X10 .3 f',
+'f .13 p4 X4 D X5 .3 f','f .6 @ .6 p4 S10 .3 f','f .2 l .4 i .5 p4 .4 M .4 l .3 f','p32','p6 @ p25','p32','p32','f .2 l .10 p4 .10 l .2 f',
+'f . T .3 w4 .4 p4 .3 ,4 .6 f','f .5 w4 .4 p4 .3 ,4 . Y .4 f','f .5 w4 .4 p4 .2 i .2 i .7 f','f .3 y .9 p4 .9 T .3 f','f .2 T .3 ` .6 p4 .5 @ .7 f',
+'f b3 .10 p4 .13 f','f $ b2 .10 p4 .13 f','f14 p4 f14'],
+  npcs:[N('archivist'),N('quizguide'),F('The squirrels here are bolder than the legislators.','I eat lunch by the fountain every day. Even in the fog.')],
+  enT:[],readsL:['capitol','civilrights'],doorsL:[{to:'capitol:0,0'}],chestsL:['coins50'],
+  lm:[{art:'capitol',x:18,y:1,w:10,h:6,read:'capitol'},{art:'belltower',x:5,y:1,w:2,h:4,read:'capital1780'}]});
 ow(3,1,"Shockoe Bottom",{base:'p',pal:[BRICK2,STONE],rows:[
-'B14 p4 B14','B s13 p4 s B12 B','B s13 p4 s B12 B','B s4 B5 s4 p4 s B12 B','B s4 B5 s4 p4 s B12 B','B s4 B5 s4 p4 s B12 B',
-'B s13 p4 s2 M s10 B','B K30 B','B s13 p4 s13 B','p31 B','p6 ! p17 ! p6 B','p31 B','p31 B','B s13 p4 s3 M s9 B','B s13 p4 s13 B',
-'B s2 B6 s5 p4 s B11 s B','B s2 B6 s5 p4 s B11 s B','B s2 B2 D B3 s5 p4 s B11 s B','B s7 M s5 p4 s4 ! s8 B','B s13 p4 s13 B','B s13 p4 s13 B','B14 p4 B14'],
-  enT:['rat','rat','rat'],readsL:['shockoe','slavetrail','stonehouse'],doorsL:[{to:'poe:1,2'}]});
+'B14 p4 B14','B s5 ? s7 p4 s X12 B','B s3 l s9 p4 s X12 B','B s4 B5 s4 p4 s X12 B','B s4 B5 s4 p4 s X12 B','B s4 B5 s4 p4 s X12 B','B s13 p4 s X5 D X6 B',
+'B K30 B','B s13 p4 s M s4 ` s6 B','p31 B','p6 ! p17 ! p6 B','p10 @ p20 B','p5 ? p9 ? p9 ? p5 B','B s13 p4 s3 M s9 B','B s13 p4 s2 X10 s B',
+'B s2 B6 s5 p4 s2 X10 s B','B s2 B6 s5 p4 s3 a s a s @ s a s a s B','B s2 B2 D B3 s5 p4 s13 B','B s7 M s5 p4 s4 ! s8 B','B b3 s4 ? s5 p4 s5 ? s7 B','B $ b2 s10 p4 s5 ` s7 B','B14 p4 B14'],
+  npcs:[F('Main Street Station\'s clock has kept time over Shockoe since 1901.','Trains still stop here. You can ride all the way to Washington.'),N('marketeer')],
+  enT:['rat','rat','rat'],readsL:['shockoe','slavetrail','stonehouse'],doorsL:[{to:'station:0,0'},{to:'poe:1,2'}],chestsL:['coins50'],
+  lm:[{art:'station',x:19,y:1,w:12,h:6,read:'shockoe'},{art:'market',x:20,y:14,w:10,h:2}]});
 ow(0,2,"Byrd Park & Maymont",{base:'.',pal:[BRICK,CREAM],rows:[
-'T14 .4 T14','T .30 T','T .2 B4 .12 w9 .3 T','T .2 B4 .11 w11 .2 T','T .2 B4 .4 @ .6 w4 .*. w4 .2 T','T .2 B4 .11 w11 .2 T','T .2 B4 .12 w9 .3 T',
-'T .2 B D B2 . M .9 ! .12 T','T .30 T','T .9 p22','T .9 p22','T .3 ! .5 p22','T .9 p22','T .30 T',
-'T .2 B6 .22 T','T .2 B6 .8 M .2 ,8 .3 T','T .2 B6 .9 ! . ,3 w2 ,3 .3 T','T .11 & .7 ,3 w2 ,3 .3 T','T .19 ,8 .3 T','T .5 ! .24 T','T .30 T','T32'],
-  npcs:[N('caretaker')],enT:['goose','squirrel','goose','goose'],readsL:['carillon','maymont'],doorsL:[{to:'carillon:1,2',need:'carkey'}],
-  itemsL:[{id:'bib',kind:'bib'}]});
+'T14 .4 T14','T .2 X3 .7 l .4 w11 .2 T','T .2 X3 .11 w4 ? w6 .3 T','T .2 X3 .4 @ .6 w5 ? w5 .3 T','T .2 X3 .12 w4 .*. w4 .2 T','T .2 X3 .11 w2 ? w8 .3 T',
+'T .2 X3 .5 @ .6 w10 ? .2 T','T .2 X D X . M .12 ! w7 .3 T','T .2 S3 .10 i .3 i .10 T','T .9 p22','T .9 p22','T .3 ! .5 p22','T .9 p22','T .5 l .10 l .13 T',
+'T .2 X6 .22 T','T .2 X6 .8 M .2 ,8 .3 T','T .2 X6 .9 ! . ,3 w2 ,3 .3 T','T .2 X2 D X3 .3 & .7 ,3 w2 ,3 .3 T','T .8 @ .10 ,8 .3 T','T b3 ! .26 T','T $ b2 .27 T','T32'],
+  npcs:[N('caretaker'),N('fisher'),F('Maymont has bears, you know. Real ones. And a Japanese garden.','The geese here own this park. We just visit.')],
+  enT:['goose','squirrel','goose','goose'],readsL:['carillon','maymont'],doorsL:[{to:'carillon:1,2',need:'carkey'},{to:'mansion:0,0'}],
+  itemsL:[{id:'bib',kind:'bib'}],chestsL:['coins50'],lm:[{art:'carillon',x:3,y:1,w:3,h:7,read:'carillon'},{art:'mansion',x:3,y:14,w:6,h:4,read:'maymont'}]});
 ow(1,2,"Hollywood Cemetery",{base:'.',rows:[
-'T14 .4 T14','T .30 T','T .2 x .2 x .3 x .8 P5 .7 T','T .18 P5 .7 T','T .3 G .6 @ .7 P5 .7 T','T .18 P2 % P2 .7 T','T .30 T',
-'T .2 x .3 x .3 x .6 ! .4 x .3 x .3 T','T .30 T','.32','.5 Y .9 ! .16','.32','.32','T .2 x .3 x .3 x .6 ! .4 x .3 x .3 T','T .30 T',
-'T .21 T b3 T .4 T','T .21 T b*b T .4 T','T .21 T5 .4 T','w32','w32','w32','w32'],
-  npcs:[N('keeper')],enT:['ghost','ghost','ghost'],readsL:['irondog','hollywood'],readsT:{P:'pyramid'},doorsL:[{to:'pyramid:0,1'}]});
+'T14 .4 T14','T .5 ? .10 ? .13 T','T .2 x .2 x .3 x .8 X5 .7 T','T .18 X5 .7 T','T .3 G .6 @ .7 X5 .7 T','T .18 X2 % X2 .7 T','T s30 T',
+'T .2 x .3 x .3 x .6 ! .4 x .3 x .3 T','T .4 X2 .9 @ .14 T','.5 X2 .25','.15 ! .16','.6 ? .14 ? .10','.26 ? .5','T .2 x .3 x .3 x .6 ! .4 x .3 x .3 T','T s10 ? s19 T',
+'T .2 x . x . x .14 T b3 T .4 T','T .21 T b*b T .4 T','T b3 .18 T5 .4 T','T $ b2 .27 T','w32','w32','w32'],
+  npcs:[N('keeper'),N('watchman')],enT:['ghost','ghost','ghost'],readsL:['irondog'],doorsL:[{to:'pyramid:0,1'}],chestsL:['coins50'],
+  lm:[{art:'pyramid',x:19,y:2,w:5,h:4,read:'pyramid'},{art:'birdcage',x:5,y:8,w:2,h:2,read:'hollywood'}]});
 ow(2,2,"Belle Isle",{base:'.',rows:[
-'w14 =4 w14','w14 =4 w14','w14 =4 w14','w3 .26 w3','w3 .5 @ .4 M .3 r7 .5 w3','w3 .14 r2 D r4 .5 w3','w3 .26 w3','w3 . T .8 ! .15 w3','w3 .26 w3',
-'-3 .26 -3','-3 .6 ! .19 -3','-3 .26 -3','-3 .26 -3','w3 .26 w3','w3 .3 r2 % r .16 ! .2 w3','w3 .17 M .8 w3','w3 .26 w3','w3 .5 ! .20 w3','w3 .26 w3',
-'w14 ~4 w14','w14 ~4 w14','w14 ~4 w14'],
-  npcs:[N('kayaker')],enT:['crab','goose','crab','crab'],readsL:['belleisle','falls'],doorsL:[{to:'quarry:0,1'},{to:'ruins:0,0'}]});
-ow(3,2,"Rocketts Landing",{base:'n',rows:[
-'r14 n4 r14','r n30 r','r n3 M n26 r','r n30 r','r n5 ! n18 ! n5 r','r n30 r','r n22 M n7 r','r n30 r','r n30 r',
-'n31 r','n10 ! n20 r','n31 r','n31 r','r n30 r','r n30 r',
-'r w8 =2 w6 ~2 w12 r','r w8 =2 w6 ~2 w12 r','r w8 =2 w6 ~6 w8 r','r w16 ~2 * ~3 w8 r','r w16 ~6 w8 r','r w30 r','r32'],
-  enT:['crab','crab','crab'],readsL:['rocketts','trail']});
+'w14 =4 w14','w14 =4 w14','w14 =4 w14','w3 .2 ? .23 w3','w3 .5 @ .4 M .3 r7 .5 w3','w3 .14 r2 D r4 .5 w3','w3 .3 T .7 ` .8 ? .5 w3',
+'w3 . T .8 ! .9 ? .5 w3','w3 .10 @ .15 w3','-3 .26 -3','-3 .6 ! .19 -3','-3 .26 -3','-3 .20 ? .5 -3','w3 .26 w3',
+'w3 . X6 .16 ! .2 w3','w3 . X6 .11 M .7 w3','w3 . X2 % X3 .19 w3','w3 .2 ? .5 ! .17 w3','w3 .9 r2 .3 ? r2 .9 w3','w14 ~4 w14','w14 ~9 $ r w7','w14 ~4 w14'],
+  npcs:[N('kayaker'),N('volunteer')],enT:['crab','goose','crab','crab'],readsL:['belleisle','falls'],doorsL:[{to:'quarry:0,1'},{to:'ruins:0,0'}],chestsL:['coins50'],
+  lm:[{art:'ruins',x:4,y:14,w:6,h:3,read:'belleisle'}]});
+ow(3,2,"Rocketts Landing",{base:'n',pal:[BRICK2],rows:[
+'r14 n4 r14','r n2 B6 n5 n4 n3 B10 r','r n2 B6 n12 B10 r','r n2 B2 D B3 n3 M n8 B10 r','r n5 ! n18 ! n5 r','r n3 l n8 ? n8 l n8 r','r n22 M n7 r',
+'r n4 @ n10 i n2 i n11 r','r n8 ? n12 ? n8 r','n31 r','n10 ! n20 r','n6 ? n12 @ n11 r','n31 r','r n3 ` n26 r','r n4 =2 n3 =2 n19 r',
+'r w4 =2 X7 w2 ~2 w13 r','r w4 =2 X7 w2 ~2 w13 r','r w4 =2 w8 ~6 w10 r','r w4 $ w10 ~2 * ~3 w9 r','r w15 ~6 w9 r','r w30 r','r32'],
+  npcs:[F('This was the port of Richmond once. Tall ships, right where you\'re standing.','The Capital Trail starts here. Fifty-some miles to Jamestown by bike.'),N('crabber')],
+  enT:['crab','crab','crab'],readsL:['rocketts','trail'],doorsL:[{to:'boathouse:0,0'}],chestsL:['coins50'],lm:[{art:'steamboat',x:7,y:15,w:7,h:2}]});
 ow(1,3,"Forest Hill Park",{base:'.',pal:[STONE],rows:[
-'T32','T .30 T','T .3 B7 .20 T','T .3 B7 .5 @ .14 T','T .3 B7 .6 M .13 T','T .3 B7 .20 T','T .2 b3 .14 r5 .6 T','T .2 b*b .14 r . & . r .6 T','T .2 b3 .14 r2 v r2 .6 T',
-'T .13 ! .17','T .10 K21','T .31','T .2 w8 .21','T .2 w8 .4 Y .15 T','T .2 w8 .20 T','T .2 w8 .6 ! .13 T','T .2 w8 .20 T','T .30 T','T .8 ! .21 T','T .30 T','T .30 T','T32'],
-  npcs:[N('ranger')],enT:['squirrel','goose','squirrel'],readsL:['foresthill','!carousel'],itemsL:[{id:'carkey',kind:'carkey'}]});
+'T32','T .30 T','T .3 X7 .20 T','T .3 X7 .5 @ .14 T','T .3 X7 .6 M .13 T','T .3 X3 D X3 .20 T','T .2 b3 .14 r5 .6 T','T .2 b*b .14 r . & . r .6 T','T .2 b3 .14 r2 v r2 .6 T',
+'T .4 @ .8 ! .17','T .3 X3 .3 K22','T .29 ? .','T .2 w8 .21','T .2 w8 .4 Y .15 T','T .2 w8 .20 T','T .2 w8 .6 ! .13 T','T .2 w8 .3 @ .16 T','T .14 i .3 i .11 T','T .8 ! .21 T','T b3 .27 T','T $ b2 .27 T','T32'],
+  npcs:[N('ranger'),N('conductor'),F('My great-grandmother rode the roller coaster here for a nickel.','The lake used to freeze over in winter. Everyone went skating.')],
+  enT:['squirrel','goose','squirrel'],readsL:['foresthill','!carousel'],doorsL:[{to:'stonehouse:0,0'}],itemsL:[{id:'carkey',kind:'carkey'}],chestsL:['coins50'],
+  lm:[{art:'stonehouse',x:4,y:2,w:7,h:4,read:'foresthill'},{art:'trolley',x:4,y:10,w:3,h:1}]});
 ow(2,3,"Manchester",{base:'p',pal:[BRICK,STEEL],rows:[
-'w14 ~4 w8 f4 w2','w14 ~4 w8 =4 w2','w14 ~4 w8 =4 w2','U14 p4 U8 =4 U2','B s5 M s7 p4 s4 @ s3 M s4 B','B s30 B',
-'B s2 B6 s5 p4 s B11 s B','B s2 B6 s5 p4 s B11 s B','B s2 B6 s5 p4 s B11 s B','p31 B','p6 ! p17 ! p6 B','p31 B','p31 B','B s30 B',
-'B s2 B6 s5 p4 s B11 s B','B s2 B6 s5 p4 s B11 s B','B s2 B6 s5 p4 s B11 s B','B s13 p4 s7 ! s5 B','B s30 B','B s30 B','B s30 B','B32'],
-  npcs:[N('painter')],enT:['rat','scooter','rat'],readsL:['manchester','mayo']});
+'w14 ~4 w8 f4 w2','w14 ~4 w8 =4 w2','w14 ~4 w8 =4 w2','U3 e U5 e U4 p4 U2 e U5 =4 U2','B s5 M s7 p4 s4 @ s3 M s4 B','B s2 l s5 l s4 p4 s4 l s4 l s3 B',
+'B s2 B6 s5 p4 s B11 s B','B s2 B6 s5 p4 s B11 s B','B s2 B2 D B3 s5 p4 s B4 e B6 s B','p31 B','p6 ! p17 ! p6 B','p13 @ p17 B','p31 B','B s3 q s9 p4 s9 q s3 B',
+'B s2 B6 s5 p4 s B11 s B','B s2 B6 s5 p4 s B11 s B','B s2 B6 s5 p4 s B4 e B6 s B','B s13 p4 s7 ! s5 B','B s3 ` s9 p4 s13 B','B b3 s10 p4 s13 B','B $ b2 s10 p4 s13 B','B32'],
+  npcs:[N('painter'),F('Manchester was its own city until 1910. Some folks here still say it is.','The floodwall keeps the James out when it rises. Mostly.')],
+  enT:['rat','scooter','rat'],readsL:['manchester','mayo'],doorsL:[{to:'studio:0,0'}],chestsL:['coins50'],cars:[{y:12,dir:1}]});
 
 /* ---------- buildings and caves ---------- */
 room('bank',0,0,'St. Luke Penny Savings Bank',{entry:true,feats:[['V',3,4,10,1]],
@@ -183,6 +229,52 @@ room('vmfa',0,0,'Virginia Museum of Fine Arts',{entry:true,feats:[['g',3,3],['g'
   npcs:[{tx:4,ty:7,who:'Docent',hat:C3('#e8e4dc','#b0aca4','#ffffff'),shirt:C3('#2e2e3e','#1a1a26','#4a4a5e'),talk:'docent'}]});
 room('libby',0,0,'Cave Under Libby Hill',{entry:true,style:'cave',feats:[['r',3,3],['r',12,6],['r',4,7]],en:[['bat',5,4],['bat',10,5]],chests:[{id:'libby',tx:8,ty:3,item:'hc'}]});
 room('ruins',0,0,'Power Plant Ruins',{entry:true,style:'cave',feats:[['w',2,2,3,2],['w',11,6,3,2],['Z',7,2,3,2]],en:[['crab',5,6],['bat',10,4]],chests:[{id:'ruins',tx:13,ty:2,item:'hc'}]});
+
+
+const FL=(who,c,...lines)=>({who,hat:FOLKC[c][0],shirt:FOLKC[c][1],talk:'folk',lines});
+room('taproom',0,0,"Scott's Addition Taproom",{entry:true,style:'tap',feats:[['V',3,3,10,1],['a',3,6],['a',7,6],['a',11,6],['a',5,8],['a',10,8]],
+  npcs:[Object.assign(N('brewer'),{tx:7,ty:2}),Object.assign(FL('Regular',4,'They brew a ginger beer here that could wake the dead. Bad choice of words, with all that\'s going on.','Try the brewer. Free refills for heroes.'),{tx:13,ty:7})]});
+room('tearoom',0,0,'Miller & Rhoads Tea Room',{entry:true,style:'tea',feats:[['a',3,3],['a',6,3],['a',9,3],['a',12,3],['a',4,6],['a',11,6],['u',1,1],['u',14,1]],
+  npcs:[Object.assign(FL('Santa',2,'Ho ho! You\'re early. It\'s not even December!','I\'ve been coming to Richmond\'s department stores for a very long time. Don\'t tell anyone how long.'),{tx:8,ty:2}),
+        Object.assign(FL('Waiter',3,'Chicken salad and a Missouri Club, the house favorites.','Booths by the window fill up fast at Christmas.'),{tx:3,ty:8})]});
+room('hippo',0,0,'The Hippodrome',{entry:true,style:'hippo',feats:[['V',3,2,10,1],['h',2,5,5,1],['h',9,5,5,1],['h',2,7,5,1],['h',9,7,5,1]],
+  npcs:[Object.assign(FL('Bandleader',4,'Jazz greats played this stage when Jackson Ward was the Harlem of the South.','Tonight we play for whoever wanders in out of the fog.'),{tx:8,ty:1})]});
+room('stjohn',0,0,"St. John's Church",{entry:true,style:'church',feats:[['V',7,2,2,1],['h',2,4,5,1],['h',9,4,5,1],['h',2,6,5,1],['h',9,6,5,1]],readsT:{V:'stjohns'},
+  npcs:[Object.assign(FL('Docent',3,'Patrick Henry stood about where you\'re standing. The pews are original to the 1700s church, mostly.','Edgar Allan Poe\'s mother is buried in the churchyard outside.'),{tx:12,ty:2})]});
+room('shop',0,0,'Carytown Goods',{entry:true,style:'shop',feats:[['V',4,4,8,1],['u',1,1],['u',14,1],['V',1,2,2,1],['V',13,2,2,1]],
+  npcs:[Object.assign(N('shop'),{tx:8,ty:3})]});
+room('rowhouse',0,0,'A Fan Row House',{entry:true,style:'home',feats:[['V',3,2,3,1],['a',10,3],['u',13,1],['u',2,7],['i',11,7]],
+  npcs:[Object.assign(FL('Neighbor',5,'Come in out of the fog! This house is over a hundred years old. The floors creak in every room.','Cats? Oh, those belong to the whole block.'),{tx:7,ty:5})]});
+room('station',0,0,'Main Street Station',{entry:true,style:'station',feats:[['V',5,3,6,1],['i',2,6],['i',3,6],['i',12,6],['i',13,6],['i',2,8],['i',13,8]],
+  npcs:[Object.assign(FL('Ticket Agent',2,'Trains north to Washington and east to Newport News. Nothing to Church Hill anymore.','The old train shed out back is bigger than it looks.'),{tx:8,ty:2}),
+        Object.assign(FL('Traveler',1,'I came down from New York. Nobody warned me about the fog.'),{tx:9,ty:7})]});
+room('mansion',0,0,'Maymont House',{entry:true,style:'mansion',statue:'marble',feats:[['V',6,2,4,1],['Y',2,2],['Y',13,2],['a',4,6],['a',11,6],['u',1,8],['u',14,8]],
+  npcs:[Object.assign(FL('Docent',3,'The Dooleys furnished every room with treasures from their travels.','Mrs. Dooley left the whole estate to the city. Wasn\'t that something?'),{tx:8,ty:4})]});
+room('boathouse',0,0,'Rocketts Boathouse',{entry:true,style:'boat',feats:[['w',9,2,5,5],['=',8,4,1,2],['V',2,2,3,1],['u',2,7]],
+  npcs:[Object.assign(FL('Old Captain',4,'Tall ships used to tie up all along this shore. Now it\'s kayaks and paddleboards.','Keep your kayak pointed downstream and the James will carry you.'),{tx:5,ty:4})]});
+room('stonehouse',0,0,'Stone House Arcade',{entry:true,style:'arcade',feats:[['O',2,2],['O',4,2],['O',11,2],['O',13,2],['O',2,6],['O',13,6]],readsT:{O:'!arcade'},
+  npcs:[Object.assign(FL('Attendant',0,'Back when this was an amusement park, kids spent pennies in machines right here in the house.','The machines don\'t work anymore. Most of them.'),{tx:8,ty:4})]});
+room('studio',0,0,'Manchester Art Studio',{entry:true,style:'studio',feats:[['Y',3,2],['Y',6,2],['Y',9,2],['u',13,2],['a',11,6]],
+  npcs:[Object.assign(FL('Artist',1,'Half the walls in Manchester have a mural on them now. Some of them are mine.','The light off the river is the best in the city for painting.'),{tx:7,ty:5})]});
+
+/* ---------- neighborhood challenges ---------- */
+const CHAL={
+  flies:{name:'Shag Flies',type:'collect',time:30,ic:'ball',intro:'Fly balls are dropping all over the field. Grab every one before time runs out!'},
+  bus:{name:'Catch the Bus',type:'race',time:8,intro:'My bus leaves from the shelter at the east end of Broad. Beat me there and you win!'},
+  taps:{name:'Lost Taps',type:'collect',time:40,ic:'tap',intro:'The taps came off my shoes and scattered all over Jackson Ward. Find all six!'},
+  lamps:{name:'Light the Gas Lamps',type:'light',time:60,intro:'The fog snuffed every gas lamp on Church Hill. Light them all with your lantern!'},
+  melons:{name:'Melon Roundup',type:'collect',time:35,ic:'melon',intro:'A crate tipped over and melons rolled all down Cary Street. Gather them up!'},
+  tenk:{name:'Monument Avenue 10K',type:'race',time:9,intro:'Race me to the finish flag at the west end of Monument Avenue! Go!'},
+  quiz:{name:'Richmond History Quiz',type:'quiz',intro:'Three questions about stories in your journal. Ready?'},
+  rats:{name:'Market Rats',type:'defeat',time:40,foe:'rat',n:8,intro:'Rats are swarming the 17th Street Market. Clear out eight of them!'},
+  lures:{name:'Lost Lures',type:'collect',time:60,ic:'lure',needs:'bug',intro:'My fishing lures snagged on the little islands in the lake. Fetch all four!'},
+  ghosts:{name:'Restless Spirits',type:'defeat',time:45,foe:'ghost',n:6,intro:'Ghosts are rising all over the cemetery. Lay six of them to rest!'},
+  cleanup:{name:'River Cleanup',type:'collect',time:40,ic:'trash',intro:'The flood left trash all over the island. Pick up all six pieces!'},
+  crabs:{name:'Crab Catch',type:'defeat',time:40,foe:'crab',n:6,intro:'The crabs are thick at Rocketts today. Bag six of them!'},
+  trolley:{name:'Last Trolley',type:'race',time:7,intro:'Run the old trolley line to the end of the tracks, east of here, before the bell!'},
+  murals:{name:'Mural Hunt',type:'tag',time:60,intro:'Five murals are hidden on walls around Manchester. Find them all and press A at each!'}
+};
+const NCHAL=Object.keys(CHAL).length;
 
 /* dungeon 1: Belle Isle Quarry -> blasting powder, granite keystone */
 room('quarry',0,1,'Quarry Floor',{entry:true,solve:'clear',feats:[['w',3,3,2,2],['w',11,6,2,2]],en:[['crab',6,6],['crab',10,3]],chests:[{id:'q1',tx:12,ty:3,item:'key',appear:true}]});
@@ -230,16 +322,20 @@ function cellsFor(s,d){const c=[];
   for(const id in SC){const s=SC[id];
     if(s.rows){
       const rows=s.rows.map(rle);s.h=rows.length;s.w=rows[0].length;
-      const m=[],npc=[],en=[],rd=[],dr=[],it=[],pc=[];
+      const m=[],npc=[],en=[],rd=[],dr=[],it=[],pc=[],spots=[],chs=[],birds=[],lamps=[],murals=[];
       rows.forEach((r,y)=>{if(r.length!==s.w)throw new Error(s.name+' row '+y+' is '+r.length+' wide, expected '+s.w);m.push([]);
         for(let x=0;x<s.w;x++){let ch=r[x];
           if(ch=='@'){npc.push([x,y]);ch=s.base;}else if(ch=='!'){en.push([x,y]);ch=s.base;}else if(ch=='*'){pc.push([x,y]);ch=s.base;}else if(ch=='&'){it.push([x,y]);ch=s.base;}
+          else if(ch=='?'){spots.push([x,y]);ch=s.base;}else if(ch=='$'){chs.push([x,y]);ch=s.base;}else if(ch=='`'){birds.push([x,y]);ch=s.base;}
+          if(ch=='l')lamps.push([x,y]);if(ch=='e')murals.push([x,y]);
           else if(ch=='v'){s.dyn.push({cells:[[x,y]],closed:'%',open:s.base,flag:'rub:'+id+':'+x+','+y});ch='%';}
           else if(ch=='%'){s.dyn.push({cells:[[x,y]],closed:'%',open:'D',flag:'rub:'+id+':'+x+','+y});dr.push([x,y]);}
           if('MYGQ'.includes(ch))rd.push([x,y]);if(ch=='D')dr.push([x,y]);
           m[y].push(ch);}});
       const need=(a,b,what)=>{if(a.length!==(b||[]).length)throw new Error(s.name+': '+a.length+' '+what+' placeholders but '+(b||[]).length+' listed');};
-      need(npc,s.npcs,'person');need(en,s.enT,'enemy');need(rd,s.readsL,'marker');need(dr,s.doorsL,'door');need(it,s.itemsL,'item');
+      need(npc,s.npcs,'person');need(chs,s.chestsL,'chest');
+      s.spots=spots;s.birds=birds;s.lamps=lamps;s.murals=murals;s.chests=chs.map((q,i)=>({id:'ch:'+id,tx:q[0],ty:q[1],item:s.chestsL[i]}));
+      for(const L of s.lm||[])for(let yy=L.y;yy<L.y+L.h;yy++)for(let xx=L.x;xx<L.x+L.w;xx++)if(!'XD%'.includes(rows[yy][xx]))throw new Error(s.name+': landmark '+L.art+' covers '+rows[yy][xx]+' at '+xx+','+yy);need(en,s.enT,'enemy');need(rd,s.readsL,'marker');need(dr,s.doorsL,'door');need(it,s.itemsL,'item');
       (s.npcs||[]).forEach((n,i)=>{n.tx=npc[i][0];n.ty=npc[i][1];});
       s.en=en.map((q,i)=>[s.enT[i],q[0],q[1]]);
       rd.forEach((q,i)=>s.reads[q.join()]=s.readsL[i]);Object.assign(s.reads,s.readsAt||{});
@@ -256,4 +352,5 @@ function cellsFor(s,d){const c=[];
     }
   }
 })();
+for(const id in SC)for(const n of SC[id].npcs||[]){n.x=n.tx*TS+8;n.y=n.ty*TS+8;n.hx=n.x;n.hy=n.y;n.f=1;n.t=0;n.vx=0;n.vy=0;}
 const AREAB={};for(const id in SC){const s=SC[id],b=AREAB[s.area]||(AREAB[s.area]={x0:9,y0:9,x1:0,y1:0});b.x0=Math.min(b.x0,s.ax);b.y0=Math.min(b.y0,s.ay);b.x1=Math.max(b.x1,s.ax);b.y1=Math.max(b.y1,s.ay);}
