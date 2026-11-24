@@ -1,5 +1,7 @@
 # River City Quest
 
+[![tests](https://github.com/doodersrage/river-city-quest/actions/workflows/tests.yml/badge.svg)](https://github.com/doodersrage/river-city-quest/actions/workflows/tests.yml)
+
 ![River City Quest title screen](screenshots/title.png)
 
 A Zelda-style adventure set in Richmond, Virginia, with SNES-style pixel art. It runs in any browser and on phones, with no install needed.
@@ -14,8 +16,10 @@ A top-down adventure game set in Richmond, Virginia. A cold fog has rolled up of
 | Capitol Square by day | Broad Street at night | Rain in Jackson Ward |
 | ![Snow in the Fan](screenshots/the-fan-snow.png) | ![Belle Isle](screenshots/belle-isle.png) | ![The Iron Foreman](screenshots/iron-foreman.png) |
 | Snow in the Fan | Belle Isle | The Iron Foreman at Tredegar |
-| ![Fishing at Pony Pasture](screenshots/fishing.png) | ![Landmark cards](screenshots/cards.png) | |
-| Fishing at Pony Pasture | Landmark cards | |
+| ![Fishing at Pony Pasture](screenshots/fishing.png) | ![Landmark cards](screenshots/cards.png) | ![The Titan Arum](screenshots/titan-arum.png) |
+| Fishing at Pony Pasture | Landmark cards | The Titan Arum in the conservatory |
+| ![The opening](screenshots/opening.png) | | |
+| The opening | | |
 
 On a phone, use your browser's "Add to Home Screen" (or the INSTALL button when it appears) to run it full screen like an app. It works offline after the first visit.
 
@@ -34,32 +38,52 @@ Progress saves automatically in your browser, in one of three save slots. OPTION
 
 ## What's in it
 
-- **16 scrolling neighborhoods**, each a big map you explore in any direction: Scott's Addition, Broad Street, Jackson Ward, Church Hill, Carytown and the VMFA, the Fan, Capitol Square, Shockoe Bottom, Byrd Park and Maymont, Hollywood Cemetery, Belle Isle, Rocketts Landing, and south of the river, Pony Pasture, Forest Hill Park, Manchester and Ancarrow's Landing.
+- **19 scrolling neighborhoods**, each a big map you explore in any direction: Bryan Park and Lewis Ginter Botanical Garden up north, Scott's Addition, Broad Street, Jackson Ward, Church Hill, Chimborazo, Carytown and the VMFA, the Fan, Capitol Square, Shockoe Bottom, Byrd Park and Maymont, Hollywood Cemetery, Belle Isle, Rocketts Landing, and south of the river, Pony Pasture, Forest Hill Park, Manchester and Ancarrow's Landing.
 - **Landmarks drawn as themselves:** The Diamond's grandstand, the Broad Street department stores, the Hippodrome, St. John's Church, the Capitol and its bell tower, Main Street Station, the 17th Street Market, the Carillon, Maymont House, the granite pyramid, Monroe's tomb, the Belle Isle ruins, a steamboat at Rocketts, Forest Hill's Stone House and an old trolley.
 - **Street life:** townspeople who walk around and chat, buses and cars that stop for you, pigeons that scatter, gas lamps, benches, cafe tables and murals.
 - **A challenge in every neighborhood,** from shagging fly balls at The Diamond and lighting Church Hill's gas lamps to a Monument Avenue race, a Richmond history quiz and a mural hunt in Manchester. Each first win earns a city pin. Collect all 14 for a golden paddle.
 - **Places to walk into:** a taproom, the Miller & Rhoads Tea Room, the Hippodrome, St. John's, the Carytown shop, a Fan row house, Main Street Station, Maymont House, a Rocketts boathouse, the Stone House arcade and a Manchester art studio, plus a hidden chest in every neighborhood.
-- **Six dungeons** with small keys, locked doors, cracked walls, braziers, push-block puzzles and a boss each. Tredegar Iron Works, behind Hollywood Cemetery, hides the Grappling Hook and the Iron Foreman.
+- **Seven dungeons** with small keys, locked doors, cracked walls, braziers, push-block puzzles and a boss each. Tredegar Iron Works, behind Hollywood Cemetery, hides the Grappling Hook and the Iron Foreman. The conservatory at Lewis Ginter hides the Watering Can and the Titan Arum.
 - **Day and night:** a full day passes about every ten minutes. Gas lamps and windows light up after dark, fireflies come out in the parks, and bats and ghosts roam the streets.
 - **Weather:** rain with puddles, snow that piles up on rooftops, and fog off the James. Frogs come out in the rain for the naturalist's frog count at Byrd Park.
 - **Fishing:** buy a rod in Carytown and fish any pond or the river. Bluegill, bass, catfish at night, shad in the rain and, if you're lucky, an Atlantic sturgeon.
 - **12 landmark cards** to collect from bosses, card packs, the frog count and the river.
-- **Items for the B button:** Gas Lantern, Baseballs, Blasting Powder, the Gold-Bug, Running Shoes, Grappling Hook, Fishing Rod and Ginger Beer. The Cast-Iron Shield and the Kayak work on their own.
+- **Items for the B button:** Gas Lantern, Baseballs, Blasting Powder, the Gold-Bug, Running Shoes, Grappling Hook, Fishing Rod, Watering Can and Ginger Beer. The Cast-Iron Shield and the Kayak work on their own.
 - **A trading quest** across town that ends with a kayak for crossing the whitewater on the James, and a **bateau quest** on the south bank that ends with a Golden Lure.
 - **Eight heart pieces** hidden behind bushes, across water and in the rapids. Four make a heart.
-- **A journal of 44 Richmond stories** from historical markers, statues and people around town: Patrick Henry at St. John's, Maggie L. Walker's bank, Bojangles' traffic light, Sprague's electric streetcars, the VMFA's Faberge eggs, the Carillon, Forest Hill's old amusement park, Mayo's Bridge, the Church Hill Tunnel collapse and more.
+- **A journal of 47 Richmond stories** from historical markers, statues and people around town: Patrick Henry at St. John's, Maggie L. Walker's bank, Bojangles' traffic light, Sprague's electric streetcars, the VMFA's Faberge eggs, the Carillon, Forest Hill's old amusement park, Mayo's Bridge, the Church Hill Tunnel collapse and more.
 - **Chiptune music** for the city, the south bank, nighttime, dungeons, the Tredegar foundry, bosses and the title screen, plus rain, wind and cricket sounds.
 - **Hints when you need them:** the GEAR tab always shows your next goal, and townspeople react to the weather, the time of day and how far you've come.
+- **An opening and credits:** name your hero, watch the fog roll in, and roll the credits at the end.
+- **Sharing:** copy a save code from one device and import it on another, and share a picture of your finish time.
+- **Phones:** vibration, a sideways layout with the controls beside the screen, a FULL button for full screen, and the game pauses when you switch apps.
 - **Replay:** New Game+ (tougher foes that hit harder), a boss rush against all six bosses, 15 awards, and split times for each dungeon on the ending screen.
 - **Accessibility options:** bigger dialog text, color assist labels, a calm mode with no screen shake or damage flash, and small, medium or large touch buttons.
 
 ## Files
 
-No build step and no dependencies. Open `index.html` in a browser to play locally.
+No build step and no dependencies. Open `index.html` in a browser to play locally. The scripts load in order from `index.html`:
 
-- `world.js`: the maps, rooms, dungeon links and journal text
-- `game.js`: the engine, drawing and controls
-- `music.js`: the music sequencer and songs
+- `js/world.js`: the maps, rooms, dungeon links and journal text
+- `js/core.js`: setup, sprites, game state, saving, sound effects and dialog
+- `js/people.js`: challenges, items, the shop and what everyone in town says
+- `js/play.js`: movement, enemies, bosses, the update loop and menu controls
+- `js/art.js`: tile art and the hand-drawn landmarks
+- `js/draw.js`: the world, HUD, menus, title and ending screens
+- `js/systems.js`: cards, time of day, weather, fishing, the hook, options, story beats, awards, New Game+, boss rush, the opening and sharing
+- `js/main.js`: page buttons, input and the main loop
+- `js/music.js`: the music sequencer, songs and weather sounds
 - `sw.js`, `manifest.webmanifest`, `icon-*.png`: install-to-home-screen and offline support
+
+## Tests
+
+Run `node tests/run.js` (Node 18 or newer, nothing to install). It loads the game into Node with a stand-in canvas and runs:
+
+- `maps.test.js`: every door, chest, person and item can be reached, counting the grappling hook, and map edges line up
+- `sim.test.js`: a random-input run through every scene, plus scripted checks of each challenge
+- `features.test.js` and `more-features.test.js`: the newer systems, from weather and fishing to New Game+ and the boss rush
+- `playthrough.test.js`: a bot plays from a new game to the ending, walking through every dungeon door for real and checking the hint at each step
+
+GitHub Actions runs them on every push.
 
 Maps are written as run-length rows, so `B14 p4 B14` is 14 building tiles, 4 cobblestone tiles and 14 more buildings. When you change any file, bump `VERSION` in `sw.js` so installed copies update.

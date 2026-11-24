@@ -42,7 +42,7 @@ function wantSong(){
   if(mode=='title')return'title';if(mode=='win')return'win';if(!cur)return'';
   if(enemies.some(e=>e.boss))return'boss';
   if(cur.ow)return typeof dark=='function'&&dark()>.6?'night':cur.ay==3?'south':'city';
-  return cur.lit?'city':cur.area=='tredegar'?'forge':'dungeon';
+  return cur.area=='conserv'?'dungeon':cur.lit?'city':cur.area=='tredegar'?'forge':'dungeon';
 }
 function voice(f,t,len,type,vol){const o=ac.createOscillator(),gn=ac.createGain();o.type=type;o.frequency.value=f;
   gn.gain.setValueAtTime(0,t);gn.gain.linearRampToValueAtTime(vol,t+.01);gn.gain.setValueAtTime(vol,t+len*.7);gn.gain.linearRampToValueAtTime(0,t+len*.97);

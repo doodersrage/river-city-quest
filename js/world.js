@@ -42,6 +42,9 @@ const LORE=[
 ['ponypasture',`Pony Pasture`,`Part of the James River Park System, Pony Pasture is a stretch of riverbank beside wide, rocky rapids. People come to wade, tube and fish, and to watch for herons and bald eagles.`],
 ['ancarrow',`Ancarrow's Landing`,`A boat landing on the south bank in Manchester. The Richmond Slave Trail begins here, tracing the route enslaved people were forced to walk into the city.`],
 ['bateau',`James River Bateaux`,`Before railroads, long flat-bottomed bateaux carried tobacco and other goods down the James to Richmond. A festival still poles replica bateaux down the river every summer.`],
+['bryanpark',`Bryan Park`,`Isobel Stewart Bryan gave this park to the city in 1909 in memory of her husband, newspaper publisher Joseph Bryan. Its azalea garden blooms by the thousands every spring.`],
+['ginter',`Lewis Ginter Botanical Garden`,`The garden grows on land once owned by Lewis Ginter, a tobacco businessman who helped shape Richmond in the late 1800s. Its glass conservatory is full of tropical plants.`],
+['chimborazo',`Chimborazo`,`During the Civil War, Chimborazo Hospital stood on this hilltop, one of the largest military hospitals of its time. Today it is a park with a wide view of the James.`],
 ['stonehouse',`The Old Stone House`,`The Poe Museum's Old Stone House dates to the mid-1700s and is the oldest house still standing in Richmond. In 1824 a 15-year-old Edgar Allan Poe stood in an honor guard outside it when Lafayette came to visit.`],
 ['poe',`Poe in Richmond`,`Edgar Allan Poe grew up in Richmond and later edited the Southern Literary Messenger here. As a teenager he swam about six miles of the James against the tide, a feat he was proud of all his life.`],
 ['goldbugtale',`The Gold-Bug`,`Poe's 1843 story "The Gold-Bug" follows a man who cracks a secret code to find Captain Kidd's buried treasure. It was one of his most popular stories while he was alive.`],
@@ -65,6 +68,7 @@ const AST={
   tunnel:{fl:['#4a4038','#342c26','#5e5248'],wl:['#6a4034','#44261e','#865448']},
   carillon:{fl:['#7a6a5a','#5e5044','#948270'],wl:['#a87a5a','#7a5238','#c89a78']},
   tredegar:{fl:['#4e484c','#3a3438','#625a5e'],wl:['#7a4a3a','#54301f','#9a6450']},
+  conserv:{lit:true,fl:['#5a6a4a','#46543a','#6e7e5c'],wl:['#c8d8d0','#8aa098','#eef6f2']},
   cave:{fl:['#5a4e44','#423830','#6e6256'],wl:['#6e5a4a','#4a3a2e','#8a7462']},
   bank:{lit:true,wood:true,fl:['#8a5a34','#6a4224','#a8744a'],wl:['#c8b48c','#8a7a5a','#e4d4b0']},
   byrd:{lit:true,fl:['#7a1c2c','#5a1020','#94303e'],wl:['#8a6a3a','#5e4420','#b08a52']},
@@ -82,7 +86,7 @@ const AST={
   arcade:{lit:true,wood:true,fl:['#7a6a5a','#5e5044','#948270'],wl:['#9a9aa0','#6a6a74','#bcbcc4']},
   studio:{lit:true,fl:['#8a8a90','#6a6a70','#a8a8ae'],wl:['#e8e4dc','#b0aca4','#ffffff']}
 };
-const AREAN={ow:'Richmond',quarry:'Belle Isle Quarry',pyramid:'The Pyramid',poe:'Poe Museum Cellar',tunnel:'Church Hill Tunnel',tredegar:'Tredegar Iron Works',carillon:'The Carillon'};
+const AREAN={ow:'Richmond',quarry:'Belle Isle Quarry',pyramid:'The Pyramid',poe:'Poe Museum Cellar',tunnel:'Church Hill Tunnel',tredegar:'Tredegar Iron Works',conserv:'The Conservatory',carillon:'The Carillon'};
 const C3=(a,b,c)=>[a,b,c];
 function def(id,o){const [a,c]=id.split(':'),[x,y]=c.split(',').map(Number);
   Object.assign(o,{id,area:a,ax:x,ay:y,seed:seedN++});o.en=o.en||[];o.dyn=o.dyn||[];o.reads=o.reads||{};o.feats=o.feats||[];o.items=o.items||[];SC[id]=o;return o;}
@@ -129,7 +133,7 @@ let folkN=0;
 const F=(...lines)=>{const c=FOLKC[folkN++%FOLKC.length];return{who:'Local',hat:c[0],shirt:c[1],talk:'folk',lines,wander:true};};
 
 ow(0,0,"Scott's Addition",{base:'p',pal:[STEEL,BRICK,STEEL,BRICK2],rows:[
-'B32','B X12 p6 B13','B X12 p6 B13','B ..?..nn..?.. p6 B13','B .?.n....n.?. p6 B4 D B8','B ..n..?...n.. p6 susasasus`ss B',
+'B13 p6 B13','B X12 p6 B13','B X12 p6 B13','B ..?..nn..?.. p6 B13','B .?.n....n.?. p6 B4 D B8','B ..n..?...n.. p6 susasasus`ss B',
 'B ...n.nn.n?.. p6 sasasas@ssss B','B ..?.....?... p6 s2 M s2 l s6 B','B f5 .. f5 @ p5 s12 B','B p31','B p6 ! p17 ! p6','B p10 @ p20','B p31',
 'B s2 l s5 l s4 p4 s4 l s5 l s2 B','B B5 s B6 s p4 s b12 B','B B5 s B6 s p4 s b .10 b B','B B5 s B6 s p4 s b ...,,.!... b B','B B5 s B6 s p4 s b .,,....,,. b B',
 'B s13 p4 s b ....bbb... b B','B b3 ` s9 p4 s b ....b*b... b B','B $ b2 s10 p4 s b12 B','B14 p4 B14'],
@@ -152,7 +156,7 @@ ow(2,0,"Jackson Ward",{base:'p',pal:[BRICK,BRICK2],rows:[
   lm:[{art:'hippodrome',x:19,y:1,w:12,h:4,read:'jward'}],cars:[{y:9,dir:1}]});
 ow(3,0,"Church Hill",{base:'.',rows:[
 'T32','T r8 .9 X6 .7 T','T r8 .9 X6 .7 T','T r % r D r4 .9 X6 .3 @ .3 T','T .3 k .3 l .4 M .4 X6 .7 T','T .3 k .13 X2 D X3 .7 T','T .3 k .12 l .13 T',
-'T .3 k .11 x . x . x . ! .8 T','T .15 x . x . x .3 l .6 T','.31 T','. ! .29 T','.9 @ .21 T','.31 T','T R13 S4 R13 T',
+'T .3 k .11 x . x . x . ! .8 T','T .15 x . x . x .3 l .6 T','.31 T','. ! .29 T','.9 @ .22','.32','T R13 S4 R13 T',
 'T .4 ,4 .22 T','T .3 l .15 b6 .5 T','T .19 b.*..b .5 T','T .5 ! .13 b6 .5 T','T .10 i .2 i .11 M .4 T','T b3 ` .17 l .8 T','T $ b2 .27 T','T14 .4 T14'],
   npcs:[N('henry'),N('lamplighter')],enT:['bat','bat','bat'],readsL:['tunnel','names'],readsAt:{'18,7':'eliza'},
   doorsL:[{to:'libby:0,0'},{to:'tunnel:0,1',need:'keystones'},{to:'stjohn:0,0'}],chestsL:['coins50'],lm:[{art:'church',x:18,y:1,w:6,h:5,read:'stjohns'}]});
@@ -233,6 +237,20 @@ ow(3,3,"Ancarrow's Landing",{base:'.',rows:['wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww','
   npcs:[F('This is where the boats go in. Fishermen, kayakers, everybody.','On a clear day you can see the whole skyline from the ramp.'),N('historian'),
     F('Shad and catfish run right up to this landing in spring.','If you see a sturgeon out there, holler. They\'re coming back to the James.')],
   enT:['crab','rat','crab','goose'],readsL:['ancarrow','slavetrail'],itemsL:[{id:'tiller',kind:'part'}],chestsL:['coins50']});
+ow(0,-1,"Bryan Park",{base:'.',rows:['TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT','T..............................T','T..,,,,..TT........wwwwww......T','T..,,,,..TT.......wwwwwwww.....T','T..,,,,..........wwwwwwwwww....T','T...@.......M....wwwwwwwwww....T','T..,,,,..........wwwwwwwwww....T','T..,,,,...!.......wwwwwwww..@..T','T.................wwwwww........','T.....TT.......!................','T.....TT........................','T..bbb.........sssssss.........T','T..b$b.........s.....s....TT...T','T..bbb.........s..!..s....TT...T','T..............sssssss.........T','T...TT.........................T','T...TT.....@...........`.......T','T..............................T','T.......TT.........!......TT...T','T.......TT................TT...T','T............pppppp............T','TTTTTTTTTTTTTppppppTTTTTTTTTTTTT'],
+  npcs:[F('Every spring the azalea garden here turns pink and white. Thousands of them.','Young\'s Pond has the best turtles in the city. Don\'t tell anyone.'),
+    F('East of here is the botanical garden. Their glass conservatory has been acting strange lately.','I heard something in there is growing way too fast.'),
+    F('Scott\'s Addition is just south, down the path.','Frisbee golf? In this fog? Maybe tomorrow.')],
+  enT:['squirrel','goose','squirrel','goose'],readsL:['bryanpark'],chestsL:['coins50']});
+ow(1,-1,"Lewis Ginter Botanical Garden",{base:'.',rows:['TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT','T..............................T','T...BBBBBBBBBB.................T','T...BBBBBBBBBB....,,,,,,,,.....T','T...BBBBBBBBBB....,,,,,,,,.....T','T...BBBBDBBBBB....,,,www,,.....T','T.............M...,,,www,,.....T','T...l....l.........,,,,,,......T','...............@...............T','......!........................T','...............................T','T....ssssssssssssssssssss......T','T....s,,,,,,s..T..s,,,,,s......T','T....s,,!,,,s.....s,,,,,s......T','T....ssssssssssssssssssss......T','T..............................T','T..TT....@.............TT......T','T..TT.......!..........TT..$...T','T..............................T','T.....wwww...........`.........T','T.....wwww.....................T','TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT'],
+  npcs:[F('The conservatory doors blew open in the fog, and vines came out after them.','Our gardener left a watering can somewhere inside. Plants in there respond to it. Strongly.'),
+    F('Something enormous is blooming under the glass dome. It smells like a dumpster in August.','Bryan Park is west of here.')],
+  enT:['squirrel','rat','goose'],readsL:['ginter'],doorsL:[{to:'conserv:0,2'}],chestsL:['coins50']});
+ow(4,0,"Chimborazo",{base:'.',rows:['TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT','T..............................T','T..TT......,,,,,,.......TT.....T','T..TT......,,,M,,.......TT.....T','T..........,,,,,,..............T','T....@.........................T','T.........!.........l..........T','T....bbb...........sssss.......T','T....b$b...........s...s...@...T','T....bbb...........sssss.......T','T..............!...............T','...............................T','..........@....................T','T..............................T','T...TT...........!.......TT....T','T...TT...................TT....T','T..............................T','T......`..........l............T','TrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrT','TwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwT','TwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwT','TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT'],
+  npcs:[F('This hill held one of the biggest military hospitals of the Civil War. Thousands of beds.','Now it\'s a park. Best view of the river bend you\'ll find.'),
+    F('Church Hill is right next door, to the west.','Fog looks like a lake from up here.'),
+    F('My grandfather walked his dog here every day for fifty years.','Watch the edge of the bluff. It drops straight down.')],
+  enT:['bat','rat','ghost'],readsL:['chimborazo'],chestsL:['coins50']});
 /* ---------- buildings and caves ---------- */
 room('bank',0,0,'St. Luke Penny Savings Bank',{entry:true,feats:[['V',3,4,10,1]],
   npcs:[{tx:7,ty:3,who:'Teller',hat:C3('#3a3a54','#24243a','#5a5a7a'),shirt:C3('#e8e4dc','#b0aca4','#ffffff'),talk:'teller'}]});
@@ -326,6 +344,14 @@ room('tredegar',0,1,'Casting Floor',{solve:'clear',feats:[['_',1,4,14,3],['+',7,
   en:[['bat',4,2],['bat',11,2],['bat',8,5]],chests:[{id:'t3',tx:3,ty:2,item:'coins50'}]});
 room('tredegar',0,0,'Furnace Hall',{bossT:'foreman',feats:[['W',3,3],['W',12,3],['W',3,7],['W',12,7]],en:[['foreman',8,4]]});
 link('tredegar','0,2','E','1,2','open');link('tredegar','0,2','N','0,1','lock');link('tredegar','0,1','N','0,0','gate');
+
+/* dungeon 6: the Conservatory at Lewis Ginter -> watering can, the Titan Arum */
+room('conserv',0,2,'Palm House',{entry:true,feats:[['T',3,3],['T',12,3],['T',3,7],['T',12,7],[',',6,2,4,1]],en:[['rat',6,5],['rat',10,6],['bat',8,3]]});
+room('conserv',1,2,'Orchid Room',{solve:'clear',feats:[['_',9,1,6,2],['_',9,3,3,2],['_',14,3,1,2],['_',9,5,6,4],['z',8,4],[',',2,7,4,2]],
+  en:[['rat',4,6],['bat',3,3],['bat',6,7],['squirrel',5,4]],chests:[{id:'g1',tx:4,ty:2,item:'can',appear:true},{id:'g2',tx:12,ty:3,item:'key'}]});
+room('conserv',0,1,'Fern Gully',{solve:'clear',feats:[['_',1,4,14,3],['z',5,7],['z',10,3],['T',2,2],['T',13,8]],en:[['bat',4,2],['bat',11,8],['bat',8,5]],chests:[{id:'g3',tx:12,ty:2,item:'coins50'}]});
+room('conserv',0,0,'Under the Dome',{bossT:'arum',feats:[[',',2,2,3,2],[',',11,2,3,2],['T',2,7],['T',13,7]],en:[['arum',8,3]]});
+link('conserv','0,2','E','1,2','open');link('conserv','0,2','N','0,1','lock');link('conserv','0,1','N','0,0','gate');
 
 /* finale: the tunnel */
 room('tunnel',0,1,'Church Hill Tunnel',{entry:true,feats:[['k',7,1,2,8],['r',3,2],['r',12,6],['r',4,7],['M',2,5]],reads:{'2,5':'tunnel'},en:[['bat',4,4],['bat',11,4],['bat',10,7]]});

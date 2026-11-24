@@ -56,6 +56,18 @@ canvas{display:block;max-width:100%;max-height:100%;image-rendering:pixelated;bo
 #bbtn{left:0;bottom:4px;width:66px;height:66px;background:var(--river);box-shadow:0 5px 0 #26566a;font-size:13px}
 .btn small{display:block;font-size:7px;opacity:.85}
 .btn:active,.btn.on{transform:translateY(3px)}
+#fs{display:none}
+/* phones held sideways: pad on the left, buttons on the right, game in the middle */
+@media (orientation:landscape) and (max-height:560px) and (pointer:coarse){
+  body{display:grid;grid-template-columns:auto 1fr auto;grid-template-rows:auto 1fr}
+  header{grid-column:1/4;padding-top:calc(4px + env(safe-area-inset-top));padding-bottom:4px}
+  #stage{grid-column:2;grid-row:2;padding:4px 6px calc(4px + env(safe-area-inset-bottom))}
+  #controls{display:contents}
+  #pad{grid-column:1;grid-row:2;align-self:center;margin-left:calc(14px + env(safe-area-inset-left));margin-bottom:env(safe-area-inset-bottom)}
+  #btns{grid-column:3;grid-row:2;align-self:center;margin-right:calc(14px + env(safe-area-inset-right));margin-bottom:env(safe-area-inset-bottom)}
+  #fs:not([hidden]){display:inline-block}
+  h1{font-size:9px}
+}
 @media (hover:hover) and (pointer:fine){
   #controls,#menu{display:none}
   header p{flex:1;min-width:0}
@@ -70,6 +82,7 @@ canvas{display:block;max-width:100%;max-height:100%;image-rendering:pixelated;bo
   <p>Arrows or WASD move. Z or Space: A (swing, talk, read; hold for a spin). X: B (item). Enter: menu. N: sound.</p>
   <div class="hbtns">
     <button id="install" class="hb" type="button" hidden>INSTALL</button>
+    <button id="fs" class="hb" type="button" hidden aria-label="Full screen">FULL</button>
     <button id="snd" class="hb" type="button" aria-pressed="true"><span class="lg">SOUND </span>ON</button>
     <button id="menu" class="hb" type="button" aria-label="Open the inventory menu">MENU</button>
   </div>
@@ -82,8 +95,14 @@ canvas{display:block;max-width:100%;max-height:100%;image-rendering:pixelated;bo
     <button id="act" class="btn" type="button" aria-label="Swing paddle, talk or read">A<small>PADDLE</small></button>
   </div>
 </div>
-<script src="world.js"></script>
-<script src="game.js"></script>
-<script src="music.js"></script>
+<script src="js/world.js"></script>
+<script src="js/core.js"></script>
+<script src="js/people.js"></script>
+<script src="js/play.js"></script>
+<script src="js/art.js"></script>
+<script src="js/draw.js"></script>
+<script src="js/systems.js"></script>
+<script src="js/main.js"></script>
+<script src="js/music.js"></script>
 </body>
 </html>

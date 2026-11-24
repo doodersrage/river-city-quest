@@ -1,6 +1,6 @@
 /* River City Quest offline cache. Bump VERSION whenever any game file changes. */
-const VERSION='rcq-v10';
-const FILES=['./','index.html','world.js','game.js','music.js','manifest.webmanifest','icon-192.png','icon-512.png','icon-180.png'];
+const VERSION='rcq-v11';
+const FILES=['./','index.html','js/world.js','js/core.js','js/people.js','js/play.js','js/art.js','js/draw.js','js/systems.js','js/main.js','js/music.js','manifest.webmanifest','icon-192.png','icon-512.png','icon-180.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(VERSION).then(c=>c.addAll(FILES)).then(()=>self.skipWaiting()));});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==VERSION).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});
 self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;
