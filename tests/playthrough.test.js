@@ -10,18 +10,21 @@ function run(n){for(let i=0;i<n;i++){G.update();closeDlg();if(G.mode!='play')ret
 function at(tx,ty,dir){Object.assign(G.p,{x:tx*T+8,y:ty*T+8,dir:dir==null?G.p.dir:dir,atk:0,spin:0,charging:false,kt:0,dash:0});G.updCam();}
 function hold(k,n){G.keys[k]=1;for(let i=0;i<n;i++){G.update();closeDlg();}G.keys[k]=0;}
 function safe(){G.p.hp=G.p.max;G.p.inv=999;}
+function settleIn(id){G.load(id);G.dlg=null;const c=G.cur,cx=c.w>>1,cy=c.h>>1;let best=null;
+  for(let y=2;y<c.h-2;y++)for(let x=2;x<c.w-2;x++){const t=c.g[y][x];if(G.SOLID.includes(t)||'DE~'.includes(t))continue;const d=Math.abs(x-cx)+Math.abs(y-cy);if(!best||d<best[0])best=[d,x,y];}
+  if(best)at(best[1],best[2]);}
 function cleanEnemies(){for(const e of G.enemies.slice())if(!e.boss){G.kill(e);const i=G.enemies.indexOf(e);if(i>=0)G.enemies.splice(i,1);}run(20);}
 function walkable(x,y){const t=G.cur.g[y]&&G.cur.g[y][x];return t&&!G.SOLID.includes(t);}
 function standBeside(x,y){for(const [d,[dx,dy,dir]] of Object.entries(DIRS)){const sx=x-dx,sy=y-dy;if(walkable(sx,sy)){at(sx,sy,dir);return d;}}return null;}
 function openChests(){for(let y=0;y<G.cur.h;y++)for(let x=0;x<G.cur.w;x++)if(G.cur.g[y][x]=='c'){if(standBeside(x,y)){G.press.a=1;run(3);}}}
 function grabPicks(){for(const k of G.picks.slice()){if(!G.picks.includes(k))continue;G.p.x=k.x;G.p.y=k.y;run(3);}}
-function talkTo(talk){for(const id in SC){const n=(SC[id].npcs||[]).find(q=>q.talk==talk);if(!n)continue;G.load(id);G.dlg=null;cleanEnemies();
+function talkTo(talk){for(const id in SC){const n=(SC[id].npcs||[]).find(q=>q.talk==talk);if(!n)continue;settleIn(id);cleanEnemies();
     n.x=n.tx*T+8;n.y=n.ty*T+8;n.vx=n.vy=0;n.wander=false;const d=standBeside(n.tx,n.ty);if(!d)return false;safe();G.press.a=1;G.update();closeDlg();run(2);return true;}return false;}
 function bombAt(x,y){G.st.eq='powder';G.st.ammo.powder=Math.max(G.st.ammo.powder,3);if(!standBeside(x,y))return false;safe();G.press.b=1;G.update();
   const [fx,fy]=[G.p.x,G.p.y];at(Math.floor(fx/T),Math.floor(fy/T));G.p.x+=0;for(let i=0;i<4;i++){} // step back two tiles so the blast misses us
   const b=G.p.dir;const back=[[0,-1],[1,0],[0,1],[-1,0]][b];for(const s of[2,1]){const bx=Math.floor(fx/T)+back[0]*s,by=Math.floor(fy/T)+back[1]*s;if(walkable(bx,by)){at(bx,by);break;}}
   run(110);return true;}
-function enterDoor(sceneId,to){G.load(sceneId);G.dlg=null;cleanEnemies();const d=G.cur.doors.find(q=>q.to==to);if(!d)return false;
+function enterDoor(sceneId,to){settleIn(sceneId);cleanEnemies();const d=G.cur.doors.find(q=>q.to==to);if(!d)return false;
   if(G.cur.g[d.ty][d.tx]=='%'){bombAt(d.tx,d.ty);}
   at(d.ret[0],d.ret[1],2);safe();G.keys.up=1;for(let i=0;i<80&&G.cur.id==sceneId;i++){G.update();closeDlg();}G.keys.up=0;run(40);return G.cur.id==to;}
 
@@ -51,7 +54,7 @@ function doDungeon(entry){
   while(guard++<60){solveRoom();if(G.cur.bossT){boss=killBoss();if(G.mode!='play')return boss;run(30);grabPicks();break;}
     // try to step into a room we have not seen yet
     let moved=false;
-    for(const id of[...seen]){G.load(id);G.dlg=null;solveRoom();
+    for(const id of[...seen]){settleIn(id);solveRoom();
       for(const d of SC[id].opens){const to=nb(id,d);if(seen.has(to)||!SC[to])continue;const cells=exitCells(d),[cx,cy]=cells[0],t=G.cur.g[cy][cx];
         if(t=='H')continue;
         if(t=='L'&&!(G.st.keys[area]>0))continue;
@@ -84,7 +87,7 @@ talkTo('musician');ok(G.st.trade=='music','musician trades sheet music');
 talkTo('organist');ok(G.st.trade=='rivermap','organist trades a river map');
 talkTo('kayaker');ok(G.st.items.kayak,'kayaker trades the kayak');
 ok(/Forest Hill/.test(G.goal()),'hint: Forest Hill');
-G.load('ow:1,3');cleanEnemies();for(const d of G.cur.dyn)if(d.flag&&d.flag.startsWith('rub:')&&!G.st.f[d.flag]){const [x,y]=d.cells[0];bombAt(x,y);}
+settleIn('ow:1,3');cleanEnemies();for(const d of G.cur.dyn)if(d.flag&&d.flag.startsWith('rub:')&&!G.st.f[d.flag]){const [x,y]=d.cells[0];bombAt(x,y);}
 grabPicks();ok(G.st.got.carkey,'Carillon key found behind the cracked rocks');
 dungeon('ow:0,2','carillon:1,2','Carillon');ok(G.st.got.bronze,'bronze keystone');
 ok(/tunnel/.test(G.goal()),'hint: the tunnel');
@@ -92,8 +95,8 @@ ok(/tunnel/.test(G.goal()),'hint: the tunnel');
 dungeon('ow:1,2','tredegar:0,2','Tredegar Iron Works');ok(G.st.items.hook,'grappling hook');
 G.load('ow:2,1');run(2);
 ok(enterDoor('ow:1,-1','conserv:0,2'),'reach the conservatory through Northside');const cb=doDungeon('conserv:0,2');ok(cb&&G.st.items.can,'beat the Titan Arum with the watering can');leaveDungeon();
-G.load('ow:0,3');cleanEnemies();for(const d of G.cur.dyn)if(d.flag&&d.flag.startsWith('rub:')&&!G.st.f[d.flag]){const [x,y]=d.cells[0];bombAt(x,y);}
-G.st.eq='hook';at(18,7,2);G.press.b=1;run(45);grabPicks();G.load('ow:3,3');cleanEnemies();G.st.eq='hook';at(24,7,2);G.press.b=1;run(45);grabPicks();
+settleIn('ow:0,3');cleanEnemies();for(const d of G.cur.dyn)if(d.flag&&d.flag.startsWith('rub:')&&!G.st.f[d.flag]){const [x,y]=d.cells[0];bombAt(x,y);}
+G.st.eq='hook';at(18,7,2);G.press.b=1;run(45);grabPicks();settleIn('ow:3,3');cleanEnemies();G.st.eq='hook';at(24,7,2);G.press.b=1;run(45);grabPicks();
 talkTo('historian');ok(G.st.f.bateau&&G.st.lure,'bateau rebuilt, golden lure earned');
 // finale
 const coins=G.st.coins;
