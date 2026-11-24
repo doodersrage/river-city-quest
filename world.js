@@ -61,6 +61,7 @@ const AST={
   poe:{wood:true,fl:['#6a4a34','#4e3424','#82603f'],wl:['#8a4a3c','#5e2e24','#a8685a']},
   tunnel:{fl:['#4a4038','#342c26','#5e5248'],wl:['#6a4034','#44261e','#865448']},
   carillon:{fl:['#7a6a5a','#5e5044','#948270'],wl:['#a87a5a','#7a5238','#c89a78']},
+  tredegar:{fl:['#4e484c','#3a3438','#625a5e'],wl:['#7a4a3a','#54301f','#9a6450']},
   cave:{fl:['#5a4e44','#423830','#6e6256'],wl:['#6e5a4a','#4a3a2e','#8a7462']},
   bank:{lit:true,wood:true,fl:['#8a5a34','#6a4224','#a8744a'],wl:['#c8b48c','#8a7a5a','#e4d4b0']},
   byrd:{lit:true,fl:['#7a1c2c','#5a1020','#94303e'],wl:['#8a6a3a','#5e4420','#b08a52']},
@@ -78,7 +79,7 @@ const AST={
   arcade:{lit:true,wood:true,fl:['#7a6a5a','#5e5044','#948270'],wl:['#9a9aa0','#6a6a74','#bcbcc4']},
   studio:{lit:true,fl:['#8a8a90','#6a6a70','#a8a8ae'],wl:['#e8e4dc','#b0aca4','#ffffff']}
 };
-const AREAN={ow:'Richmond',quarry:'Belle Isle Quarry',pyramid:'The Pyramid',poe:'Poe Museum Cellar',tunnel:'Church Hill Tunnel',carillon:'The Carillon'};
+const AREAN={ow:'Richmond',quarry:'Belle Isle Quarry',pyramid:'The Pyramid',poe:'Poe Museum Cellar',tunnel:'Church Hill Tunnel',tredegar:'Tredegar Iron Works',carillon:'The Carillon'};
 const C3=(a,b,c)=>[a,b,c];
 function def(id,o){const [a,c]=id.split(':'),[x,y]=c.split(',').map(Number);
   Object.assign(o,{id,area:a,ax:x,ay:y,seed:seedN++});o.en=o.en||[];o.dyn=o.dyn||[];o.reads=o.reads||{};o.feats=o.feats||[];o.items=o.items||[];SC[id]=o;return o;}
@@ -113,6 +114,7 @@ const NPC={
   crabber:{who:'Crabber',hat:C3('#e8e4dc','#b0aca4','#ffffff'),shirt:C3('#d8692a','#a04414','#f09458'),talk:'chal',chal:'crabs'},
   ranger:{who:'Park Ranger',hat:C3('#6a5a2a','#4a3e18','#9a8a50'),shirt:C3('#4a6a3a','#2e4624','#6a9058'),talk:'ranger'},
   conductor:{who:'Old Conductor',hat:C3('#2e4a8a','#1c2e5a','#4a6ab0'),shirt:C3('#2e4a8a','#1c2e5a','#4a6ab0'),talk:'chal',chal:'trolley'},
+  naturalist:{who:'Naturalist',hat:C3('#6a8a3a','#4a6a24','#8aac5a'),shirt:C3('#c8b48c','#9a8660','#e4d4b0'),talk:'naturalist'},
   painter:{who:'Mural Painter',hat:C3('#3ac2e8','#1a8ab0','#8ae0f8'),shirt:C3('#f08030','#b85a18','#ffb868'),talk:'painter',chal:'murals'}
 };
 const N=k=>Object.assign({},NPC[k]);
@@ -182,16 +184,16 @@ ow(3,1,"Shockoe Bottom",{base:'p',pal:[BRICK2,STONE],rows:[
   lm:[{art:'station',x:19,y:1,w:12,h:6,read:'shockoe'},{art:'market',x:20,y:14,w:10,h:2}]});
 ow(0,2,"Byrd Park & Maymont",{base:'.',pal:[BRICK,CREAM],rows:[
 'T14 .4 T14','T .2 X3 .7 l .4 w11 .2 T','T .2 X3 .11 w4 ? w6 .3 T','T .2 X3 .4 @ .6 w5 ? w5 .3 T','T .2 X3 .12 w4 .*. w4 .2 T','T .2 X3 .11 w2 ? w8 .3 T',
-'T .2 X3 .5 @ .6 w10 ? .2 T','T .2 X D X . M .12 ! w7 .3 T','T .2 S3 .10 i .3 i .10 T','T .9 p22','T .9 p22','T .3 ! .5 p22','T .9 p22','T .5 l .10 l .13 T',
+'T .2 X3 .5 @ .6 w10 ? .2 T','T .2 X D X . M .12 ! w7 .3 T','T .2 S3 .10 i .3 i .4 @ .5 T','T .9 p22','T .9 p22','T .3 ! .5 p22','T .9 p22','T .5 l .10 l .13 T',
 'T .2 X6 .22 T','T .2 X6 .8 M .2 ,8 .3 T','T .2 X6 .9 ! . ,3 w2 ,3 .3 T','T .2 X2 D X3 .3 & .7 ,3 w2 ,3 .3 T','T .8 @ .10 ,8 .3 T','T b3 ! .26 T','T $ b2 .27 T','T32'],
-  npcs:[N('caretaker'),N('fisher'),F('Maymont has bears, you know. Real ones. And a Japanese garden.','The geese here own this park. We just visit.')],
+  npcs:[N('caretaker'),N('fisher'),N('naturalist'),F('Maymont has bears, you know. Real ones. And a Japanese garden.','The geese here own this park. We just visit.')],
   enT:['goose','squirrel','goose','goose'],readsL:['carillon','maymont'],doorsL:[{to:'carillon:1,2',need:'carkey'},{to:'mansion:0,0'}],
   itemsL:[{id:'bib',kind:'bib'}],chestsL:['coins50'],lm:[{art:'carillon',x:3,y:1,w:3,h:7,read:'carillon'},{art:'mansion',x:3,y:14,w:6,h:4,read:'maymont'}]});
 ow(1,2,"Hollywood Cemetery",{base:'.',rows:[
 'T14 .4 T14','T .5 ? .10 ? .13 T','T .2 x .2 x .3 x .8 X5 .7 T','T .18 X5 .7 T','T .3 G .6 @ .7 X5 .7 T','T .18 X2 % X2 .7 T','T s30 T',
 'T .2 x .3 x .3 x .6 ! .4 x .3 x .3 T','T .4 X2 .9 @ .14 T','.5 X2 .25','.15 ! .16','.6 ? .14 ? .10','.26 ? .5','T .2 x .3 x .3 x .6 ! .4 x .3 x .3 T','T s10 ? s19 T',
-'T .2 x . x . x .14 T b3 T .4 T','T .21 T b*b T .4 T','T b3 .18 T5 .4 T','T $ b2 .27 T','w32','w32','w32'],
-  npcs:[N('keeper'),N('watchman')],enT:['ghost','ghost','ghost'],readsL:['irondog'],doorsL:[{to:'pyramid:0,1'}],chestsL:['coins50'],
+'T .2 x . x . x .14 T b3 T B4 T','T .21 T b*b T B D B2 T','T b3 .18 T5 .4 T','T $ b2 .27 T','w32','w32','w32'],
+  npcs:[N('keeper'),N('watchman')],enT:['ghost','ghost','ghost'],readsL:['irondog'],doorsL:[{to:'pyramid:0,1'},{to:'tredegar:0,2'}],chestsL:['coins50'],
   lm:[{art:'pyramid',x:19,y:2,w:5,h:4,read:'pyramid'},{art:'birdcage',x:5,y:8,w:2,h:2,read:'hollywood'}]});
 ow(2,2,"Belle Isle",{base:'.',rows:[
 'w14 =4 w14','w14 =4 w14','w14 =4 w14','w3 .2 ? .23 w3','w3 .5 @ .4 M .3 r7 .5 w3','w3 .14 r2 D r4 .5 w3','w3 .3 T .7 ` .8 ? .5 w3',
@@ -303,6 +305,15 @@ room('carillon',0,1,'Bell Loft',{solve:'switch',feats:[['#',4,3],['#',11,7],['^'
 room('carillon',2,1,'Belfry Ledge',{feats:[['r',3,3],['r',12,7],['r',6,8]],en:[['bat',8,4],['bat',10,6]],chests:[{id:'c3',tx:8,ty:3,item:'piece'}]});
 room('carillon',1,0,'The Great Bell',{bossT:'bell',reward:'bronze',feats:[['W',3,3],['W',12,3],['W',3,7],['W',12,7]],en:[['bell',8,4]]});
 link('carillon','1,2','N','1,1','gate');link('carillon','1,1','W','0,1','open');link('carillon','1,1','E','2,1','bomb');link('carillon','1,1','N','1,0','lock');
+/* dungeon 5: Tredegar Iron Works -> grappling hook, the Iron Foreman */
+room('tredegar',0,2,'Foundry Gate',{entry:true,feats:[['W',3,3],['W',12,3],['M',3,6]],reads:{'3,6':'tredegar'},en:[['rat',6,4],['rat',10,6],['bat',8,3]]});
+room('tredegar',1,2,'Pattern Shop',{solve:'clear',feats:[['_',9,1,6,1],['_',9,2,1,2],['_',14,2,1,2],['_',9,4,6,2],['+',12,2],['+',12,7]],
+  en:[['rat',4,6],['rat',6,8],['bat',3,3],['bat',7,2]],chests:[{id:'t1',tx:4,ty:3,item:'hook',appear:true},{id:'t2',tx:11,ty:2,item:'key'}]});
+room('tredegar',0,1,'Casting Floor',{solve:'clear',feats:[['_',1,4,14,3],['+',7,2],['+',8,8],['W',2,8],['W',13,8]],
+  en:[['bat',4,2],['bat',11,2],['bat',8,5]],chests:[{id:'t3',tx:3,ty:2,item:'coins50'}]});
+room('tredegar',0,0,'Furnace Hall',{bossT:'foreman',feats:[['W',3,3],['W',12,3],['W',3,7],['W',12,7]],en:[['foreman',8,4]]});
+link('tredegar','0,2','E','1,2','open');link('tredegar','0,2','N','0,1','lock');link('tredegar','0,1','N','0,0','gate');
+
 /* finale: the tunnel */
 room('tunnel',0,1,'Church Hill Tunnel',{entry:true,feats:[['k',7,1,2,8],['r',3,2],['r',12,6],['r',4,7],['M',2,5]],reads:{'2,5':'tunnel'},en:[['bat',4,4],['bat',11,4],['bat',10,7]]});
 room('tunnel',0,0,'Engine 231',{bossT:'vampire',feats:[['k',7,3,2,7],['Z',6,1,4,2]],readsT:{Z:'!engine'},en:[['vampire',8,5]]});
