@@ -42,6 +42,7 @@ function give(code){
     case'bug':st.items.bug=1;st.eq='bug';ic=IC.bug;L=['You got the Gold-Bug!','A golden beetle from Poe\'s story. Throw it with B and it flies back with whatever it touches.'];break;
     case'shoes':st.items.shoes=1;st.eq='shoes';ic=IC.shoes;L=['You got the Running Shoes!','Use them with B to dash. Small foes get bowled over.'];break;
     case'hook':st.items.hook=1;st.eq='hook';ic=IC.hook;L=['You got the Grappling Hook!','Fire it with B. Hook an iron post to fly across a gap. There\'s a post across that pit.'];break;
+    case'bike':st.items.bike=1;st.eq='bike';ic=IC.bike;L=['You got a Bicycle!','Hop on with B. It\'s quick on paths and sidewalks.'];break;
     case'can':st.items.can=1;st.eq='can';ic=IC.can;L=['You got the Watering Can!','Use it with B on a dry sprout. Try the one by the sunken bed.'];break;
     case'rod':st.items.rod=1;st.eq='rod';ic=IC.rod;L=['You got a Fishing Rod!','Face open water and cast with B.'];break;
     case'key':st.keys[cur.area]=(st.keys[cur.area]||0)+1;ic=IC.key;L=['You got a small key!','It opens one locked door in this place.'];break;
@@ -87,7 +88,7 @@ const TALK={
     if(st.ammo.balls<10){st.ammo.balls=10;needSave=true;return offer(n,['Running low? Here, take a few.']);}
     if(st.pins.flies){say(['Nice glove work out there. Want to take some swings in the batting cage? Ten pitches.'],sel=>{if(sel==0)startMini('bat');},n.who,['Batter up!','No thanks']);return null;}
     return offer(n,['The Flying Squirrels play over at The Diamond. Best seats in town are out on the grass.']);},
-  racer(n){say(['This is the Libby Hill soapbox derby! Steepest street in Church Hill.','Want to race my car down the hill? Beat '+fmtTime(34*60)+' for gold.'+(st.mini&&st.mini.derby?' Your best: '+fmtTime(st.mini.derby)+'.':'')],sel=>{if(sel==0)startMini('derby');},n.who,['Let\'s race!','Not now']);return null;},
+  racer(n){say(['This is the Libby Hill soapbox derby! Steepest street in Church Hill.','Want to race my car down the hill? Beat '+fmtTime(MINI.derby.gold*60)+' for gold.'+(st.mini&&st.mini.derby?' Your best: '+fmtTime(st.mini.derby)+'.':'')],sel=>{if(sel==0)startMini('derby');},n.who,['Let\'s race!','Not now']);return null;},
   musician(){
     if(st.trade=='melon'){const L=give('music');return['Is that a Carytown watermelon? The band hasn\'t eaten all day! Take this in trade.',...L];}
     if(st.trade=='music'||st.trade=='rivermap'||st.items.kayak)return['That melon hit the spot. Hold A after a swing for a spin attack, by the way.'];
@@ -150,7 +151,18 @@ const BOSSTXT={arum:['The Titan Arum wilts with a sigh you can smell from across
   wraith:['The wraith thins to mist and drifts up through the granite.','The pyramid falls quiet.'],
   raven:['The raven croaks one last word. You can guess which one.','It flaps off through a crack in the brick and is gone.'],
   bell:['The great bell cracks and settles on its beam.','From the top of the tower, the other bells start to ring.']};
+const ING=(k,n)=>()=>{st.ingr=st.ingr||{};st.ingr[k]=(st.ingr[k]||0)+1;return'One '+n+'. You have '+st.ingr[k]+'.';};
 const SHOP=[
+  {name:'Camera',price:25,why:()=>st.items.camera?'SOLD OUT':'',buy(){st.items.camera=1;if(!st.eq)st.eq='camera';return'Snap landmarks to fill your album!';}},
+  {name:'Picnic Basket',price:10,why:()=>st.items.basket?'SOLD OUT':'',buy(){st.items.basket=1;st.food=st.food||{};st.food.cupcake=(st.food.cupcake||0)+1;return'A basket, with a cupcake in it!';}},
+  {name:'Carytown Cupcake',price:4,why:()=>!st.items.basket?'???':'',buy(){st.food=st.food||{};st.food.cupcake=(st.food.cupcake||0)+1;return'In the basket it goes.';}},
+  {name:'Virginia Ham',price:3,why:()=>'',buy:ING('ham','Virginia ham')},
+  {name:'Bag of Flour',price:2,why:()=>'',buy:ING('flour','bag of flour')},
+  {name:'Bag of Sugar',price:2,why:()=>'',buy:ING('sugar','bag of sugar')},
+  {name:'Braided Rug',price:15,why:()=>st.furn&&st.furn.rug?'SOLD OUT':'',buy(){(st.furn=st.furn||{}).rug=1;return'Delivered to your row house in the Fan.';}},
+  {name:'Potted Fern',price:8,why:()=>st.furn&&st.furn.fern?'SOLD OUT':'',buy(){(st.furn=st.furn||{}).fern=1;return'Delivered to your row house in the Fan.';}},
+  {name:'Fish Tank',price:30,why:()=>st.furn&&st.furn.tank?'SOLD OUT':'',buy(){(st.furn=st.furn||{}).tank=1;return'Delivered. Fish you catch will swim in it.';}},
+  {name:'Upright Piano',price:40,why:()=>st.furn&&st.furn.piano?'SOLD OUT':'',buy(){(st.furn=st.furn||{}).piano=1;return'Delivered to your row house in the Fan.';}},
   {name:'Fishing Rod',price:30,why:()=>st.items.rod?'SOLD OUT':'',buy(){st.items.rod=1;if(!st.eq)st.eq='rod';return'A fine rod. Use it on B at the water.';}},
   {name:'Landmark Card Pack',price:20,why:()=>PACK.every(c=>st.cards[c])?'SOLD OUT':'',buy(){const c=PACK.filter(c=>!st.cards[c]),id=c[rnd(c.length)];awardCard(id,true);return'You got the '+CARDM[id].name+' card!';}},
   {name:'Big Satchel',price:60,why:()=>st.f.satchel?'SOLD OUT':'',buy(){st.f.satchel=1;st.cap.balls=Math.max(st.cap.balls,50);st.cap.powder=Math.max(st.cap.powder,16);}},

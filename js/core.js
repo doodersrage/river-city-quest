@@ -104,6 +104,9 @@ IC.hook=mkSpr(["....kkk.....","...kYzYk....","....kzk.....","....kNk.....","....
 IC.rod=mkSpr(["..........kk",".........kNk","........kNk.",".......kNk..","......kNk...",".....kNk.q..","....kuk..q..","...kuk...q..","..kUk...krk.",".kUk....kwk.","kUk......k..",".k.........."]);
 IC.frog=mkSpr(["..kk....kk..",".kwek..kwek.",".kDDkkkkDDk.","kDDDDDDDDDDk","kDTTTTTTTTDk",".kDTTTTTTDk.","kDkkDDDDkkDk","kk..kkkk..kk"],{D:'#2f7a3c',T:'#68b854'});
 IC.can=mkSpr(["............","......kkkk..",".....k....k.","..k.kkkkkk.k",".kNkNIIIINkk","kNk.kNIIIINk","k...kNNNNNNk","....kNNNNNNk","....kNNNNNNk",".....kkkkkk.","............","............"],{N:'#3a8a8a',I:'#7ac8c0'});
+IC.camera=mkSpr(["............","....kkk.....","...kNNNk....",".kkkkkkkkkk.","kNNNNkkNNNNk","kNNNkwwkNNNk","kNNkwqqwkNNk","kNNkwqqwkNNk","kNNNkwwkNNNk","kNNNNkkNNNNk",".kkkkkkkkkk.","............"]);
+IC.basket=mkSpr(["....kkkk....","...k....k...","..k......k..",".kkkkkkkkkk.","kuuUuuUuuUuk","kUuuUuuUuuUk","kuuUuuUuuUuk",".kUuuUuuUuk.",".kuuUuuUuuk.","..kkkkkkkk..","............","............"]);
+IC.bike=mkSpr(["............","........kkk.","...kkk..krk.","....kr.kk...",".kkk.krrk.kk","kNNNkkrkkNNk","kN.krrrk.kNk","kN..k.k..kNk","kNNNk..kNNNk",".kkk....kkk.","............","............"]);
 IC.oar=mkSpr(["..........kk",".........kuk","........kuk.",".......kuk..","......kuk...",".....kuk....","....kuk.....","..kkuk......",".kAAk.......","kAAAk.......","kAAk........",".kk........."]);
 IC.lure=mkSpr(["....kk......","...kYk......","...kk.......","..kkYYk.....",".kYLYYzk....","kYLYYYzzk...","kYYYzzzk....",".kzzzzk.....","..kkkk.k....","......kk.k..",".......kkk..","............"]);
 IC.card=mkSpr(["..kkkkkkkk..","..kYYYYYYk..","..kYqqqqYk..","..kYqiiqYk..","..kYqiiqYk..","..kYqqqqYk..","..kYYYYYYk..","..kYkkkkYk..","..kYYYYYYk..","..kkkkkkkk..","............","............"]);
@@ -117,6 +120,9 @@ const ITEMS=[
   {id:'hook',name:'Grappling Hook',ic:IC.hook,desc:'Fires a chain ahead. Hook an iron post to fly over a gap. It yanks armor loose, too.'},
   {id:'rod',name:'Fishing Rod',ic:IC.rod,desc:'Cast into water with B. Press A when it bites, then tap A to reel. Mind the tension!'},
   {id:'can',name:'Watering Can',ic:IC.can,desc:'Water a sprout and it grows like crazy, even across a gap. Some big plants like it too.'},
+  {id:'camera',name:'Camera',ic:IC.camera,desc:'Snap a photo of a landmark to add it to your album. Weather and time of day show in the shot.'},
+  {id:'basket',name:'Picnic Basket',ic:IC.basket,desc:'Eat food you bought or cooked. Cook at the stove in your row house in the Fan.'},
+  {id:'bike',name:'Bicycle',ic:IC.bike,desc:'Hop on or off with B. Fast on paths and sidewalks. You can\'t swing while riding.'},
   {id:'bottle',name:'Ginger Beer',ic:IC.bottle,desc:'Drink it to refill every heart. The brewer in Scott\'s Addition refills it for free.'}
 ];
 
@@ -193,6 +199,7 @@ function load(id){
   if(!done)for(const [t,tx,ty] of cur.en)enemies.push(mk(t,tx*TS+8,ty*TS+8));
   if(cur.ow&&SECRETS[id]&&!st.got['sec:'+id]){const [sx,sy]=SECRETS[id];picks.push({x:sx*TS+8,y:sy*TS+8,kind:'secret',id:'sec:'+id,life:1e9});}
   if(cur.ow)seasonOnLoad();
+  if(!cur.ow)st.riding=false;spawnTomatoes();fridayOnLoad();dogReset();
   if(cur.ow&&dark()>.6)for(let i=0,n=0;i<60&&n<2;i++){const x=rnd(cur.w)*TS+8,y=rnd(cur.h)*TS+8;if(!blocked(x,y,6,true)&&Math.hypot(x-p.x,y-p.y)>90){const e=mk(n?'ghost':'bat',x,y);e.night=1;enemies.push(e);n++;}}
   for(const it of cur.items||[])if(!st.got[it.id])picks.push({x:it.px||it.tx*TS+8,y:it.py||it.ty*TS+8,kind:it.kind,id:it.id,life:1e9});
   if(cur.bossT&&st.f['boss:'+id]){if(cur.reward&&!st.got[cur.reward])picks.push({x:112,y:80,kind:'keystone',id:cur.reward,life:1e9});
@@ -220,7 +227,7 @@ function updBlocks(){
       else if(cur.g[b.ty][b.tx]=='^')sfx(660,.08,'triangle');}}}
 }
 function burst(x,y,n,cols,sp0,size){for(let i=0;i<n;i++){const a=Math.random()*6.283,v=sp0*(.4+Math.random());parts.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,life:14+rnd(10),max:24,c:cols[rnd(cols.length)],s:size});}}
-function toast(m){toastMsg=m;toastT=150;}
+function toast(m){toastMsg=tr(m);toastT=150;}
 function learn(id){if(!LOREM[id]||st.lore[id])return;st.lore[id]=1;toast('Journal: '+LOREM[id].t);needSave=true;}
 
 /* ---------- save ---------- */
@@ -242,7 +249,7 @@ function tune(seq,type){if(!ac||!musicOn)return;try{let t=ac.currentTime;for(con
 const JING=[[523,.09],[659,.09],[784,.09],[1047,.24]],SECRET=[[784,.07],[740,.07],[622,.07],[440,.07],[415,.07],[659,.07],[831,.07],[1047,.2]],ORGAN=[[392,.22],[523,.22],[659,.22],[784,.44],[659,.22],[784,.6]];
 
 /* ---------- dialog ---------- */
-function say(lines,cb,head,choices){
+function say(lines,cb,head,choices){lines=lines.map(tr);head=tr(head);if(choices)choices=choices.map(tr);
   const pages=[];
   const cw=OPT.big?21:27,lp=OPT.big?3:4;for(const s of lines){const ls=wrap(s,cw);for(let i=0;i<ls.length;i+=lp)pages.push(ls.slice(i,i+lp));}
   dlg={pages,i:0,n:0,cb:cb||null,head:head||'',choices:choices||null,sel:0};

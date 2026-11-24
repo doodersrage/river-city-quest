@@ -44,8 +44,11 @@ function quests(){const parts=['oar','pole','tiller'].filter(q=>st.got[q]).lengt
   ['Find heart pieces',st.pieces+'/8',st.pieces>=8],
   ['Find hidden secrets',nsec+'/'+Object.keys(SECRETS).length,nsec>=Object.keys(SECRETS).length],
   ['Collect landmark cards',nCards()+'/'+CARDS.length,nCards()>=CARDS.length],
-  ['Mini-game medals',['slugger','wizard','derby'].filter(k=>miniMedal(k)).length+'/3',['slugger','wizard','derby'].every(k=>miniMedal(k))]];}
-function miniMedal(k){return k=='slugger'?!!st.f.slugger:k=='wizard'?(st.mini&&st.mini.pin||0)>=8000:!!st.f.derbyGold;}
+  ['Adopt a dog',st.dog?st.dog.name:'',!!st.dog],
+  ['Fill the photo album',(st.photos?Object.keys(st.photos).length:0)+'/'+PHOTOS.length,!!(st.photos&&Object.keys(st.photos).length>=PHOTOS.length)],
+  ['First Friday paintings',['p1','p2','p3'].filter(k=>st.got['paint:'+k]).length+'/3',!!st.f.gallery],
+  ['Mini-game medals',['slugger','wizard','derby','trail'].filter(k=>miniMedal(k)).length+'/4',['slugger','wizard','derby','trail'].every(k=>miniMedal(k))]];}
+function miniMedal(k){return k=='trail'?!!st.f.trailGold:k=='slugger'?!!st.f.slugger:k=='wizard'?(st.mini&&st.mini.pin||0)>=8000:!!st.f.derbyGold;}
 
 /* ---------- hidden secrets: one stash per neighborhood ---------- */
 const SECRETS={};
@@ -83,7 +86,7 @@ function drawSeasonWorld(){
   for(const r of runners){r.x+=r.v;if(r.x>MW()+20)r.x=-20;const f=(frame>>3)&1;g.drawImage(r.spr.side.r.c,Math.round(r.x)-8,Math.round(r.y)-12-f);}
   if(ev.includes('folk')&&(curId=='ow:2,2'||curId=='ow:1,2')&&frame%40==0)parts.push({x:cam.x+20+Math.random()*(W-40),y:cam.y+20,vx:(Math.random()-.5)*.3,vy:.25,life:90,max:90,c:['#f8e060','#ffffff','#f890a0'][rnd(3)],s:2});
 }
-function drawLights(){if(!events().includes('lights')||!(curId=='ow:1,1'||curId=='ow:0,1')||dark()<.3)return[];const out=[];
+function drawLights(){const ff=typeof firstFriday=='function'&&firstFriday()&&(curId=='ow:1,0'||curId=='ow:2,0');if(!ff&&(!events().includes('lights')||!(curId=='ow:1,1'||curId=='ow:0,1')||dark()<.3))return[];const out=[];
   const x0=Math.max(0,Math.floor(cam.x/TS)),y0=Math.max(0,Math.floor(cam.y/TS)),x1=Math.min(cur.w-1,x0+17),y1=Math.min(cur.h-1,y0+12),C=['#e83048','#3ac2e8','#f8e060','#58c868'];
   g.save();g.translate(-cam.x,-cam.y);
   for(let ty=y0;ty<=y1;ty++)for(let tx=x0;tx<=x1;tx++){if(cur.g[ty][tx]!='B'||(cur.g[ty+1]&&cur.g[ty+1][tx]=='B'))continue;for(let i=0;i<4;i++){const x=tx*TS+2+i*4,y=ty*TS+1+(i&1),c=C[(i+tx+(frame>>5))%4];R(x,y,2,2,c);if(i%2==0)out.push([x+1,y+1]);}}

@@ -229,7 +229,8 @@ function folkContext(){
   if(st.wx=='fog'&&st.wxk>.5)o.push('This fog is thick. Stay off the river.');
   return o.length?o[rnd(o.length)]:null;
 }
-function goal(){
+function goal(){return tr(goalEn());}
+function goalEn(){
   if(!st.items.lantern)return'Talk to the archivist beside the Capitol.';
   if(!st.got.granite)return'Cross the footbridge south of Capitol Square to the Belle Isle quarry.';
   if(!st.got.iron)return'Blast the rubble off the pyramid door in Hollywood Cemetery.';
@@ -266,7 +267,12 @@ const ACH=[
   ['secret','Secret Keeper','Find every hidden stash',()=>nSecrets()>=Object.keys(SECRETS).length],
   ['slugger','Slugger','Hit 3 homers in one round',()=>st.f.slugger],
   ['wizard','Pinball Wizard','Score 8,000 at pinball',()=>(st.mini&&st.mini.pin||0)>=8000],
-  ['derbyw','Derby Champ','Win gold in the derby',()=>st.f.derbyGold]];
+  ['derbyw','Derby Champ','Win gold in the derby',()=>st.f.derbyGold],
+  ['dog','Good Dog','Adopt a dog from the shelter',()=>!!st.dog],
+  ['shutter','Shutterbug','Photograph every landmark',()=>st.photos&&Object.keys(st.photos).length>=PHOTOS.length],
+  ['chef','Home Cook','Cook all three recipes',()=>st.f.cooked&&Object.keys(st.f.cooked).length>=3],
+  ['trailw','Trail Blazer','Win gold on the Capital Trail',()=>st.f.trailGold],
+  ['gallery','Art Walk','Find the curator\'s paintings',()=>st.f.gallery]];
 function checkAch(){st.ach=st.ach||{};for(const [id,name,,ok] of ACH)if(!st.ach[id]&&ok()){st.ach[id]=1;needSave=true;toast('Award: '+name+'!');tune([[784,.08],[988,.08],[1319,.16]],'triangle');return;}}
 
 /* ---------- New Game+ and boss rush ---------- */
@@ -308,7 +314,7 @@ const PANELS=[
     const s=HERO.down[(t>>4)&1].r.c;g.drawImage(s,Math.round(128-s.width*1.5),82,s.width*3,s.height*3);drawFog(.12);},txt:()=>(st.name||'RORY')+' grabbed an old kayak paddle and headed for Capitol Square.'}];
 function introUpdate(){intro.t++;if(press.menu){intro=null;mode='play';return;}if(press.a&&intro.t>20){intro.i++;intro.t=0;sfx(660,.04);if(intro.i>=PANELS.length){intro=null;mode='play';}}}
 function drawIntro(){const P=PANELS[intro.i];P.draw(intro.t);R(8,FH-50,W-16,44,'rgba(8,10,24,.88)');R(8,FH-50,W-16,1,'#f2c14e');
-  const ls=wrap(P.txt(),30),n=Math.floor(intro.t*1.2);let left=n;ls.forEach((l,i)=>{const sh=l.slice(0,Math.max(0,left));left-=l.length;if(sh)text(sh,16,FH-44+i*11,'#ffffff',8,'left','#080c28');});
+  const ls=wrap(tr(P.txt()),30),n=Math.floor(intro.t*1.2);let left=n;ls.forEach((l,i)=>{const sh=l.slice(0,Math.max(0,left));left-=l.length;if(sh)text(sh,16,FH-44+i*11,'#ffffff',8,'left','#080c28');});
   text((intro.i+1)+'/'+PANELS.length+'  A: next  MENU: skip',W-14,FH-12,'#7a84b6',6,'right');}
 const CREDITS=()=>['RIVER CITY QUEST','','Starring '+(st.name||'RORY'),'','Made by doodersrage','with Claude','','Set in Richmond, Virginia','','The real places are worth a visit.','Learn more from:','','Library of Virginia','The Valentine','Virginia Museum of History & Culture','James River Park System','Maymont','Lewis Ginter Botanical Garden','The Poe Museum','American Civil War Museum','Richmond National Battlefield Park','Virginia Museum of Fine Arts','','','Thanks for playing!'];
 function creditsUpdate(){credits.y+=press.a||keys.a?2:.35;const end=CREDITS().length*14+FH;if(press.menu||credits.y>end){credits=null;mode='title';titleInit();}}

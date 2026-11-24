@@ -44,7 +44,7 @@ function moveE(e,dx,dy){
 const front=d=>[p.x+DX[p.dir]*d,p.y+DY[p.dir]*d];
 function hurt(d,sx,sy){
   if(p.inv>0||p.dash>0||p.hp<=0)return;
-  if(st.ng)d++;buzz(40);p.hp-=d;p.inv=50;hurtT=OPT.calm?0:12;hitstop=4;const dx=p.x-sx,dy=p.y-sy,l=Math.hypot(dx,dy)||1;p.kx=dx/l*2.5;p.ky=dy/l*2.5;p.kt=8;p.atk=0;p.charging=false;p.spin=0;sfx(140,.18,'sawtooth');
+  if(st.ng)d++;if(warm>0)d=Math.max(1,Math.ceil(d/2));if(st.riding){st.riding=false;}buzz(40);p.hp-=d;p.inv=50;hurtT=OPT.calm?0:12;hitstop=4;const dx=p.x-sx,dy=p.y-sy,l=Math.hypot(dx,dy)||1;p.kx=dx/l*2.5;p.ky=dy/l*2.5;p.kt=8;p.atk=0;p.charging=false;p.spin=0;sfx(140,.18,'sawtooth');
   burst(p.x,p.y-4,6,['#e83048','#ffffff'],1.6,2);
   if(p.hp<=0&&st.rush){p.hp=0;const n=st.rush.i;st.rush.over=1;say(['The fog takes you.','Boss rush over: you beat '+n+' of '+RUSH.length+'.'],()=>{mode='title';titleInit();});return;}
   if(p.hp<=0){p.hp=0;bug=null;
@@ -161,6 +161,8 @@ function collect(k){
     case'part':{st.got[k.id]=1;p.hold={ic:IC.oar,t:90};tune(JING);needSave=true;const n=['oar','pole','tiller'].filter(q=>st.got[q]).length;
       say(['You found the bateau '+k.id+'! ('+n+' of 3)',n<3?'The river historian at Ancarrow\'s Landing will want it.':'That\'s every part! Take them to the historian at Ancarrow\'s Landing.'],null,'Bateau Part');break;}
     case'frog':st.frogs++;sfx(1400,.05,'triangle');if(typeof splashSfx=='function')splashSfx(.4);burst(k.x,k.y,5,['#68b854','#ffffff'],1.2,1);toast(st.frogs>=5&&!st.f.frogsDone?'Five frogs! Take them to the naturalist in Byrd Park.':'Caught a frog! ('+Math.min(st.frogs,5)+'/5)');needSave=true;break;
+    case'tomato':st.ingr=st.ingr||{};st.ingr.tomato=(st.ingr.tomato||0)+1;if(k.day)st.f[k.day]=1;sfx(1000,.05,'triangle');toast('A ripe Hanover tomato! ('+st.ingr.tomato+')');needSave=true;break;
+    case'painting':{st.got[k.id]=1;const n=['p1','p2','p3'].filter(q=>st.got['paint:'+q]).length;tune(JING);toast('A lost painting! ('+n+'/3) Bring them to the curator.');needSave=true;break;}
     case'secret':st.got[k.id]=1;st.coins=Math.min(999,st.coins+25);tune([[1047,.06],[1319,.06],[1568,.12]],'triangle');burst(k.x,k.y,10,['#fff2a8','#ffffff','#f2c14e'],1.6,2);toast('A hidden stash! 25 coins. ('+nSecrets()+'/'+Object.keys(SECRETS).length+' secrets)');needSave=true;break;
     case'coin':st.coins=Math.min(999,st.coins+1);sfx(1200,.05);burst(k.x,k.y,3,['#fff2a8'],1,1);break;
     case'heart':p.hp=Math.min(p.max,p.hp+2);sfx(800,.1,'triangle');break;
@@ -179,6 +181,7 @@ function collect(k){
 /* ---------- actions ---------- */
 function interact(){
   const [fx,fy]=front(14);
+  if(homeInteract())return true;
   let n=npcAt(fx,fy);
   if(!n&&tileAt(fx,fy)=='V'){const [gx,gy]=front(30);n=npcAt(gx,gy);}
   if(n){sfx(700,.03);n.d=(p.dir+2)%4;n.look=150;n.vx=n.vy=0;n.t=Math.max(n.t||0,90);const r=TALK[n.talk](n);if(r)say(r,null,n.who);return true;}
@@ -220,6 +223,9 @@ function useItem(){
       if(bombs.length>=2)break;st.ammo.powder--;bombs.push({x:p.x+DX[p.dir]*12,y:p.y+DY[p.dir]*12,t:80});sfx(300,.05);break;
     case'bug':if(bug)break;bug={x:p.x,y:p.y-4,vx:DX[p.dir]*4,vy:DY[p.dir]*4,t:0,ret:false,carry:[],hit:new Set()};sfx(1400,.05);break;
     case'hook':if(hook)break;hook={x:p.x,y:p.y-4,dx:DX[p.dir],dy:DY[p.dir],d:0,st:'out',carry:[]};sfx(900,.06,'square',.03);break;
+    case'camera':snapPhoto();break;
+    case'basket':eatMenu();break;
+    case'bike':if(!cur.ow){toast('Save the bike for outdoors.');break;}st.riding=!st.riding;sfx(st.riding?900:500,.06,'triangle',.03);toast(st.riding?'You hop on the bike.':'You hop off the bike.');break;
     case'can':{const [fx,fy]=front(14),t=tileAt(fx,fy),tx=Math.floor(fx/TS),ty=Math.floor(fy/TS);
       for(let i=0;i<6;i++)parts.push({x:fx,y:fy-4,vx:(Math.random()-.5)*1.4,vy:Math.random()*1.2,life:14,max:14,c:i&1?'#7ac8f0':'#d8f4ff',s:2});if(typeof splashSfx=='function')splashSfx(.3);
       if(t=='z'){st.f['grow:'+curId+':'+tx+','+ty]=1;refresh();tune(SECRET);toast('The sprout drinks it up and grows!');burst(tx*TS+8,ty*TS+8,12,['#58a848','#84cc68','#f08098'],1.8,2);needSave=true;break;}
@@ -303,12 +309,12 @@ function play(){
       if(!p.charging){if(dx&&!dy)p.dir=dx>0?3:1;else if(dy&&!dx)p.dir=dy>0?0:2;
         else if(!((p.dir==3&&dx>0)||(p.dir==1&&dx<0)||(p.dir==0&&dy>0)||(p.dir==2&&dy<0)))p.dir=dx>0?3:1;}
       if(frame%14==0)footstep();
-      const sp0=p.charging?.8:onRiver()?1.05:1.3,l=Math.hypot(dx,dy),ox=p.x,oy=p.y;moveP(dx/l*sp0,dy/l*sp0);p.moving=true;
+      const sp0=(st.riding?bikeSpeed():p.charging?.8:onRiver()?1.05:1.3)*(zoom>0?1.25:1),l=Math.hypot(dx,dy),ox=p.x,oy=p.y;moveP(dx/l*sp0,dy/l*sp0);p.moving=true;
       const [fx,fy]=front(8),ft=tileAt(fx,fy);if(ft=='L')tryUnlock(Math.floor(fx/TS),Math.floor(fy/TS),false);
       if(blocks.length&&(!dx||!dy)&&ox==p.x&&oy==p.y)tryPush();else push.n=0;
       if(ft=='~'&&!st.items.kayak&&toastT<=0)toast('Whitewater. You\'d need a boat.');
     }else{p.moving=false;push.n=0;}
-    if(press.a){if(!interact()){p.atk=14;p.charging=false;sfx(420,.05);}}
+    if(press.a){if(!interact()){if(st.riding){st.riding=false;toast('You hop off the bike.');}else{p.atk=14;p.charging=false;sfx(420,.05);}}}
     else if(press.b)useItem();
   }
   if(dlg||shop||menu)return;
@@ -321,7 +327,7 @@ function play(){
     reflectNear(hx,hy,11);
     if(p.atk==10)cutAt(hx,hy);
   }
-  updBlocks();updLife();
+  updBlocks();updLife();dogTick();if(warm>0)warm--;if(zoom>0)zoom--;
   if(chal&&chal.t!=null&&--chal.t<=0){chalFail();return;}
   for(const e of enemies.slice())updEnemy(e);
   if(dlg||mode!='play')return;
@@ -389,12 +395,15 @@ function menuUpdate(){
   const m=menu;
   if(press.menu){menu=null;sfx(600,.05);return;}
   if(m.rd){if(press.a){m.rd.pg++;sfx(700,.03);if(m.rd.pg>=m.rd.pages.length)m.rd=null;}else if(press.b)m.rd=null;return;}
-  if(press.b){m.tab=(m.tab+1)%7;sfx(760,.04);return;}
+  if(m.big!=null){if(press.a)sharePhoto(PHOTOS[m.big]);if(press.a||press.b)m.big=null;return;}
+  if(press.b){m.tab=(m.tab+1)%8;sfx(760,.04);return;}
   if(m.tab==0){
     const NI=ITEMS.length;if(nav('left')){m.cur=(m.cur+NI-1)%NI;sfx(600,.02);}
     if(nav('right')){m.cur=(m.cur+1)%NI;sfx(600,.02);}
-    if(nav('up')||nav('down')){m.cur=m.cur<5?Math.min(NI-1,m.cur+5):m.cur-5;sfx(600,.02);}
+    if(nav('up')||nav('down')){m.cur=m.cur<6?Math.min(NI-1,m.cur+6):m.cur-6;sfx(600,.02);}
     if(press.a){const it=ITEMS[m.cur];if(st.items[it.id]){st.eq=it.id;sfx(990,.08,'triangle');needSave=true;}else sfx(150,.06);}
+  }else if(m.tab==2){
+    const NQ=quests().length;m.qs=m.qs||0;if(nav('down'))m.qs=Math.min(Math.max(0,NQ-13),m.qs+1);if(nav('up'))m.qs=Math.max(0,m.qs-1);
   }else if(m.tab==3){
     const N=LORE.length;
     if(nav('up'))m.jc=(m.jc+N-1)%N;if(nav('down'))m.jc=(m.jc+1)%N;
@@ -404,16 +413,19 @@ function menuUpdate(){
   }else if(m.tab==4){
     m.cc=m.cc||0;const N=CARDS.length;
     if(nav('left'))m.cc=(m.cc+N-1)%N;if(nav('right'))m.cc=(m.cc+1)%N;if(nav('up'))m.cc=(m.cc+N-4)%N;if(nav('down'))m.cc=(m.cc+4)%N;
-    if(press.a){const c=CARDS[m.cc];if(st.cards[c.id]){const ls=wrap(c.fact,28);m.rd={t:c.name,pages:[ls],pg:0};sfx(700,.03);}else sfx(150,.06);}
+    if(press.a){const c=CARDS[m.cc];if(st.cards[c.id]){const ls=wrap(tr(c.fact),28);m.rd={t:c.name,pages:[ls],pg:0};sfx(700,.03);}else sfx(150,.06);}
   }else if(m.tab==5){
+    m.pc=m.pc||0;const N=PHOTOS.length;if(nav('left'))m.pc=(m.pc+N-1)%N;if(nav('right'))m.pc=(m.pc+1)%N;if(nav('up'))m.pc=(m.pc+N-5)%N;if(nav('down'))m.pc=(m.pc+5)%N;
+    if(press.a&&st.photos&&st.photos[PHOTOS[m.pc].art]){m.big=m.pc;sfx(700,.03);}
+  }else if(m.tab==6){
     m.ac=m.ac||0;const N=ACH.length,H=Math.ceil(N/2);
     if(nav('up'))m.ac=(m.ac+N-1)%N;if(nav('down'))m.ac=(m.ac+1)%N;if(nav('left')||nav('right'))m.ac=m.ac<H?Math.min(N-1,m.ac+H):m.ac-H;
-  }else if(m.tab==6&&cur.ow){
+  }else if(m.tab==7&&cur.ow){
     if(!m.mc||!SC[m.mc])m.mc=curId;const s0=SC[m.mc];
     for(const [d,dx,dy] of [['left',-1,0],['right',1,0],['up',0,-1],['down',0,1]])if(nav(d)){for(let k=1;k<5;k++){const id='ow:'+(s0.ax+dx*k)+','+(s0.ay+dy*k);if(SHORT[id]&&SC[id]){m.mc=id;sfx(600,.02);break;}}break;}
     if(press.a){if(m.mc==curId)sfx(150,.06);else if(!st.vis[m.mc]){toast('You haven\'t been there yet.');sfx(150,.06);}else busTo(m.mc);}
   }else{
-    if(nav('left'))m.tab=(m.tab+6)%7;else if(nav('right'))m.tab=(m.tab+1)%7;
+    if(nav('left'))m.tab=(m.tab+7)%8;else if(nav('right'))m.tab=(m.tab+1)%8;
   }
 }
 function shopUpdate(){
@@ -431,7 +443,7 @@ function titleOpts(){
   if(tl.lv==0)return tl.saves.map((d,i)=>'SLOT '+(i+1)+'  '+(d?(d.st.name?d.st.name+' ':'')+(d.max/2)+'H '+fmtTime(d.st.time||0):'- EMPTY -')).concat(['IMPORT SAVE CODE','OPTIONS']);
   if(tl.lv==1)return saveData&&saveData.st.f.won?['CONTINUE','NEW GAME+','BOSS RUSH','COPY SAVE CODE','NEW GAME','BACK']:['CONTINUE','COPY SAVE CODE','NEW GAME','BACK'];
   if(tl.lv==2)return['YES, ERASE IT','NO'];
-  if(tl.lv==3)return['SOUND: '+(musicOn?'ON':'OFF'),'VIBRATION: '+(OPT.haptic===false?'OFF':'ON'),'TIMER: '+(OPT.timer?'ON':'OFF'),'TEXT: '+(OPT.big?'BIG':'NORMAL'),'COLOR ASSIST: '+(OPT.assist?'ON':'OFF'),'CALM MODE: '+(OPT.calm?'ON':'OFF'),'BUTTONS: '+{S:'SMALL',M:'MEDIUM',L:'LARGE'}[OPT.bs],'CONTROLS','BACK'];
+  if(tl.lv==3)return['SOUND: '+(musicOn?'ON':'OFF'),'VIBRATION: '+(OPT.haptic===false?'OFF':'ON'),'TIMER: '+(OPT.timer?'ON':'OFF'),'TEXT: '+(OPT.big?'BIG':'NORMAL'),'COLOR ASSIST: '+(OPT.assist?'ON':'OFF'),'CALM MODE: '+(OPT.calm?'ON':'OFF'),'BUTTONS: '+{S:'SMALL',M:'MEDIUM',L:'LARGE'}[OPT.bs],OPT.lang=='es'?'IDIOMA: ESPAÑOL':'LANGUAGE: ENGLISH','CONTROLS','BACK'];
   return ACTS.map(a=>ACTN[a]+'  '+bindName(a)).concat(['RESET KEYS','BACK']);
 }
 function titleUpdate(){
@@ -439,7 +451,7 @@ function titleUpdate(){
   const o=titleOpts(),n=o.length;
   if(nav('up'))titleSel=(titleSel+n-1)%n;if(nav('down'))titleSel=(titleSel+1)%n;
   const go=(lv,sel)=>{tl.lv=lv;titleSel=sel||0;sfx(760,.05);};
-  if(press.b){if(tl.lv==1||tl.lv==3)go(0,tl.lv==3?4:saveSlot-1);else if(tl.lv==2)go(1,0);else if(tl.lv==4)go(3,7);return;}
+  if(press.b){if(tl.lv==1||tl.lv==3)go(0,tl.lv==3?4:saveSlot-1);else if(tl.lv==2)go(1,0);else if(tl.lv==4)go(3,8);return;}
   if(!(press.a||press.menu))return;
   const sel=titleSel;
   if(tl.lv==0){if(sel==4){go(3);return;}if(sel==3){importSave();return;}saveSlot=sel+1;saveData=tl.saves[sel];if(saveData)go(1);else{sfx(660,.15,'triangle');startNew();}}
@@ -450,6 +462,7 @@ function titleUpdate(){
   else if(tl.lv==3){if(sel==0)setSound(!musicOn);
     else if(sel<7){if(sel==1){OPT.haptic=OPT.haptic===false;if(OPT.haptic)buzz(40);}else if(sel==2)OPT.timer=!OPT.timer;else if(sel==3)OPT.big=!OPT.big;else if(sel==4)OPT.assist=!OPT.assist;else if(sel==5)OPT.calm=!OPT.calm;else OPT.bs={S:'M',M:'L',L:'S'}[OPT.bs];
       try{localStorage.setItem('rcq-timer',OPT.timer?'1':'0');}catch(e){}saveOpt();sfx(880,.05);}
-    else if(sel==7)go(4);else go(0,4);}
-  else{if(sel<ACTS.length){capture=ACTS[sel];sfx(990,.05);}else if(sel==ACTS.length){CUST={};try{localStorage.removeItem('rcq-keys');}catch(e){}sfx(880,.05);}else go(3,7);}
+    else if(sel==7){OPT.lang=OPT.lang=='es'?'en':'es';saveOpt();sfx(880,.05);}
+    else if(sel==8)go(4);else go(0,4);}
+  else{if(sel<ACTS.length){capture=ACTS[sel];sfx(990,.05);}else if(sel==ACTS.length){CUST={};try{localStorage.removeItem('rcq-keys');}catch(e){}sfx(880,.05);}else go(3,8);}
 }

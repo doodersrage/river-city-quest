@@ -5,17 +5,18 @@ let mini=null;
 const MINI={
   bat:{name:'Batting Practice',award:'slugger'},
   pin:{name:'Stone House Pinball',award:'wizard'},
-  derby:{name:'Libby Hill Soapbox Derby',award:'derby'}};
+  derby:{name:'Libby Hill Soapbox Derby',award:'derby',gold:15.5,silver:19},
+  trail:{name:'Capital Trail Time Trial',award:'trail',gold:21,silver:26}};
 function startMini(kind){mini={kind,t:0,done:false};mode='mini';sfx(880,.08,'triangle');
   if(kind=='bat')Object.assign(mini,{n:0,hits:0,hr:0,ball:null,swing:0,msg:'Press A to swing',wait:60,log:[]});
   if(kind=='pin')Object.assign(mini,{balls:3,score:0,ball:null,fl:[0,0],flv:[0,0],launch:40,bumps:[[92,60,9],[164,60,9],[128,92,10],[60,104,7],[196,104,7]],lit:[0,0,0,0,0],msg:'',still:0});
-  if(kind=='derby'){const obs=[];for(let y=260;y<3000;y+=90+rnd(70)){const k=rnd(4);obs.push({x:76+rnd(100),y,k:['hay','cone','puddle','hay'][k],hit:false});}
-    Object.assign(mini,{x:128,v:0,y:0,obs,time:0,bump:0,len:3100,msg:'Steer with left and right'});}}
+  if(kind=='derby'||kind=='trail'){const tr=kind=='trail',L=tr?4200:3100,obs=[];for(let y=260;y<L-100;y+=(tr?80:90)+rnd(70)){const k=rnd(4);obs.push({x:76+rnd(100),y,k:tr?['goose','jogger','puddle','goose'][k]:['hay','cone','puddle','hay'][k],hit:false});}
+    Object.assign(mini,{x:128,v:0,y:0,obs,time:0,bump:0,len:L,msg:'Steer with left and right'});}}
 function endMini(lines){const k=mini.kind;mini=null;mode='play';if(lines&&lines.length)say(lines,null,MINI[k].name);needSave=true;}
 function miniUpdate(){const m=mini;m.t++;
   if(press.menu){endMini(['You walk away from the game.']);return;}
   if(m.kind=='bat')batUpdate(m);else if(m.kind=='pin')pinUpdate(m);else derbyUpdate(m);}
-function drawMiniGame(){const m=mini;if(m.kind=='bat')drawBat(m);else if(m.kind=='pin')drawPin(m);else drawDerby(m);
+function drawMiniGame(){const m=mini;if(m.kind=='bat')drawBat(m);else if(m.kind=='pin')drawPin(m);else if(m.kind=='trail')drawTrail(m);else drawDerby(m);
   if(m.msg)text(m.msg,W/2,FH-12,'#ffffff',6,'center','#080c28');}
 function miniBest(k,v,lowerBetter){st.mini=st.mini||{};const b=st.mini[k];if(b==null||(lowerBetter?v<b:v>b)){st.mini[k]=v;return true;}return false;}
 
@@ -94,9 +95,9 @@ function derbyUpdate(m){
   const dx=keys.right-keys.left;m.x=Math.max(64,Math.min(192,m.x+dx*1.8));
   for(const o of m.obs){if(o.hit)continue;const sy=o.y-m.y;if(sy>120&&sy<150&&Math.abs(o.x-m.x)<14){o.hit=true;
     if(o.k=='puddle'){m.v*=.6;sfx(400,.1,'triangle',.03);if(typeof splashSfx=='function')splashSfx(.4);}else{m.bump=40;m.v=1;shake=6;buzz(40);sfx(120,.15,'sawtooth',.05);}}}
-  if(m.y>=m.len){m.done=true;const s=m.time/60,medal=s<34?'gold':s<40?'silver':'bronze',coins={gold:20,silver:10,bronze:5}[medal];st.coins=Math.min(999,st.coins+coins);
-    const nb=miniBest('derby',Math.round(m.time),true);if(medal=='gold'){st.f.derbyGold=1;}
-    endMini(['Finished in '+fmtTime(m.time)+'! That\'s a '+medal+' medal.','The Derby Kid hands over '+coins+' coins.'+(nb?' A new best time!':'')]);}
+  if(m.y>=m.len){m.done=true;const M=MINI[m.kind],s=m.time/60,medal=s<M.gold?'gold':s<M.silver?'silver':'bronze',coins={gold:20,silver:10,bronze:5}[medal];st.coins=Math.min(999,st.coins+coins);
+    const nb=miniBest(m.kind,Math.round(m.time),true);if(medal=='gold')st.f[m.kind=='trail'?'trailGold':'derbyGold']=1;
+    endMini(['Finished in '+fmtTime(m.time)+'! That\'s a '+medal+' medal.',(m.kind=='trail'?'The cyclist':'The Derby Kid')+' hands over '+coins+' coins.'+(nb?' A new best time!':'')]);}
 }
 function drawDerby(m){
   R(0,0,W,FH,'#58a848');const off=Math.floor(m.y)%32;
@@ -112,3 +113,14 @@ function drawDerby(m){
   const pct=Math.min(1,m.y/m.len);R(244,30,6,140,'#1a1423');R(245,31+Math.round(138*(1-pct)),4,Math.round(138*pct),'#f2c14e');
   text(fmtTime(m.time),10,6,'#fff2a8',8,'left','#080c28');text('LIBBY HILL',W-14,6,'#ffffff',8,'right','#080c28');
 }
+function drawTrail(m){
+  R(0,0,W,FH,'#58a848');const off=Math.floor(m.y);
+  R(0,0,52,FH,'#4a6e62');for(let y=-(off%20);y<FH;y+=20){R(6,y,10,1,'#b8d4c0');R(26,y+9,12,1,'#7a9e8a');}R(50,0,6,FH,'#c8b890');
+  for(let y=-(off%48);y<FH;y+=48){blob(212,y,'#2f7a3c','#1f5a30','#143c22');blob(228,y+22,'#2f7a3c','#1f5a30','#143c22');}
+  R(56,0,144,FH,'#5e5a62');R(56,0,3,FH,'#e8e4dc');R(197,0,3,FH,'#e8e4dc');for(let y=-(off%24);y<FH;y+=24)R(127,y,2,12,'#e8e4dc');
+  for(const o of m.obs){const y=Math.round(o.y-m.y);if(y<-20||y>FH+10)continue;const x=Math.round(o.x);
+    if(o.k=='goose')g.drawImage(SPR.goose.r.c,x-8,y-9);else if(o.k=='jogger'){R(x-3,y-8,6,6,'#f2c698');R(x-4,y-2,8,7,'#e83048');R(x-3,y+5,2,4,'#3c3c54');R(x+1,y+5,2,4,'#3c3c54');}
+    else{g.globalAlpha=.7;R(x-12,y-4,24,8,'#2a4a8a');g.globalAlpha=1;}}
+  const cx=Math.round(m.x),cy=138+(m.bump>0&&(m.t>>1)&1?1:0);R(cx-2,cy-6,4,18,'#1a1423');R(cx-1,cy-5,2,16,'#8e909c');R(cx-5,cy+1,10,2,'#e83048');g.drawImage(HERO.up[(m.t>>3)&1].r.c,cx-8,cy-10);
+  const pct=Math.min(1,m.y/m.len);R(244,30,6,140,'#1a1423');R(245,31+Math.round(138*(1-pct)),4,Math.round(138*pct),'#f2c14e');
+  text(fmtTime(m.time),10,6,'#fff2a8',8,'left','#080c28');text('CAPITAL TRAIL',W-14,6,'#ffffff',8,'right','#080c28');}

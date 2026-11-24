@@ -48,7 +48,7 @@ G.press.b=1;at(spot[0],spot[1]+2,2);G.update();ok(!G.fish||G.cur.g[spot[1]+1][sp
 G.st.coins=500;const n0=Object.keys(G.st.cards).length;G.load('shop:0,0');
 for(const n of G.cur.npcs)if(n.talk=='shop'){at(n.tx,n.ty+1,2);n.x=n.tx*T+8;n.y=n.ty*T+8;}
 G.press.a=1;for(let i=0;i<8&&!G.shop;i++){G.update();if(G.dlg)G.press.a=1;}
-if(G.shop){G.shop.cur=1;G.press.a=1;G.update();}ok(Object.keys(G.st.cards).length==n0+1,'card pack adds a new card');
+if(G.shop){G.shop.cur=G.SHOPLIST.findIndex(i=>i.name=='Landmark Card Pack');G.press.a=1;G.update();}ok(Object.keys(G.st.cards).length==n0+1,'card pack adds a new card');
 G.shop=null;
 // menu tabs
 G.load('ow:2,1');G.dlg=null;G.press.menu=1;G.update();const seenT=new Set();for(let i=0;i<5;i++){seenT.add(G.menu.tab);G.press.b=1;G.update();G.draw();}ok(seenT.size==5,'menu has five tabs incl. cards');G.press.menu=1;G.update();

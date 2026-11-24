@@ -22,6 +22,8 @@ A top-down adventure game set in Richmond, Virginia. A cold fog has rolled up of
 | Cast-iron porches in Jackson Ward | A ghost sign in Shockoe Bottom | Broad Street at night |
 | ![The opening](screenshots/opening.png) | ![Soapbox derby](screenshots/soapbox-derby.png) | ![The city map](screenshots/city-map.png) |
 | The opening | The Libby Hill soapbox derby | The city map, with bus travel |
+| ![Your row house](screenshots/row-house.png) | | |
+| Your row house in the Fan, with your dog | | |
 
 On a phone, use your browser's "Add to Home Screen" (or the INSTALL button when it appears) to run it full screen like an app. It works offline after the first visit.
 
@@ -56,6 +58,8 @@ Progress saves automatically in your browser, in one of three save slots. OPTION
 - **Eight heart pieces** hidden behind bushes, across water and in the rapids. Four make a heart.
 - **A journal of 47 Richmond stories** from historical markers, statues and people around town: Patrick Henry at St. John's, Maggie L. Walker's bank, Bojangles' traffic light, Sprague's electric streetcars, the VMFA's Faberge eggs, the Carillon, Forest Hill's old amusement park, Mayo's Bridge, the Church Hill Tunnel collapse and more.
 - **Chiptune music** for the city, the south bank, nighttime, dungeons, the Tredegar foundry, bosses and the title screen, plus rain, wind and cricket sounds.
+- **Everyday Richmond:** adopt a dog from the shelter in Manchester who follows you, sniffs out stashes, chases pests and digs up treats. Take photos of 19 landmarks for your album. Decorate your row house in the Fan with trophies, cards and furniture, cook at its stove and sleep until morning or evening. Ride a bike from Rocketts and race the Capital Trail time trial. Every in-game Friday night is First Friday on Broad Street, with a gallery hunt.
+- **Español:** menus, items, quests, awards, cards, hints, the opening and the shop can be switched to Spanish in OPTIONS. Dialog and journal stories are still in English.
 - **Getting around:** ride the GRTC bus from the map to any neighborhood you've visited. A star on the map marks your next goal, and the QUEST tab tracks every quest.
 - **Mini-games:** batting practice at The Diamond, pinball in the Stone House arcade, and a soapbox derby down Libby Hill.
 - **A hidden stash in every neighborhood.** Look for a glint near trees, rocks and bushes.
@@ -79,6 +83,8 @@ No build step and no dependencies. Open `index.html` in a browser to play locall
 - `js/art.js`: tile art and the hand-drawn landmarks
 - `js/style.js`: Richmond's look: ironwork, ghost signs, murals, house styles, river colors, trees and the skyline
 - `js/draw.js`: the world, HUD, menus, title and ending screens
+- `js/es.js`: Spanish text
+- `js/life.js`: the dog, camera and album, your row house, cooking, the bike and First Friday
 - `js/minigames.js`: batting practice, pinball and the soapbox derby
 - `js/extras.js`: the relighting finale, bus travel, the quest log, secrets, seasons and extra sounds
 - `js/systems.js`: cards, time of day, weather, fishing, the hook, options, story beats, awards, New Game+, boss rush, the opening and sharing
@@ -94,6 +100,7 @@ Run `node tests/run.js` (Node 18 or newer, nothing to install). It loads the gam
 - `sim.test.js`: a random-input run through every scene, plus scripted checks of each challenge
 - `features.test.js` and `more-features.test.js`: the newer systems, from weather and fishing to New Game+ and the boss rush
 - `final-act.test.js`: the finale's boss phases and relighting, bus travel, the quest log, secrets, all three mini-games and the seasons
+- `life.test.js`: the dog, photos, home, cooking, the bike and trail, First Friday and Spanish
 - `names.test.js`: no two scripts declare the same top-level name, since they share one scope
 - `playthrough.test.js`: a bot plays from a new game to the ending, walking through every dungeon door for real and checking the hint at each step
 
