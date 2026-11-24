@@ -40,7 +40,9 @@ function solveRoom(){safe();cleanEnemies();
     for(let k=0;k<20&&(b.tx!=t[0]||b.ty!=t[1]);k++){at(b.tx-dx,b.ty-dy,DIRS[key][2]);safe();hold(key,45);run(10);}}
   run(10);openChests();grabPicks();}
 function killBoss(){const e=G.enemies.find(q=>q.boss);if(!e)return true;let n=0;
-  while(G.enemies.includes(e)&&n++<200&&G.mode=='play'){safe();e.flash=0;e.kt=0;
+  while(G.enemies.includes(e)&&n++<300&&G.mode=='play'){safe();e.flash=0;e.kt=0;
+    for(const q of G.enemies.slice())if(!q.boss){G.kill(q);G.enemies.splice(G.enemies.indexOf(q),1);}
+    if(e.gone){run(4);continue;}
     if(e.type=='turtle'){e.state='stun';e.st=999;G.hitEnemyT(e,1,'paddle');}
     else if(e.type=='wraith'){e.vis=0;G.hitEnemyT(e,1,'refl');e.vis=0;}
     else if(e.type=='bell'){e.state='stun';e.st=999;e.z=0;G.hitEnemyT(e,2,'bomb');}
@@ -101,7 +103,9 @@ talkTo('historian');ok(G.st.f.bateau&&G.st.lure,'bateau rebuilt, golden lure ear
 // finale
 const coins=G.st.coins;
 ok(enterDoor('ow:3,0','tunnel:0,1'),'four keystones open the tunnel');
-doDungeon('tunnel:0,1');run(10);
+doDungeon('tunnel:0,1');
+let lit=0;for(let i=0;i<4000&&G.mode!='win';i++){if(G.dlg)closeDlg();if(G.mode=='relight'){lit=1;if(i%40==0)G.press.a=1;}G.update();}
+ok(lit,'the lamps relight across the city');
 ok(G.mode=='win','beating the thing in the tunnel reaches the ending');
 console.log('coins at the finale:',coins,' hearts:',G.p.max/2,' foes:',G.st.kills,' stories:',Object.keys(G.st.lore).length,' time:',G.fmtTime(G.st.time));
 process.exitCode=fails?1:0;

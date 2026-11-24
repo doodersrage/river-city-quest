@@ -54,7 +54,7 @@ function give(code){
     case'kayak':st.items.kayak=1;st.trade=null;ic=IC.kayak;L=['You got the Kayak!','Walk into whitewater on the James to paddle across it. The south bank is open to you now.'];break;
     case'melon':case'music':case'rivermap':st.trade=code;ic=TRADE[code][1];L=['You got the '+TRADE[code][0]+'!',TRADE[code][2]];break;
   }
-  if(ic)p.hold={ic,t:90};tune(JING);needSave=true;return L;
+  if(ic)p.hold={ic,t:90};tune(BIGITEMS.has(code)?FANFARE:JING);needSave=true;return L;
 }
 const TALK={
   archivist(){
@@ -85,7 +85,9 @@ const TALK={
   ballplayer(n){learn('diamond');
     if(!st.items.balls)return offer(n,['I was shagging flies by The Diamond and the fog ate half my bucket. Take what\'s left.',...give('balls')]);
     if(st.ammo.balls<10){st.ammo.balls=10;needSave=true;return offer(n,['Running low? Here, take a few.']);}
+    if(st.pins.flies){say(['Nice glove work out there. Want to take some swings in the batting cage? Ten pitches.'],sel=>{if(sel==0)startMini('bat');},n.who,['Batter up!','No thanks']);return null;}
     return offer(n,['The Flying Squirrels play over at The Diamond. Best seats in town are out on the grass.']);},
+  racer(n){say(['This is the Libby Hill soapbox derby! Steepest street in Church Hill.','Want to race my car down the hill? Beat '+fmtTime(34*60)+' for gold.'+(st.mini&&st.mini.derby?' Your best: '+fmtTime(st.mini.derby)+'.':'')],sel=>{if(sel==0)startMini('derby');},n.who,['Let\'s race!','Not now']);return null;},
   musician(){
     if(st.trade=='melon'){const L=give('music');return['Is that a Carytown watermelon? The band hasn\'t eaten all day! Take this in trade.',...L];}
     if(st.trade=='music'||st.trade=='rivermap'||st.items.kayak)return['That melon hit the spot. Hold A after a swing for a spin attack, by the way.'];

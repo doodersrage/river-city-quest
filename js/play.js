@@ -27,7 +27,7 @@ function updLife(){
     else if(b.st=='fly'){b.x+=b.vx;b.y+=b.vy;b.vy-=.02;if(b.y<cam.y-20||b.t>300){b.st='gone';b.t=0;}}
     else if(b.t>600&&Math.hypot(p.x-b.hx,p.y-b.hy)>120){b.st='sit';b.x=b.hx;b.y=b.hy;}}
 }
-const litLamp=(x,y)=>cur.id!='ow:3,0'||st.pins.lamps||(chal&&chal.id=='lamps'&&chal.set.has(x+','+y));
+const litLamp=(x,y)=>relight?relightLit((cur.lamps||[]).findIndex(l=>l[0]==x&&l[1]==y)):cur.id!='ow:3,0'||st.pins.lamps||(chal&&chal.id=='lamps'&&chal.set.has(x+','+y));
 function moveP(dx,dy){
   if(dx&&!blocked(p.x+dx,p.y,5,false,true)&&!npcHit(p.x+dx,p.y))p.x+=dx;
   if(dy&&!blocked(p.x,p.y+dy,5,false,true)&&!npcHit(p.x,p.y+dy))p.y+=dy;
@@ -72,7 +72,12 @@ function updEnemy(e){
     case'raven':{const ph=e.t%120;
       if(ph<70){const tx=p.x-e.x,ty=clamp(p.y-50,20,PH)-e.y,l=Math.hypot(tx,ty)||1;if(l>2){e.x+=tx/l*.7;e.y+=ty/l*.7;}e.vx=dx;if(ph==35)shoot(e,1.6,Math.atan2(dy,dx),'feather');}
       else{if(ph==70){e.vx=dx/d*2.2;e.vy=dy/d*2.2;sfx(300,.15,'sawtooth');}e.x+=e.vx;e.y+=e.vy;}break;}
-    case'vampire':{const ph=e.t%170;e.gone=ph>=130;e.vx=dx;
+    case'vampire':{
+      if(!e.p2&&e.hp<=e.mhp*.6){e.p2=1;e.swarm=1;shake=10;for(let i=0;i<3;i++)enemies.push(mk('bat',e.x+(i-1)*20,e.y-10));burst(e.x,e.y-6,16,['#6c4c9e','#e83048','#1a1423'],2,2);toast('It bursts into a swarm of bats!');sfx(200,.4,'sawtooth',.05);}
+      if(e.swarm){e.gone=true;if(!enemies.some(q=>q.type=='bat')){e.swarm=0;e.t=0;e.gone=false;burst(e.x,e.y-6,12,['#6c4c9e','#e83048'],1.6,2);toast('The bats pull back together!');}break;}
+      if(!e.p3&&e.hp<=e.mhp*.3){e.p3=1;shake=14;toast('Engine 231 groans. The thing is desperate!');sfx(90,.5,'sawtooth',.06);}
+      if(e.p3&&e.t%170==60){for(let i=0;i<8;i++)shoot(e,1.5,i*Math.PI/4,'blood');}
+      const ph=e.t%170;e.gone=ph>=130;e.vx=dx;
       if(ph==0){for(let i=0;i<30;i++){const x=(2+rnd(12))*TS+8,y=(3+rnd(6))*TS+8;if(!blocked(x,y,6,true)&&Math.hypot(x-p.x,y-p.y)>50){e.x=x;e.y=y;break;}}sfx(200,.25,'triangle');burst(e.x,e.y-6,10,['#6c4c9e','#e83048'],1.4,2);}
       if(ph==40||ph==80||(e.hp<=7&&ph==110)){const b=Math.atan2(p.y-e.y,p.x-e.x),s0=e.hp<=7?1.9:1.5;for(const o of[-.4,0,.4])shoot(e,s0,b+o,'blood');}
       if(ph==100&&enemies.filter(q=>q.type=='bat').length<2)enemies.push(mk('bat',e.x,e.y-10));
@@ -126,7 +131,7 @@ function hitEnemy(e,dmg,src,kx,ky){
   if(e.type=='foreman'){if(src=='hook'){if(e.state=='stun')return false;e.state='stun';e.st=170;e.flash=8;shake=6;sfx(1100,.1,'square',.05);sfx(180,.3,'sawtooth',.05);burst(e.x,e.y-12,14,['#8e909c','#d8dce4','#f8a030'],2.2,2);toast('The chest plate rips loose!');return true;}
     if(e.state!='stun'){sfx(1500,.05,'square',.03);burst(e.x,e.y-8,3,['#ffffff'],1,1);return'clank';}}
   if(e.type=='bell'&&e.state!='stun'){if(e.z>12)return false;if(src!='bomb'){sfx(1500,.05,'square',.03);return'clank';}}
-  e.hp-=dmg;e.flash=16;hitstop=Math.max(hitstop,e.boss?4:3);e.kx=kx||0;e.ky=ky||0;e.kt=e.boss?2:8;sfx(240,.06);
+  voiceOf(e.type);e.hp-=dmg;e.flash=16;hitstop=Math.max(hitstop,e.boss?4:3);e.kx=kx||0;e.ky=ky||0;e.kt=e.boss?2:8;sfx(240,.06);
   burst(e.x,e.y-2,5,['#ffffff','#fff2a8'],1.8,2);
   if(e.hp<=0){const i=enemies.indexOf(e);if(i>=0)enemies.splice(i,1);kill(e);}
   return true;
@@ -140,7 +145,7 @@ function kill(e){
     else say(['Down! '+(RUSH.length-st.rush.i)+' to go.'],()=>loadRush(st.rush.i),'Boss Rush');return;}
   if(e.boss){st.splits=st.splits||{};if(!st.splits[cur.area])st.splits[cur.area]=st.time;}
   if(e.type=='vampire'){enemies=[];shots=[];st.f['boss:'+curId]=1;st.f.won=1;if(st.ng)st.f.ngWon=1;needSave=true;
-    say(['The pale thing shrieks and comes apart like wet newspaper.','Above you the fog thins. One by one the lamps along Broad Street come back on.','Richmond is safe. Somebody owes you a ginger beer.','By morning the fog has burned off the James. Every lamp from Church Hill to Carytown is lit.','The archivist adds one last story to the journal. It\'s called '+(st.name||'Rory')+' and the Fog.'],()=>{mode='win';winT=0;checkAch();},'Engine 231');return;}
+    say(['The pale thing shrieks and comes apart like wet newspaper.','Above you the fog thins. One by one the lamps along Broad Street come back on.','Richmond is safe. Somebody owes you a ginger beer.','By morning the fog has burned off the James. Every lamp from Church Hill to Carytown is lit.','The archivist adds one last story to the journal. It\'s called '+(st.name||'Rory')+' and the Fog.'],()=>startRelight(),'Engine 231');return;}
   if(e.boss){st.f['boss:'+curId]=1;st.f['clr:'+curId]=1;enemies=[];shots=[];bombs=[];refresh();
     if(cur.reward)picks.push({x:112,y:80,kind:'keystone',id:cur.reward,life:1e9});picks.push({x:144,y:80,kind:'container',id:'hc:'+curId,life:1e9});
     tune(JING);const bc=BOSSCARD[e.type],nc=bc&&awardCard(bc,true);say(BOSSTXT[e.type].concat(nc?['You found a landmark card: '+CARDM[bc].name+'!']:[]),null,cur.name);needSave=true;return;}
@@ -156,6 +161,7 @@ function collect(k){
     case'part':{st.got[k.id]=1;p.hold={ic:IC.oar,t:90};tune(JING);needSave=true;const n=['oar','pole','tiller'].filter(q=>st.got[q]).length;
       say(['You found the bateau '+k.id+'! ('+n+' of 3)',n<3?'The river historian at Ancarrow\'s Landing will want it.':'That\'s every part! Take them to the historian at Ancarrow\'s Landing.'],null,'Bateau Part');break;}
     case'frog':st.frogs++;sfx(1400,.05,'triangle');if(typeof splashSfx=='function')splashSfx(.4);burst(k.x,k.y,5,['#68b854','#ffffff'],1.2,1);toast(st.frogs>=5&&!st.f.frogsDone?'Five frogs! Take them to the naturalist in Byrd Park.':'Caught a frog! ('+Math.min(st.frogs,5)+'/5)');needSave=true;break;
+    case'secret':st.got[k.id]=1;st.coins=Math.min(999,st.coins+25);tune([[1047,.06],[1319,.06],[1568,.12]],'triangle');burst(k.x,k.y,10,['#fff2a8','#ffffff','#f2c14e'],1.6,2);toast('A hidden stash! 25 coins. ('+nSecrets()+'/'+Object.keys(SECRETS).length+' secrets)');needSave=true;break;
     case'coin':st.coins=Math.min(999,st.coins+1);sfx(1200,.05);burst(k.x,k.y,3,['#fff2a8'],1,1);break;
     case'heart':p.hp=Math.min(p.max,p.hp+2);sfx(800,.1,'triangle');break;
     case'ballpk':st.ammo.balls=Math.min(st.cap.balls,st.ammo.balls+3);sfx(1000,.05);break;
@@ -183,6 +189,7 @@ function interact(){
   if(t=='l'&&!(chal&&chal.d.type=='light')){say([litLamp(tx,ty)?'A gas lamp, burning low in the fog.':'A cold gas lamp. The lamplighter could use help.'],null,'Gas Lamp');return true;}
   const lmk=t=='X'&&(cur.lm||[]).find(L=>tx>=L.x&&tx<L.x+L.w&&ty>=L.y&&ty<L.y+L.h);
   const r=cur.reads[tx+','+ty]||(cur.readsT&&cur.readsT[t])||(lmk&&lmk.read);
+  if(r=='!arcade'){say(['A pinball machine called RIVER CITY RAMBLE. One coin a game.'+(st.mini&&st.mini.pin?' High score: '+st.mini.pin+'.':'')],sel=>{if(sel!=0)return;if(st.coins<1){toast('You need a coin.');return;}st.coins--;startMini('pin');},'Stone House Arcade',['Play (1 coin)','Walk away']);return true;}
   if(r){if(r[0]=='!'){const x=READX[r];if(r=='!organ')tune(ORGAN,'triangle');say([x[1]],null,x[0]);}else{sfx(700,.03);say([LOREM[r].s],null,LOREM[r].t);learn(r);}return true;}
   if(t=='j'){say(['A cold brazier.',st.items.lantern?'Use the Gas Lantern on it with B. Pick it in the MENU if it isn\'t on B.':'Something would have to light it.']);return true;}
   if(t=='L'){tryUnlock(tx,ty,true);return true;}
@@ -254,6 +261,8 @@ function update(){
   if(mode=='title')titleUpdate();
   else if(mode=='name')nameUpdate();
   else if(mode=='intro')introUpdate();
+  else if(mode=='mini')miniUpdate();
+  else if(mode=='relight')relightUpdate();
   else if(mode=='credits')creditsUpdate();
   else if(mode=='win'){winT++;if(press.b&&winT>60)shareCard();else if(press.a&&winT>60){credits={y:0};mode='credits';}}
   else if(trans){trans.t++;
@@ -293,6 +302,7 @@ function play(){
     if(dx||dy){
       if(!p.charging){if(dx&&!dy)p.dir=dx>0?3:1;else if(dy&&!dx)p.dir=dy>0?0:2;
         else if(!((p.dir==3&&dx>0)||(p.dir==1&&dx<0)||(p.dir==0&&dy>0)||(p.dir==2&&dy<0)))p.dir=dx>0?3:1;}
+      if(frame%14==0)footstep();
       const sp0=p.charging?.8:onRiver()?1.05:1.3,l=Math.hypot(dx,dy),ox=p.x,oy=p.y;moveP(dx/l*sp0,dy/l*sp0);p.moving=true;
       const [fx,fy]=front(8),ft=tileAt(fx,fy);if(ft=='L')tryUnlock(Math.floor(fx/TS),Math.floor(fy/TS),false);
       if(blocks.length&&(!dx||!dy)&&ox==p.x&&oy==p.y)tryPush();else push.n=0;
@@ -379,24 +389,31 @@ function menuUpdate(){
   const m=menu;
   if(press.menu){menu=null;sfx(600,.05);return;}
   if(m.rd){if(press.a){m.rd.pg++;sfx(700,.03);if(m.rd.pg>=m.rd.pages.length)m.rd=null;}else if(press.b)m.rd=null;return;}
-  if(press.b){m.tab=(m.tab+1)%6;sfx(760,.04);return;}
+  if(press.b){m.tab=(m.tab+1)%7;sfx(760,.04);return;}
   if(m.tab==0){
     const NI=ITEMS.length;if(nav('left')){m.cur=(m.cur+NI-1)%NI;sfx(600,.02);}
     if(nav('right')){m.cur=(m.cur+1)%NI;sfx(600,.02);}
     if(nav('up')||nav('down')){m.cur=m.cur<5?Math.min(NI-1,m.cur+5):m.cur-5;sfx(600,.02);}
     if(press.a){const it=ITEMS[m.cur];if(st.items[it.id]){st.eq=it.id;sfx(990,.08,'triangle');needSave=true;}else sfx(150,.06);}
-  }else if(m.tab==2){
+  }else if(m.tab==3){
     const N=LORE.length;
     if(nav('up'))m.jc=(m.jc+N-1)%N;if(nav('down'))m.jc=(m.jc+1)%N;
     if(m.jc<m.jt)m.jt=m.jc;if(m.jc>m.jt+10)m.jt=m.jc-10;
-    if(nav('left')){m.tab=1;}else if(nav('right')){m.tab=3;}
+    if(nav('left')){m.tab=2;}else if(nav('right')){m.tab=4;}
     if(press.a){const [id,t,s]=LORE[m.jc];if(st.lore[id]){const ls=wrap(s,28),pages=[];for(let i=0;i<ls.length;i+=10)pages.push(ls.slice(i,i+10));m.rd={t,pages,pg:0};sfx(700,.03);}else sfx(150,.06);}
-  }else if(m.tab==3){
+  }else if(m.tab==4){
     m.cc=m.cc||0;const N=CARDS.length;
     if(nav('left'))m.cc=(m.cc+N-1)%N;if(nav('right'))m.cc=(m.cc+1)%N;if(nav('up'))m.cc=(m.cc+N-4)%N;if(nav('down'))m.cc=(m.cc+4)%N;
     if(press.a){const c=CARDS[m.cc];if(st.cards[c.id]){const ls=wrap(c.fact,28);m.rd={t:c.name,pages:[ls],pg:0};sfx(700,.03);}else sfx(150,.06);}
+  }else if(m.tab==5){
+    m.ac=m.ac||0;const N=ACH.length,H=Math.ceil(N/2);
+    if(nav('up'))m.ac=(m.ac+N-1)%N;if(nav('down'))m.ac=(m.ac+1)%N;if(nav('left')||nav('right'))m.ac=m.ac<H?Math.min(N-1,m.ac+H):m.ac-H;
+  }else if(m.tab==6&&cur.ow){
+    if(!m.mc||!SC[m.mc])m.mc=curId;const s0=SC[m.mc];
+    for(const [d,dx,dy] of [['left',-1,0],['right',1,0],['up',0,-1],['down',0,1]])if(nav(d)){for(let k=1;k<5;k++){const id='ow:'+(s0.ax+dx*k)+','+(s0.ay+dy*k);if(SHORT[id]&&SC[id]){m.mc=id;sfx(600,.02);break;}}break;}
+    if(press.a){if(m.mc==curId)sfx(150,.06);else if(!st.vis[m.mc]){toast('You haven\'t been there yet.');sfx(150,.06);}else busTo(m.mc);}
   }else{
-    if(nav('left'))m.tab=(m.tab+5)%6;else if(nav('right'))m.tab=(m.tab+1)%6;
+    if(nav('left'))m.tab=(m.tab+6)%7;else if(nav('right'))m.tab=(m.tab+1)%7;
   }
 }
 function shopUpdate(){

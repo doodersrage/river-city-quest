@@ -23,7 +23,7 @@ const fmtTime=f=>{const t=Math.floor(f/6),ds=t%10,sec=Math.floor(t/10),h=Math.fl
 /* ---------- time of day ---------- */
 const CYC=36000;
 const hour=()=>(6+(st?st.clock:4500)/CYC*24)%24;
-function dark(){const h=hour();return h>=20||h<5?1:h>=17?(h-17)/3:h<7?(7-h)/2:0;}
+function dark(){if(typeof relight!='undefined'&&relight)return 1;const h=hour();return h>=20||h<5?1:h>=17?(h-17)/3:h<7?(7-h)/2:0;}
 function dusk(){const h=hour();return Math.max(0,1-Math.abs(h-18.5)/1.5)+.6*Math.max(0,1-Math.abs(h-6))/1;}
 function drawClock(x,y){
   const nt=dark()>.5;R(x,y,13,10,'#080a18');R(x+1,y+1,11,8,nt?'#141a44':'#3a6ab0');
@@ -40,7 +40,7 @@ function drawClock(x,y){
 function wxTick(){
   if(st.wxNext){st.wxk=Math.max(0,st.wxk-1/240);if(st.wxk<=0){st.wx=st.wxNext;st.wxNext=null;}}
   else{if(st.wx!='clear')st.wxk=Math.min(1,st.wxk+1/300);
-    if(--st.wxT<=0){st.wxT=3000+rnd(4200);const r=Math.random(),n=r<.45?'clear':r<.72?'rain':r<.87?'fog':'snow';if(n!=st.wx)st.wxNext=n;}}
+    if(--st.wxT<=0){st.wxT=3000+rnd(4200);const n=pickWeather();if(n!=st.wx)st.wxNext=n;}}
   if(st.wx=='snow'&&st.wxk>.5)st.snow=Math.min(1,st.snow+1/1800);else st.snow=Math.max(0,st.snow-1/2400);
 }
 let drops=[],splash=[],flakes=[],flies=[];
@@ -86,13 +86,14 @@ function drawWeatherGround(){
 }
 function drawNight(){
   const dk=dark();if(dk<=.02)return;
-  const wins=cur.wins?Object.values(cur.wins):[];
+  const wins=(cur.wins?Object.values(cur.wins):[]).filter((w,i)=>w[2]&&(!relight||relightLit(Math.floor(i/3)))).map(w=>[w[0],w[1],true]);
   if(dk>.2){g.save();g.translate(-cam.x,-cam.y);g.globalAlpha=Math.min(1,dk*1.3);
     for(const [x,y,on] of wins)if(on&&x>cam.x-16&&x<cam.x+W&&y>cam.y-16&&y<cam.y+PH){R(x+4,y+5,8,7,'#f8d868');R(x+7,y+5,2,7,'#d8a838');R(x+4,y+8,8,1,'#d8a838');R(x+4,y+5,3,1,'#fff6c0');}
     g.globalAlpha=1;g.restore();}
   lg.globalCompositeOperation='source-over';lg.clearRect(0,0,W,PH);lg.fillStyle='rgba(10,14,46,'+(.7*dk).toFixed(3)+')';lg.fillRect(0,0,W,PH);
+  const bulbs=drawLights();
   lg.globalCompositeOperation='destination-out';
-  const hole=holeAt;
+  const hole=holeAt;for(const [x,y] of bulbs)hole(x,y,7);
   hole(p.x,p.y-4,st.items.lantern?54:32);
   for(const [lx,ly] of cur.lamps||[])if(litLamp(lx,ly))hole(lx*TS+8,ly*TS+4,48);
   for(const [x,y,on] of wins)if(on)hole(x+8,y+9,15);
@@ -261,7 +262,11 @@ const ACH=[
   ['night','Night Watch','Beat 25 foes after dark',()=>(st.nightKills||0)>=25],
   ['rich','Deep Pockets','Carry 999 coins',()=>st.coins>=999],
   ['speed','Speedrunner','Beat the game in under an hour',()=>st.f.won&&st.time<216000],
-  ['ngplus','Again!','Beat New Game+',()=>st.f.ngWon]];
+  ['ngplus','Again!','Beat New Game+',()=>st.f.ngWon],
+  ['secret','Secret Keeper','Find every hidden stash',()=>nSecrets()>=Object.keys(SECRETS).length],
+  ['slugger','Slugger','Hit 3 homers in one round',()=>st.f.slugger],
+  ['wizard','Pinball Wizard','Score 8,000 at pinball',()=>(st.mini&&st.mini.pin||0)>=8000],
+  ['derbyw','Derby Champ','Win gold in the derby',()=>st.f.derbyGold]];
 function checkAch(){st.ach=st.ach||{};for(const [id,name,,ok] of ACH)if(!st.ach[id]&&ok()){st.ach[id]=1;needSave=true;toast('Award: '+name+'!');tune([[784,.08],[988,.08],[1319,.16]],'triangle');return;}}
 
 /* ---------- New Game+ and boss rush ---------- */

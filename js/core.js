@@ -191,6 +191,8 @@ function load(id){
   st.vis[id]=1;
   const done=cur.ow?false:cur.bossT?st.f['boss:'+id]:st.f['clr:'+id];
   if(!done)for(const [t,tx,ty] of cur.en)enemies.push(mk(t,tx*TS+8,ty*TS+8));
+  if(cur.ow&&SECRETS[id]&&!st.got['sec:'+id]){const [sx,sy]=SECRETS[id];picks.push({x:sx*TS+8,y:sy*TS+8,kind:'secret',id:'sec:'+id,life:1e9});}
+  if(cur.ow)seasonOnLoad();
   if(cur.ow&&dark()>.6)for(let i=0,n=0;i<60&&n<2;i++){const x=rnd(cur.w)*TS+8,y=rnd(cur.h)*TS+8;if(!blocked(x,y,6,true)&&Math.hypot(x-p.x,y-p.y)>90){const e=mk(n?'ghost':'bat',x,y);e.night=1;enemies.push(e);n++;}}
   for(const it of cur.items||[])if(!st.got[it.id])picks.push({x:it.px||it.tx*TS+8,y:it.py||it.ty*TS+8,kind:it.kind,id:it.id,life:1e9});
   if(cur.bossT&&st.f['boss:'+id]){if(cur.reward&&!st.got[cur.reward])picks.push({x:112,y:80,kind:'keystone',id:cur.reward,life:1e9});

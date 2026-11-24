@@ -18,8 +18,8 @@ A top-down adventure game set in Richmond, Virginia. A cold fog has rolled up of
 | Snow in the Fan | Belle Isle | The Iron Foreman at Tredegar |
 | ![Fishing at Pony Pasture](screenshots/fishing.png) | ![Landmark cards](screenshots/cards.png) | ![The Titan Arum](screenshots/titan-arum.png) |
 | Fishing at Pony Pasture | Landmark cards | The Titan Arum in the conservatory |
-| ![The opening](screenshots/opening.png) | | |
-| The opening | | |
+| ![The opening](screenshots/opening.png) | ![Soapbox derby](screenshots/soapbox-derby.png) | ![The city map](screenshots/city-map.png) |
+| The opening | The Libby Hill soapbox derby | The city map, with bus travel |
 
 On a phone, use your browser's "Add to Home Screen" (or the INSTALL button when it appears) to run it full screen like an app. It works offline after the first visit.
 
@@ -43,7 +43,7 @@ Progress saves automatically in your browser, in one of three save slots. OPTION
 - **Street life:** townspeople who walk around and chat, buses and cars that stop for you, pigeons that scatter, gas lamps, benches, cafe tables and murals.
 - **A challenge in every neighborhood,** from shagging fly balls at The Diamond and lighting Church Hill's gas lamps to a Monument Avenue race, a Richmond history quiz and a mural hunt in Manchester. Each first win earns a city pin. Collect all 14 for a golden paddle.
 - **Places to walk into:** a taproom, the Miller & Rhoads Tea Room, the Hippodrome, St. John's, the Carytown shop, a Fan row house, Main Street Station, Maymont House, a Rocketts boathouse, the Stone House arcade and a Manchester art studio, plus a hidden chest in every neighborhood.
-- **Seven dungeons** with small keys, locked doors, cracked walls, braziers, push-block puzzles and a boss each. Tredegar Iron Works, behind Hollywood Cemetery, hides the Grappling Hook and the Iron Foreman. The conservatory at Lewis Ginter hides the Watering Can and the Titan Arum.
+- **Seven dungeons and a finale** with small keys, locked doors, cracked walls, braziers, push-block puzzles and a boss each. Tredegar Iron Works, behind Hollywood Cemetery, hides the Grappling Hook and the Iron Foreman. The conservatory at Lewis Ginter hides the Watering Can and the Titan Arum. The Church Hill Tunnel ends in a three-phase fight, then the lamps come back on across the city.
 - **Day and night:** a full day passes about every ten minutes. Gas lamps and windows light up after dark, fireflies come out in the parks, and bats and ghosts roam the streets.
 - **Weather:** rain with puddles, snow that piles up on rooftops, and fog off the James. Frogs come out in the rain for the naturalist's frog count at Byrd Park.
 - **Fishing:** buy a rod in Carytown and fish any pond or the river. Bluegill, bass, catfish at night, shad in the rain and, if you're lucky, an Atlantic sturgeon.
@@ -53,6 +53,11 @@ Progress saves automatically in your browser, in one of three save slots. OPTION
 - **Eight heart pieces** hidden behind bushes, across water and in the rapids. Four make a heart.
 - **A journal of 47 Richmond stories** from historical markers, statues and people around town: Patrick Henry at St. John's, Maggie L. Walker's bank, Bojangles' traffic light, Sprague's electric streetcars, the VMFA's Faberge eggs, the Carillon, Forest Hill's old amusement park, Mayo's Bridge, the Church Hill Tunnel collapse and more.
 - **Chiptune music** for the city, the south bank, nighttime, dungeons, the Tredegar foundry, bosses and the title screen, plus rain, wind and cricket sounds.
+- **Getting around:** ride the GRTC bus from the map to any neighborhood you've visited. A star on the map marks your next goal, and the QUEST tab tracks every quest.
+- **Mini-games:** batting practice at The Diamond, pinball in the Stone House arcade, and a soapbox derby down Libby Hill.
+- **A hidden stash in every neighborhood.** Look for a glint near trees, rocks and bushes.
+- **Seasons by the real calendar:** falling leaves in autumn, holiday lights in the Fan and Carytown in December, azaleas at Bryan Park in spring, runners in the Fan during 10K season, and music from the Folk Festival in October.
+- **Sound:** footsteps that change with the ground, voices for each enemy, and fanfares for big items.
 - **Hints when you need them:** the GEAR tab always shows your next goal, and townspeople react to the weather, the time of day and how far you've come.
 - **An opening and credits:** name your hero, watch the fog roll in, and roll the credits at the end.
 - **Sharing:** copy a save code from one device and import it on another, and share a picture of your finish time.
@@ -70,6 +75,8 @@ No build step and no dependencies. Open `index.html` in a browser to play locall
 - `js/play.js`: movement, enemies, bosses, the update loop and menu controls
 - `js/art.js`: tile art and the hand-drawn landmarks
 - `js/draw.js`: the world, HUD, menus, title and ending screens
+- `js/minigames.js`: batting practice, pinball and the soapbox derby
+- `js/extras.js`: the relighting finale, bus travel, the quest log, secrets, seasons and extra sounds
 - `js/systems.js`: cards, time of day, weather, fishing, the hook, options, story beats, awards, New Game+, boss rush, the opening and sharing
 - `js/main.js`: page buttons, input and the main loop
 - `js/music.js`: the music sequencer, songs and weather sounds
@@ -82,6 +89,8 @@ Run `node tests/run.js` (Node 18 or newer, nothing to install). It loads the gam
 - `maps.test.js`: every door, chest, person and item can be reached, counting the grappling hook, and map edges line up
 - `sim.test.js`: a random-input run through every scene, plus scripted checks of each challenge
 - `features.test.js` and `more-features.test.js`: the newer systems, from weather and fishing to New Game+ and the boss rush
+- `final-act.test.js`: the finale's boss phases and relighting, bus travel, the quest log, secrets, all three mini-games and the seasons
+- `names.test.js`: no two scripts declare the same top-level name, since they share one scope
 - `playthrough.test.js`: a bot plays from a new game to the ending, walking through every dungeon door for real and checking the hint at each step
 
 GitHub Actions runs them on every push.

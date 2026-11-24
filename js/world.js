@@ -122,6 +122,7 @@ const NPC={
   ranger:{who:'Park Ranger',hat:C3('#6a5a2a','#4a3e18','#9a8a50'),shirt:C3('#4a6a3a','#2e4624','#6a9058'),talk:'ranger'},
   conductor:{who:'Old Conductor',hat:C3('#2e4a8a','#1c2e5a','#4a6ab0'),shirt:C3('#2e4a8a','#1c2e5a','#4a6ab0'),talk:'chal',chal:'trolley'},
   naturalist:{who:'Naturalist',hat:C3('#6a8a3a','#4a6a24','#8aac5a'),shirt:C3('#c8b48c','#9a8660','#e4d4b0'),talk:'naturalist'},
+  racer:{who:'Derby Kid',hat:C3('#e83048','#a01c30','#f890a0'),shirt:C3('#f2c14e','#b88a20','#ffe08a'),talk:'racer'},
   historian:{who:'River Historian',hat:C3('#8a5a2b','#5e3a18','#b07c48'),shirt:C3('#2e4a8a','#1c2e5a','#4a6ab0'),talk:'historian'},
   painter:{who:'Mural Painter',hat:C3('#3ac2e8','#1a8ab0','#8ae0f8'),shirt:C3('#f08030','#b85a18','#ffb868'),talk:'painter',chal:'murals'}
 };
@@ -157,8 +158,8 @@ ow(2,0,"Jackson Ward",{base:'p',pal:[BRICK,BRICK2],rows:[
 ow(3,0,"Church Hill",{base:'.',rows:[
 'T32','T r8 .9 X6 .7 T','T r8 .9 X6 .7 T','T r % r D r4 .9 X6 .3 @ .3 T','T .3 k .3 l .4 M .4 X6 .7 T','T .3 k .13 X2 D X3 .7 T','T .3 k .12 l .13 T',
 'T .3 k .11 x . x . x . ! .8 T','T .15 x . x . x .3 l .6 T','.31 T','. ! .29 T','.9 @ .22','.32','T R13 S4 R13 T',
-'T .4 ,4 .22 T','T .3 l .15 b6 .5 T','T .19 b.*..b .5 T','T .5 ! .13 b6 .5 T','T .10 i .2 i .11 M .4 T','T b3 ` .17 l .8 T','T $ b2 .27 T','T14 .4 T14'],
-  npcs:[N('henry'),N('lamplighter')],enT:['bat','bat','bat'],readsL:['tunnel','names'],readsAt:{'18,7':'eliza'},
+'T .4 ,4 .10 @ .11 T','T .3 l .15 b6 .5 T','T .19 b.*..b .5 T','T .5 ! .13 b6 .5 T','T .10 i .2 i .11 M .4 T','T b3 ` .17 l .8 T','T $ b2 .27 T','T14 .4 T14'],
+  npcs:[N('henry'),N('lamplighter'),N('racer')],enT:['bat','bat','bat'],readsL:['tunnel','names'],readsAt:{'18,7':'eliza'},
   doorsL:[{to:'libby:0,0'},{to:'tunnel:0,1',need:'keystones'},{to:'stjohn:0,0'}],chestsL:['coins50'],lm:[{art:'church',x:18,y:1,w:6,h:5,read:'stjohns'}]});
 ow(0,1,"Carytown",{base:'s',awn:true,pal:[['#d8a048','#a87428','#f0c070'],['#5aa8a0','#3a7c76','#80c8c0'],['#d87878','#a84c4c','#f0a0a0'],BRICK],rows:[
 'B14 p4 B14','B . X11 .. p4 B13','B . X11 .. p4 B13','B . X11 .. p4 B13','B . X11 .. p4 s12 B','B . X5 D X5 .. p4 s2 @ s9 B','B .2 S7 .4 p4 s3 t s3 t s5 B',
@@ -356,7 +357,9 @@ link('conserv','0,2','E','1,2','open');link('conserv','0,2','N','0,1','lock');li
 /* finale: the tunnel */
 room('tunnel',0,1,'Church Hill Tunnel',{entry:true,feats:[['k',7,1,2,8],['r',3,2],['r',12,6],['r',4,7],['M',2,5]],reads:{'2,5':'tunnel'},en:[['bat',4,4],['bat',11,4],['bat',10,7]]});
 room('tunnel',0,0,'Engine 231',{bossT:'vampire',feats:[['k',7,3,2,7],['Z',6,1,4,2]],readsT:{Z:'!engine'},en:[['vampire',8,5]]});
-link('tunnel','0,1','N','0,0','bomb');
+room('tunnel',1,1,'Flooded Siding',{feats:[['w',8,2,7,7],['F',11,5],['k',1,5,7,1],['r',3,2],['r',4,8]],en:[['crab',4,4],['crab',5,7],['bat',11,2]],items:[{id:'tunkey',kind:'skey',px:184,py:88}]});
+room('tunnel',1,0,'Signal Room',{solve:'lit',braz:[[3,2],[12,2],[3,8],[12,8]],feats:[['k',1,5,14,1],['W',6,3],['W',9,7]],en:[['ghost',5,5],['ghost',10,4],['bat',8,7]]});
+link('tunnel','0,1','E','1,1','bomb');link('tunnel','1,1','N','1,0','lock');link('tunnel','1,0','W','0,0','gate');
 
 /* ---------- build every scene's grid ---------- */
 const OPP={N:'S',S:'N',E:'W',W:'E'};
