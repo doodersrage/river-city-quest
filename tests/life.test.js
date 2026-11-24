@@ -49,3 +49,7 @@ G.p.atk=5;G.update();G.update();ok(G.st.tut==3,'tip 3 clears after a swing');
 G.p.atk=0;G.p.charging=false;G.st.eq='lantern';G.press.b=1;G.update();G.update();ok(G.st.tut==4,'tip 4 clears after using B');
 G.press.menu=1;G.update();G.update();ok(G.st.tut==5,'tip 5 clears on opening the menu');
 for(let i=0;i<8&&G.st.tut!=null;i++){G.press.b=1;G.update();G.draw();}ok(G.st.tut==null,'tip 6 clears on the map tab, and the tips end');G.press.menu=1;G.update();
+// regression: opening the Capitol Square chest after cutting in must not regrow the bushes around you
+{G.newGame();G.dlg=null;run(2);G.enemies.length=0;const g=()=>G.cur.g,mv=(k,n)=>{for(let i=0;i<n;i++){G.keys[k]=1;G.update();pick(0);}G.keys[k]=0;};
+ G.p.x=2*T+8;G.p.y=17*T+8;mv('down',30);G.press.a=1;run(25);mv('down',30);G.press.a=1;run(25);mv('down',30);mv('left',20);G.press.a=1;run(120);
+ ok(g()[20][1]=='o','the corner chest opens');const y0=G.p.y;mv('up',30);ok(G.p.y<y0-20&&g()[19][2]=='.','cut bushes stay cut after opening a chest, so you can walk back out');}

@@ -33,7 +33,7 @@ function moveP(dx,dy){
   if(dy&&!blocked(p.x,p.y+dy,5,false,true)&&!npcHit(p.x,p.y+dy))p.y+=dy;
 }
 function cutAt(x,y){const tx=Math.floor(x/TS),ty=Math.floor(y/TS);if(tileAt(x,y)!='b')return;
-  cur.g[ty][tx]=cur.base;patchTile(tx,ty);burst(tx*TS+8,ty*TS+8,8,['#2f7a3c','#58a850','#90d070'],1.6,2);sfx(300,.05,'square',.03);
+  cur.g[ty][tx]=cur.base;(cur.cut=cur.cut||new Set()).add(tx+','+ty);patchTile(tx,ty);burst(tx*TS+8,ty*TS+8,8,['#2f7a3c','#58a850','#90d070'],1.6,2);sfx(300,.05,'square',.03);
   const r=Math.random();if(r<.2)picks.push({x:tx*TS+8,y:ty*TS+8,kind:'coin',life:600});else if(r<.3)picks.push({x:tx*TS+8,y:ty*TS+8,kind:'heart',life:600});}
 function moveE(e,dx,dy){
   let ok=true;

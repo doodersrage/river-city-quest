@@ -146,6 +146,7 @@ function applyDyn(s){
   (s.braz||[]).forEach(([x,y],i)=>s.g[y][x]=st.f['b:'+s.id+':'+i]?'J':'j');
   for(const c of s.chests||[]){if(st.f['c:'+c.id])s.g[c.ty][c.tx]='o';else if(!c.appear||isSolved(s))s.g[c.ty][c.tx]='c';}
   if(s.bossT&&st.f['boss:'+s.id])s.g[8][7]=s.g[8][8]='E';
+  if(s.cut)for(const k of s.cut){const [x,y]=k.split(',').map(Number);if(s.g[y][x]=='b')s.g[y][x]=s.base;}
   if(s.interior)s.g0.forEach((r,y)=>r.forEach((c,x)=>{if(c!='z'||!st.f['grow:'+s.id+':'+x+','+y])return;s.g[y][x]='1';
     for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){let X=x+dx,Y=y+dy;if(!s.g0[Y]||s.g0[Y][X]!='_')continue;while(s.g0[Y]&&s.g0[Y][X]=='_'){s.g[Y][X]='|';X+=dx;Y+=dy;}}}));
 }
@@ -158,7 +159,8 @@ function cachePut(s,sig,cv0){const e={sig,cv:[cv0,null,null,null],torches:s.torc
   for(let f=1;f<4;f++)jobs.push({id:s.id,e,fr:f});return e;}
 function refresh(){applyDyn(cur);let c=cacheGet(cur);
   if(!c){jobs=jobs.filter(j=>j.id!==cur.id);cur.torches=[];c=cachePut(cur,sigOf(cur),renderMap(cur,0));jobs.sort((a,b)=>(b.id===cur.id)-(a.id===cur.id));}
-  cur.cv=c.cv;cur.torches=c.torches;}
+  cur.cv=c.cv;cur.torches=c.torches;
+  if(typeof p!='undefined'&&p&&curId==cur.id&&!trans&&blocked(p.x,p.y,5,false,true))settle();}
 function prefetch(){
   jobs=jobs.filter(j=>!j.pre&&!j.new&&CVC.get(j.id)===j.e);
   const ids=new Set();
@@ -183,7 +185,7 @@ function runJob(){
 }
 function pump(ms){const t0=performance.now();let n=0;while(jobs.length&&(n++<1||performance.now()-t0<ms)){if(!runJob())break;}}
 function load(id){
-  cur=SC[id];curId=id;enemies=[];shots=[];picks=[];parts=[];bombs=[];bug=null;hook=null;fish=null;hitstop=0;fade=10;
+  if(cur)cur.cut=null;cur=SC[id];curId=id;cur.cut=null;enemies=[];shots=[];picks=[];parts=[];bombs=[];bug=null;hook=null;fish=null;hitstop=0;fade=10;
   refresh();
   blocks=[];cur.g0.forEach((r,y)=>r.forEach((c,x)=>{if(c=='#')blocks.push({tx:x,ty:y,x:x*TS,y:y*TS,mv:0,dx:0,dy:0});}));
   if(st.f['sw:'+id]){const sw=[];cur.g0.forEach((r,y)=>r.forEach((c,x)=>{if(c=='^')sw.push([x,y]);}));blocks.forEach((b,i)=>{if(sw[i]){b.tx=sw[i][0];b.ty=sw[i][1];b.x=b.tx*TS;b.y=b.ty*TS;}});}
