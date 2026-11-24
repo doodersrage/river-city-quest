@@ -136,7 +136,39 @@ function applyDyn(s){
   for(const c of s.chests||[]){if(st.f['c:'+c.id])s.g[c.ty][c.tx]='o';else if(!c.appear||isSolved(s))s.g[c.ty][c.tx]='c';}
   if(s.bossT&&st.f['boss:'+s.id])s.g[8][7]=s.g[8][8]='E';
 }
-function refresh(){applyDyn(cur);cur.torches=[];cur.cv=[0,1,2,3].map(f=>renderMap(cur,f));}
+/* map canvases are cached per scene and painted a few rows at a time in the background */
+const CVC=new Map();let jobs=[];
+const sigOf=s=>s.g.map(r=>r.join('')).join('|');
+function cacheGet(s){const sig=sigOf(s),c=CVC.get(s.id);if(c&&c.sig===sig){CVC.delete(s.id);CVC.set(s.id,c);return c;}return null;}
+function cachePut(s,sig,cv0){const e={sig,cv:[cv0,null,null,null],torches:s.torches};CVC.set(s.id,e);
+  while(CVC.size>14){const k=CVC.keys().next().value;if(k===curId)break;CVC.delete(k);}
+  for(let f=1;f<4;f++)jobs.push({id:s.id,e,fr:f});return e;}
+function refresh(){applyDyn(cur);let c=cacheGet(cur);
+  if(!c){jobs=jobs.filter(j=>j.id!==cur.id);cur.torches=[];c=cachePut(cur,sigOf(cur),renderMap(cur,0));jobs.sort((a,b)=>(b.id===cur.id)-(a.id===cur.id));}
+  cur.cv=c.cv;cur.torches=c.torches;}
+function prefetch(){
+  jobs=jobs.filter(j=>!j.pre&&!j.new&&CVC.get(j.id)===j.e);
+  const ids=new Set();
+  if(cur.ow){for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]])ids.add('ow:'+(cur.ax+dx)+','+(cur.ay+dy));for(const d of cur.doors||[])ids.add(d.to);}
+  else{for(const id in SC){const q=SC[id];if(q.area==cur.area&&Math.abs(q.ax-cur.ax)+Math.abs(q.ay-cur.ay)==1)ids.add(id);}if(st&&st.ret)ids.add(st.ret[0]);}
+  for(const id of ids)if(SC[id]&&id!==curId&&!jobs.some(j=>j.pre===id))jobs.push({pre:id});
+}
+/* one background step: paint part of a map canvas, then yield */
+function runJob(){
+  const j=jobs[0];if(!j)return false;
+  if(j.pre){jobs.shift();const s=SC[j.pre];applyDyn(s);if(cacheGet(s))return true;j.e=null;j.s=s;j.id=s.id;j.fr=0;j.new=true;jobs.unshift(j);delete j.pre;return true;}
+  const s=SC[j.id];
+  if(!j.cv){if(j.fr>0&&j.e.cv[j.fr]){jobs.shift();return true;}j.cv=mkCanvas(s.w*TS,s.h*TS);j.y=0;j.ph=0;if(j.fr==0)s.torches=[];}
+  const old=g;g=j.cv.getContext('2d');
+  if(j.ph==0){const y1=Math.min(s.h,j.y+4);for(let y=j.y;y<y1;y++)for(let x=0;x<s.w;x++)tile(s,s.g[y][x],x,y,j.fr);j.y=y1;if(j.y>=s.h){j.ph=1;j.y=0;}}
+  else if(j.ph==1){const y1=Math.min(s.h,j.y+8);for(let y=j.y;y<y1;y++)for(let x=0;x<s.w;x++)shadeTile(s,x,y);j.y=y1;if(j.y>=s.h)j.ph=2;}
+  else{drawLandmarks(s,j.fr);jobs.shift();
+    if(j.new){applyDyn(s);cachePut(s,sigOf(s),j.cv);}
+    else if(j.stale){j.cv=null;j.stale=0;jobs.push(j);}
+    else if(CVC.get(j.id)===j.e)j.e.cv[j.fr]=j.cv;}
+  g=old;return true;
+}
+function pump(ms){const t0=performance.now();let n=0;while(jobs.length&&(n++<1||performance.now()-t0<ms)){if(!runJob())break;}}
 function load(id){
   cur=SC[id];curId=id;enemies=[];shots=[];picks=[];parts=[];bombs=[];bug=null;hook=null;fish=null;fade=10;
   refresh();
@@ -156,7 +188,7 @@ function load(id){
   for(const it of cur.items||[])if(!st.got[it.id])picks.push({x:it.px||it.tx*TS+8,y:it.py||it.ty*TS+8,kind:it.kind,id:it.id,life:1e9});
   if(cur.bossT&&st.f['boss:'+id]){if(cur.reward&&!st.got[cur.reward])picks.push({x:112,y:80,kind:'keystone',id:cur.reward,life:1e9});
     if(!st.got['hc:'+id]&&cur.bossT!='vampire')picks.push({x:144,y:80,kind:'container',id:'hc:'+id,life:1e9});}
-  banner=cur.name;bannerT=100;needSave=true;
+  banner=cur.name;bannerT=100;needSave=true;prefetch();
   if(typeof pickSong=='function')pickSong();
 }
 const push={n:0,dir:-1};
@@ -689,7 +721,7 @@ function play(){
     if(nx!=cur.ax||ny!=cur.ay){const nid=cur.area+':'+nx+','+ny,ns=SC[nid];
       if(ns){if(px<0)px=ns.w*TS-8;if(py<0)py=ns.h*TS-8;
         if(cur.ow){trans={fade:true,t:0,to:nid,px,py};p.x=clamp(p.x,4,MW()-4);p.y=clamp(p.y,4,MH()-4);}
-        else{const old=cur.cv[(frame>>4)&3],dx=nx-cur.ax,dy=ny-cur.ay;load(nid);p.x=px;p.y=py;fade=0;trans={old,dx,dy,t:0};}}
+        else{const old=cur.cv[(frame>>4)&3]||cur.cv[0],dx=nx-cur.ax,dy=ny-cur.ay;load(nid);p.x=px;p.y=py;fade=0;trans={old,dx,dy,t:0};}}
       else{p.x=clamp(ox,8,MW()-8);p.y=clamp(oy,8,MH()-8);}}
   }
   updCam();
@@ -1103,7 +1135,7 @@ function renderMap(s,fr){
   drawLandmarks(s,fr);
   g=old;return c;
 }
-function patchTile(tx,ty){const old=g;cur.cv.forEach((c,fr)=>{g=c.getContext('2d');g.clearRect(tx*TS,ty*TS,TS,TS);tile(cur,cur.g[ty][tx],tx,ty,fr);shadeTile(cur,tx,ty);});g=old;}
+function patchTile(tx,ty){const old=g;const ce=CVC.get(curId);if(ce)ce.sig=sigOf(cur);for(const j of jobs)if(j.id===curId&&j.cv)j.stale=1;cur.cv.forEach((c,fr)=>{if(!c)return;g=c.getContext('2d');g.clearRect(tx*TS,ty*TS,TS,TS);tile(cur,cur.g[ty][tx],tx,ty,fr);shadeTile(cur,tx,ty);});g=old;}
 
 /* ---------- drawing ---------- */
 let texts=[];
@@ -1261,10 +1293,12 @@ function drawLeaves(){if(!cur.leafy){leaves.length=0;return;}
   leaves=leaves.filter(l=>l.y<PH+4&&l.x<W+4);}
 function drawFog(a){for(let i=0;i<5;i++){const x=((i*83+frame*(.15+i*.05))%(W+170))-170,y=4+i*33+Math.sin(frame/90+i)*7;g.globalAlpha=a;g.drawImage(fogC,x,y,170,60);}g.globalAlpha=1;}
 const lightC=mkCanvas(W,PH),lg=lightC.getContext('2d');
+const holeC=mkCanvas(64,64);{const f=holeC.getContext('2d'),gr=f.createRadialGradient(32,32,7,32,32,32);gr.addColorStop(0,'rgba(0,0,0,1)');gr.addColorStop(1,'rgba(0,0,0,0)');f.fillStyle=gr;f.fillRect(0,0,64,64);}
+function holeAt(x,y,r){x-=cam.x;y-=cam.y;if(x<-r||y<-r||x>W+r||y>PH+r)return;lg.drawImage(holeC,Math.round(x-r),Math.round(y-r),Math.round(r*2),Math.round(r*2));}
 function drawLight(){
   lg.globalCompositeOperation='source-over';lg.clearRect(0,0,W,PH);lg.fillStyle=cur.area=='tunnel'?'rgba(20,4,24,.72)':'rgba(8,6,24,.68)';lg.fillRect(0,0,W,PH);
   lg.globalCompositeOperation='destination-out';
-  const hole=(x,y,r)=>{x-=cam.x;y-=cam.y;const gr=lg.createRadialGradient(x,y,r*.25,x,y,r);gr.addColorStop(0,'rgba(0,0,0,1)');gr.addColorStop(1,'rgba(0,0,0,0)');lg.fillStyle=gr;lg.fillRect(x-r,y-r,r*2,r*2);};
+  const hole=holeAt;
   hole(p.x,p.y-4,(st.items.lantern?68:38)+Math.sin(frame/9)*2);
   for(const [x,y] of cur.torches||[])hole(x,y,46+((frame>>3)&1)*3);
   (cur.braz||[]).forEach(([x,y],i)=>{if(st.f['b:'+cur.id+':'+i])hole(x*TS+8,y*TS+6,44+((frame>>3)&1)*3);});
@@ -1277,7 +1311,7 @@ function drawLight(){
   g.drawImage(lightC,0,0);
 }
 function drawWorld(){
-  g.drawImage(cur.cv[(frame>>4)&3],0,0);
+  g.drawImage(cur.cv[(frame>>4)&3]||cur.cv[0],0,0);
   for(const k of picks)drawPick(k);
   for(const b of blocks){const x=Math.round(b.x),y=Math.round(b.y);R(x+1,y+13,15,3,'rgba(10,8,24,.35)');R(x,y,16,15,'#1a1423');R(x+1,y+1,14,13,'#8a7a6a');R(x+1,y+1,14,3,'#b4a490');R(x+1,y+11,14,3,'#5e5044');R(x+4,y+5,8,5,'#6e5e4e');R(x+5,y+6,6,3,'#9a8a76');}
   for(const b of bombs){const x=Math.round(b.x),y=Math.round(b.y);shadow(x,y+5,5);g.drawImage(IC.keg,x-6,y-9);if(b.t<24&&(frame>>1)&1){g.globalAlpha=.6;R(x-5,y-6,10,9,'#ffffff');g.globalAlpha=1;}if((frame>>1)&1)R(x+1,y-10,2,2,'#fff2a8');}
@@ -1596,7 +1630,7 @@ function drawNight(){
     g.globalAlpha=1;g.restore();}
   lg.globalCompositeOperation='source-over';lg.clearRect(0,0,W,PH);lg.fillStyle='rgba(10,14,46,'+(.7*dk).toFixed(3)+')';lg.fillRect(0,0,W,PH);
   lg.globalCompositeOperation='destination-out';
-  const hole=(x,y,r)=>{x-=cam.x;y-=cam.y;if(x<-r||y<-r||x>W+r||y>PH+r)return;const gr=lg.createRadialGradient(x,y,r*.2,x,y,r);gr.addColorStop(0,'rgba(0,0,0,1)');gr.addColorStop(1,'rgba(0,0,0,0)');lg.fillStyle=gr;lg.fillRect(x-r,y-r,r*2,r*2);};
+  const hole=holeAt;
   hole(p.x,p.y-4,st.items.lantern?54:32);
   for(const [lx,ly] of cur.lamps||[])if(litLamp(lx,ly))hole(lx*TS+8,ly*TS+4,48);
   for(const [x,y,on] of wins)if(on)hole(x+8,y+9,15);
@@ -1740,11 +1774,11 @@ addEventListener('contextmenu',e=>e.preventDefault());
 titleInit();
 let last=0,acc=0,paused=false;
 function loop(t){
-  if(!paused){acc+=Math.min(100,t-last);while(acc>=16.6){update();acc-=16.6;}draw();}
+  if(!paused){acc+=Math.min(100,t-last);while(acc>=16.6){update();acc-=16.6;}draw();if(mode=='play'&&!trans)pump(4);}
   last=t;requestAnimationFrame(loop);
 }
 if(document.fonts&&document.fonts.load)document.fonts.load('8px "Press Start 2P"').catch(()=>{});
 requestAnimationFrame(t=>{last=t;loop(t);});
-window.__g={SC,LORE,CHAL,update,draw,keys,press,load,mk,say,give,newGame,refresh,explode,irisStart,kill,updCam,CARDS,FISH,actionOf,titleOpts,hour,dark,fmtTime,get hook(){return hook},get fish(){return fish},set fish(v){fish=v},get tl(){return tl},get titleSel(){return titleSel},set titleSel(v){titleSel=v},get slot(){return saveSlot},OPT,
+window.__g={SC,LORE,CHAL,update,draw,keys,press,load,mk,say,give,newGame,refresh,explode,irisStart,kill,updCam,pump,CVC,get jobs(){return jobs},CARDS,FISH,actionOf,titleOpts,hour,dark,fmtTime,get hook(){return hook},get fish(){return fish},set fish(v){fish=v},get tl(){return tl},get titleSel(){return titleSel},set titleSel(v){titleSel=v},get slot(){return saveSlot},OPT,
   get p(){return p},get st(){return st},get mode(){return mode},set mode(v){mode=v},get enemies(){return enemies},get dlg(){return dlg},set dlg(v){dlg=v},
   get cur(){return cur},get cam(){return cam},get blocks(){return blocks},get trans(){return trans},get menu(){return menu},set menu(v){menu=v},get shop(){return shop},set shop(v){shop=v},get picks(){return picks},get bug(){return bug},pause(v){paused=v},SOLID};
