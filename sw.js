@@ -1,5 +1,5 @@
 /* River City Quest offline cache. Bump VERSION whenever any game file changes. */
-const VERSION='rcq-v8';
+const VERSION='rcq-v9';
 const FILES=['./','index.html','world.js','game.js','music.js','manifest.webmanifest','icon-192.png','icon-512.png','icon-180.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(VERSION).then(c=>c.addAll(FILES)).then(()=>self.skipWaiting()));});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==VERSION).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});

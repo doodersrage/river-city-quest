@@ -1312,6 +1312,7 @@ function drawLight(){
 }
 function drawWorld(){
   g.drawImage(cur.cv[(frame>>4)&3]||cur.cv[0],0,0);
+  if(cur.ow)drawWeatherGround();
   for(const k of picks)drawPick(k);
   for(const b of blocks){const x=Math.round(b.x),y=Math.round(b.y);R(x+1,y+13,15,3,'rgba(10,8,24,.35)');R(x,y,16,15,'#1a1423');R(x+1,y+1,14,13,'#8a7a6a');R(x+1,y+1,14,3,'#b4a490');R(x+1,y+11,14,3,'#5e5044');R(x+4,y+5,8,5,'#6e5e4e');R(x+5,y+6,6,3,'#9a8a76');}
   for(const b of bombs){const x=Math.round(b.x),y=Math.round(b.y);shadow(x,y+5,5);g.drawImage(IC.keg,x-6,y-9);if(b.t<24&&(frame>>1)&1){g.globalAlpha=.6;R(x-5,y-6,10,9,'#ffffff');g.globalAlpha=1;}if((frame>>1)&1)R(x+1,y-10,2,2,'#fff2a8');}
@@ -1330,7 +1331,6 @@ function drawWorld(){
     else{const c=s.refl?'#fff2a8':s.k=='feather'?'#4a4662':s.k=='ring'?'#f0c070':s.k=='spark'?((frame>>1)&1?'#f8e060':'#f08020'):'#e83048';R(x-3,y-2,6,4,'#1a1423');R(x-2,y-3,4,6,'#1a1423');R(x-2,y-2,4,4,c);R(x-1,y-1,2,2,'#ffffff');}}
   if(hook)drawHook();
   if(fish)drawBobber();
-  if(cur.ow)drawWeatherGround();
   if(bug){const x=Math.round(bug.x),y=Math.round(bug.y);g.drawImage(IC.bug,x-6,y-6);for(const k of bug.carry)drawPick(k);if((frame>>1)&1){R(x-8,y-2,2,1,'#fff2a8');R(x+6,y-2,2,1,'#fff2a8');}}
   for(const b of birds){if(b.st=='gone')continue;const x=Math.round(b.x),y=Math.round(b.y);
     if(b.st=='sit'){const bob=(frame+b.hx)>>4&1;R(x-3,y-2,6,4,'#1a1423');R(x-2,y-1,4,2,'#8a8496');R(x+(bob?1:2),y-4+bob,3,3,'#1a1423');R(x+(bob?2:3),y-3+bob,1,1,'#5f566a');}
