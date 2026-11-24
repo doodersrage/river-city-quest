@@ -37,7 +37,7 @@ for(const k in SONGS){const s=SONGS[k];s.L=toks(s.lead);s.B=toks(s.bass);s.D=tok
 function noteHz(n){const m=/^([A-G])(#|b)?(\d)$/.exec(n);if(!m)return 0;
   const k={C:0,D:2,E:4,F:5,G:7,A:9,B:11}[m[1]]+(m[2]=='#'?1:m[2]=='b'?-1:0);return 440*Math.pow(2,(k-9)/12+(+m[3]-4));}
 var mus={name:'',step:0,next:0,gain:null,noise:null};
-function musicVolume(on){if(mus&&mus.gain&&ac)mus.gain.gain.setTargetAtTime(on?1:0,ac.currentTime,.05);}
+function musicVolume(on){if(mus&&mus.gain&&ac)mus.gain.gain.setTargetAtTime(on?(OPT.music==null?.8:OPT.music):0,ac.currentTime,.05);}
 function wantSong(){
   if(mode=='title')return'title';if(mode=='win')return'win';if(!cur)return'';
   if(enemies.some(e=>e.boss))return'boss';
@@ -58,7 +58,7 @@ function drum(kind,t){
 function holdLen(arr,i){let n=1;while(arr[(i+n)%arr.length]=='-'&&n<arr.length)n++;return n;}
 function musicTick(){
   if(!ac||ac.state!='running')return;
-  if(!mus.gain){mus.gain=ac.createGain();mus.gain.gain.value=musicOn?1:0;mus.gain.connect(ac.destination);}
+  if(!mus.gain){mus.gain=ac.createGain();mus.gain.gain.value=musicOn?(OPT.music==null?.8:OPT.music):0;mus.gain.connect(ac.destination);}
   const want=wantSong();
   if(want!=mus.name){mus.name=want;mus.step=0;mus.next=ac.currentTime+.08;}
   const s=SONGS[mus.name];if(!s)return;
@@ -79,12 +79,12 @@ function ambTick(){
   if(!amb.rain){const mk=(type,freq,q)=>{const s=ac.createBufferSource(),f=ac.createBiquadFilter(),gn=ac.createGain();s.buffer=noiseBuf();s.loop=true;f.type=type;f.frequency.value=freq;f.Q.value=q;gn.gain.value=0;s.connect(f);f.connect(gn);gn.connect(mus.gain);s.start();return{f,gn};};
     amb.rain=mk('highpass',1200,.5);amb.wind=mk('lowpass',380,6);amb.t=0;}
   amb.t+=.025;const on=typeof mode!='undefined'&&mode=='play'&&cur&&cur.ow&&st,w=on?st.wx:'clear',k=on?st.wxk:0,now=ac.currentTime;
-  amb.rain.gn.gain.setTargetAtTime(w=='rain'?.05*k:0,now,.5);
+  amb.rain.gn.gain.setTargetAtTime(w=='rain'?.035*k:0,now,.5);
   const gust=.55+.45*Math.sin(amb.t*.7)*Math.sin(amb.t*.23);
-  amb.wind.gn.gain.setTargetAtTime((w=='snow'||w=='fog')?.06*k*gust:0,now,.4);amb.wind.f.frequency.setTargetAtTime(260+240*gust,now,.3);
+  amb.wind.gn.gain.setTargetAtTime((w=='snow'||w=='fog')?.04*k*gust:0,now,.4);amb.wind.f.frequency.setTargetAtTime(260+240*gust,now,.3);
   if(on&&musicOn&&dark()>.6&&w!='rain'&&w!='snow'&&Math.random()<.025)for(let i=0;i<3;i++){const t=now+i*.07,o=ac.createOscillator(),gn=ac.createGain();o.type='sine';o.frequency.value=4300+Math.random()*300;
     gn.gain.setValueAtTime(0,t);gn.gain.linearRampToValueAtTime(.006,t+.01);gn.gain.linearRampToValueAtTime(0,t+.04);o.connect(gn);gn.connect(mus.gain);o.start(t);o.stop(t+.05);}
 }
 function splashSfx(v,dl){if(!ac||!musicOn||ac.state!='running')return;try{const s=ac.createBufferSource(),f=ac.createBiquadFilter(),gn=ac.createGain(),t=ac.currentTime+(dl||0);s.buffer=noiseBuf();f.type='bandpass';f.frequency.setValueAtTime(1800,t);f.frequency.exponentialRampToValueAtTime(400,t+.25);
-  gn.gain.setValueAtTime(.12*(v||1),t);gn.gain.exponentialRampToValueAtTime(.001,t+.3);s.connect(f);f.connect(gn);gn.connect(ac.destination);s.start(t);s.stop(t+.32);}catch(e){}}
+  gn.gain.setValueAtTime(.12*(v||1)*OPT.sfx+.0001,t);gn.gain.exponentialRampToValueAtTime(.001,t+.3);s.connect(f);f.connect(gn);gn.connect(ac.destination);s.start(t);s.stop(t+.32);}catch(e){}}
 setInterval(()=>{try{musicTick();ambTick();}catch(e){}},25);

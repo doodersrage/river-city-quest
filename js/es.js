@@ -66,7 +66,7 @@ const ES={
  'Deep under Church Hill, in a railroad tunnel sealed since 1925, something woke up.':'Bajo Church Hill, en un túnel de tren sellado desde 1925, algo despertó.',
  'Made by doodersrage':'Hecho por doodersrage','with Claude':'con Claude','Set in Richmond, Virginia':'Ambientado en Richmond, Virginia','The real places are worth a visit.':'Los lugares reales merecen una visita.','Learn more from:':'Aprende más en:','Thanks for playing!':'¡Gracias por jugar!',
  // shop and mini-games
- 'CARYTOWN GOODS':'TIENDA DE CARYTOWN','A: buy   B: leave':'A: comprar   B: salir','Thank you kindly!':'¡Muchas gracias!','Not enough coins.':'No tienes suficientes monedas.','SOLD OUT':'AGOTADO','FULL':'LLENO',
+ 'CARYTOWN GOODS':'TIENDA DE CARYTOWN','17TH STREET MARKET':'MERCADO DE LA CALLE 17','Fresh from the farms!':'¡Recién llegado del campo!','What can I get you?':'¿Qué te sirvo?','Cupcake':'Cupcake','Come back any time!':'¡Vuelve cuando quieras!','A: buy   B: leave':'A: comprar   B: salir','Thank you kindly!':'¡Muchas gracias!','Not enough coins.':'No tienes suficientes monedas.','SOLD OUT':'AGOTADO','FULL':'LLENO',
  'Landmark Card Pack':'Sobre de cartas','Big Satchel':'Bolsa grande','Heart Charm':'Amuleto de corazón','10 Baseballs':'10 pelotas','4 Powder Kegs':'4 barriles','Carytown Cupcake':'Cupcake de Carytown',
  'Virginia Ham':'Jamón de Virginia','Bag of Flour':'Bolsa de harina','Bag of Sugar':'Bolsa de azúcar','Braided Rug':'Alfombra trenzada','Potted Fern':'Helecho en maceta','Fish Tank':'Pecera','Upright Piano':'Piano vertical',
  'A: swing   MENU: quit':'A: batear   MENÚ: salir','B: left flipper   A: right flipper   MENU: quit':'B: aleta izq.   A: aleta der.   MENÚ: salir','Steer with left and right':'Gira con izquierda y derecha',
@@ -74,12 +74,20 @@ const ES={
  // common toasts
  'Head back outside to catch a bus.':'Sal afuera para tomar el autobús.','You haven\'t been there yet.':'Todavía no has estado allí.','You hop on the bike.':'Te subes a la bici.','You hop off the bike.':'Te bajas de la bici.',
  'Face open water to cast.':'Mira hacia el agua para lanzar.','Nothing on B. Press MENU to pick an item.':'Nada en B. Pulsa MENÚ para elegir un objeto.','Challenge abandoned.':'Desafío abandonado.',
- 'A chest appeared!':'¡Apareció un cofre!','First Friday! Galleries open late.':'¡First Friday! Galerías abiertas.','Award: Good Dog!':'Logro: ¡Buen perro!','A hidden way opens!':'¡Se abre un camino oculto!','Save the bike for outdoors.':'Guarda la bici para afuera.'};
+ 'A chest appeared!':'¡Apareció un cofre!',
+ 'Move with the pad or the arrow keys.':'Muévete con el control o las flechas.','Walk up to the archivist and press A to talk.':'Acércate a la archivista y pulsa A para hablar.',
+ 'Press A away from people to swing your paddle.':'Pulsa A lejos de la gente para golpear con el remo.','Press B to use the item on B. Right now that is your lantern.':'Pulsa B para usar el objeto de B. Ahora es tu farol.',
+ 'Press MENU to see your items, quests and map.':'Pulsa MENÚ para ver objetos, misiones y mapa.','In the MENU, press B to flip tabs until you reach MAP. The star marks your next goal.':'En el MENÚ, pulsa B para pasar pestañas hasta el MAPA. La estrella marca tu próximo objetivo.',
+ "You're all set! Follow the star on your map.":'¡Listo! Sigue la estrella de tu mapa.',
+'First Friday! Galleries open late.':'¡First Friday! Galerías abiertas.','Award: Good Dog!':'Logro: ¡Buen perro!','A hidden way opens!':'¡Se abre un camino oculto!','Save the bike for outdoors.':'Guarda la bici para afuera.'};
 const ESP=[[/^Stories found (\d+)\/(\d+)$/,'Historias $1/$2'],[/^Cards (\d+)\/(\d+)   Fish caught (\d+)$/,'Cartas $1/$2   Peces $3'],[/^Awards (\d+)\/(\d+)$/,'Logros $1/$2'],[/^Quests (\d+)\/(\d+)$/,'Tareas $1/$2'],
   [/^Photos (\d+)\/(\d+)$/,'Fotos $1/$2'],[/^SOUND: ON$/,'SONIDO: SÍ'],[/^SOUND: OFF$/,'SONIDO: NO'],[/^VIBRATION: ON$/,'VIBRACIÓN: SÍ'],[/^VIBRATION: OFF$/,'VIBRACIÓN: NO'],[/^TIMER: ON$/,'CRONO: SÍ'],[/^TIMER: OFF$/,'CRONO: NO'],
   [/^TEXT: BIG$/,'TEXTO: GRANDE'],[/^TEXT: NORMAL$/,'TEXTO: NORMAL'],[/^COLOR ASSIST: ON$/,'AYUDA DE COLOR: SÍ'],[/^COLOR ASSIST: OFF$/,'AYUDA DE COLOR: NO'],[/^CALM MODE: ON$/,'MODO CALMA: SÍ'],[/^CALM MODE: OFF$/,'MODO CALMA: NO'],
   [/^BUTTONS: SMALL$/,'BOTONES: PEQUEÑOS'],[/^BUTTONS: MEDIUM$/,'BOTONES: MEDIANOS'],[/^BUTTONS: LARGE$/,'BOTONES: GRANDES'],[/^SLOT (\d)  - EMPTY -$/,'RANURA $1  - VACÍA -'],[/^SLOT (\d)  (.*)$/,'RANURA $1  $2'],
   [/^NEXT: /,'SIGUIENTE: '],[/^A: ride the bus to (.*)$/,'A: autobús a $1'],[/^Pitch (\d+)\/10   Hits (\d+)   HR (\d+)$/,'Lanzamiento $1/10   Hits $2   JR $3'],[/^Get it: (.*)$/,'Cómo: $1'],
   [/^Hearts (\d+)  Pieces (\d+)\/4$/,'Corazones $1  Piezas $2/4'],[/^Coins (\d+)  Keys (.*)$/,'Monedas $1  Llaves $2'],[/^Keystones (\d)\/4$/,'Claves $1/4'],[/^Stories (\d+)\/(\d+)  Pins (\d+)\/(\d+)$/,'Historias $1/$2  Pines $3/$4'],
-  [/^Starring (.*)$/,'Con $1'],[/^Ball (\d) of 3$/,'Bola $1 de 3'],[/^Pitch (\d+) of 10$/,'Lanzamiento $1 de 10'],[/^Time (.*)$/,'Tiempo $1']];
-function tr(s){if(typeof OPT=='undefined'||OPT.lang!='es'||typeof s!='string')return s;if(ES[s])return ES[s];for(const [re,to] of ESP)if(re.test(s))return s.replace(re,to);return s;}
+  [/^Starring (.*)$/,'Con $1'],[/^TIP (\d)\/(\d)$/,'CONSEJO $1/$2'],[/^MUSIC: (\d+)%$/,'MÚSICA: $1%'],[/^EFFECTS: (\d+)%$/,'EFECTOS: $1%'],[/^You got the (.*)!$/,'¡Conseguiste: $1!'],[/^You got a (.*)!$/,'¡Conseguiste: $1!'],[/^You found the (.*)!$/,'¡Encontraste: $1!'],[/^Ball (\d) of 3$/,'Bola $1 de 3'],[/^Pitch (\d+) of 10$/,'Lanzamiento $1 de 10'],[/^Time (.*)$/,'Tiempo $1']];
+let ESFRAG=null;
+function trLong(s){if(typeof OPT=='undefined'||OPT.lang!='es'||typeof s!='string')return s;const t=tr(s);if(t!==s)return t;
+  if(!ESFRAG)ESFRAG=Object.keys(ESX).filter(k=>k.length>=10).sort((a,b)=>b.length-a.length);let out=s;for(const k of ESFRAG)if(out.includes(k))out=out.split(k).join(ESX[k]);return out;}
+function tr(s){if(typeof OPT=='undefined'||OPT.lang!='es'||typeof s!='string')return s;if(ES[s])return ES[s];if(typeof ESX!='undefined'&&ESX[s])return ESX[s];for(const [re,to] of ESP)if(re.test(s))return s.replace(re,to);return s;}

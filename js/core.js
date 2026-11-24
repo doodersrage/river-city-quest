@@ -227,7 +227,7 @@ function updBlocks(){
       else if(cur.g[b.ty][b.tx]=='^')sfx(660,.08,'triangle');}}}
 }
 function burst(x,y,n,cols,sp0,size){for(let i=0;i<n;i++){const a=Math.random()*6.283,v=sp0*(.4+Math.random());parts.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,life:14+rnd(10),max:24,c:cols[rnd(cols.length)],s:size});}}
-function toast(m){toastMsg=tr(m);toastT=150;}
+function toast(m){toastMsg=trLong(m);toastT=150;}
 function learn(id){if(!LOREM[id]||st.lore[id])return;st.lore[id]=1;toast('Journal: '+LOREM[id].t);needSave=true;}
 
 /* ---------- save ---------- */
@@ -243,13 +243,13 @@ function continueGame(d){st=Object.assign(newState(),d.st);p=newPlayer();p.max=d
 let ac=null;
 function wake(){if(ac){if(ac.state=='suspended')ac.resume().catch(()=>{});return;}try{ac=new (window.AudioContext||window.webkitAudioContext)();}catch(e){ac=null;}}
 function sfx(f,d,type,v){if(!ac||!musicOn)return;try{const o=ac.createOscillator(),gn=ac.createGain();o.type=type||'square';o.frequency.value=f;
-  gn.gain.value=v||.04;gn.gain.exponentialRampToValueAtTime(.0001,ac.currentTime+(d||.08));o.connect(gn);gn.connect(ac.destination);o.start();o.stop(ac.currentTime+(d||.08));}catch(e){}}
+  gn.gain.value=(v||.04)*OPT.sfx;gn.gain.exponentialRampToValueAtTime(.0001,ac.currentTime+(d||.08));o.connect(gn);gn.connect(ac.destination);o.start();o.stop(ac.currentTime+(d||.08));}catch(e){}}
 function tune(seq,type){if(!ac||!musicOn)return;try{let t=ac.currentTime;for(const [f,d] of seq){if(f){const o=ac.createOscillator(),gn=ac.createGain();o.type=type||'square';o.frequency.value=f;
-  gn.gain.setValueAtTime(.045,t);gn.gain.exponentialRampToValueAtTime(.0001,t+d*.95);o.connect(gn);gn.connect(ac.destination);o.start(t);o.stop(t+d);}t+=d;}}catch(e){}}
+  gn.gain.setValueAtTime(.045*OPT.sfx+.0001,t);gn.gain.exponentialRampToValueAtTime(.0001,t+d*.95);o.connect(gn);gn.connect(ac.destination);o.start(t);o.stop(t+d);}t+=d;}}catch(e){}}
 const JING=[[523,.09],[659,.09],[784,.09],[1047,.24]],SECRET=[[784,.07],[740,.07],[622,.07],[440,.07],[415,.07],[659,.07],[831,.07],[1047,.2]],ORGAN=[[392,.22],[523,.22],[659,.22],[784,.44],[659,.22],[784,.6]];
 
 /* ---------- dialog ---------- */
-function say(lines,cb,head,choices){lines=lines.map(tr);head=tr(head);if(choices)choices=choices.map(tr);
+function say(lines,cb,head,choices){lines=lines.map(trLong);head=tr(head);if(choices)choices=choices.map(tr);
   const pages=[];
   const cw=OPT.big?21:27,lp=OPT.big?3:4;for(const s of lines){const ls=wrap(s,cw);for(let i=0;i<ls.length;i+=lp)pages.push(ls.slice(i,i+lp));}
   dlg={pages,i:0,n:0,cb:cb||null,head:head||'',choices:choices||null,sel:0};

@@ -210,7 +210,7 @@ function lightAt(tx,ty){
   if(!was&&isSolved(cur)){tune(SECRET);toast((cur.chests||[]).length?'A chest appeared!':'Something opened nearby.');}needSave=true;
 }
 function useItem(){
-  const id=st.eq;
+  const id=st.eq;tutF.b=1;
   if(!id){toast('Nothing on B. Press MENU to pick an item.');return;}
   switch(id){
     case'lantern':{const [fx,fy]=front(14),lt=tileAt(fx,fy),ltx=Math.floor(fx/TS),lty=Math.floor(fy/TS);
@@ -261,6 +261,7 @@ function updHold(){for(const d in hold)hold[d]=keys[d]?hold[d]+1:0;}
 const nav=d=>hold[d]==1||(hold[d]>18&&hold[d]%5==0);
 function update(){
   frame++;pollPad();updHold();
+  if(st&&st.tut!=null)tutTick();
   if(mode=='play'&&st&&!menu&&!trans){st.clock++;st.time++;wxTick();if(frame%60==0&&!st.rush)checkAch();}
   if(fade>0)fade--;if(bannerT>0)bannerT--;if(toastT>0)toastT--;if(shake>0)shake--;
   if(p&&p.hold&&--p.hold.t<=0)p.hold=null;
@@ -409,7 +410,7 @@ function menuUpdate(){
     if(nav('up'))m.jc=(m.jc+N-1)%N;if(nav('down'))m.jc=(m.jc+1)%N;
     if(m.jc<m.jt)m.jt=m.jc;if(m.jc>m.jt+10)m.jt=m.jc-10;
     if(nav('left')){m.tab=2;}else if(nav('right')){m.tab=4;}
-    if(press.a){const [id,t,s]=LORE[m.jc];if(st.lore[id]){const ls=wrap(s,28),pages=[];for(let i=0;i<ls.length;i+=10)pages.push(ls.slice(i,i+10));m.rd={t,pages,pg:0};sfx(700,.03);}else sfx(150,.06);}
+    if(press.a){const [id,t,s]=LORE[m.jc];if(st.lore[id]){const ls=wrap(tr(s),28),pages=[];for(let i=0;i<ls.length;i+=10)pages.push(ls.slice(i,i+10));m.rd={t,pages,pg:0};sfx(700,.03);}else sfx(150,.06);}
   }else if(m.tab==4){
     m.cc=m.cc||0;const N=CARDS.length;
     if(nav('left'))m.cc=(m.cc+N-1)%N;if(nav('right'))m.cc=(m.cc+1)%N;if(nav('up'))m.cc=(m.cc+N-4)%N;if(nav('down'))m.cc=(m.cc+4)%N;
@@ -429,10 +430,10 @@ function menuUpdate(){
   }
 }
 function shopUpdate(){
-  if(press.b||press.menu){shop=null;say(['Come back any time!'],null,'Shopkeeper');return;}
-  if(nav('up'))shop.cur=(shop.cur+SHOP.length-1)%SHOP.length;
-  if(nav('down'))shop.cur=(shop.cur+1)%SHOP.length;
-  if(press.a){const it=SHOP[shop.cur],why=it.why();
+  if(press.b||press.menu){const w=shop.who||'Shopkeeper';shop=null;say(['Come back any time!'],null,w);return;}
+  const SL=shop.list||SHOP;if(nav('up'))shop.cur=(shop.cur+SL.length-1)%SL.length;
+  if(nav('down'))shop.cur=(shop.cur+1)%SL.length;
+  if(press.a){const it=SL[shop.cur],why=it.why();
     if(why){sfx(150,.08);shop.msg=why=='???'?'You\'d need one of those first.':why=='FULL'?'You can\'t carry more.':why=='NO BOTTLE'?'You need a bottle for that.':'That one\'s gone.';}
     else if(st.coins<it.price){sfx(150,.08);shop.msg='Not enough coins.';}
     else{st.coins-=it.price;const r=it.buy();tune([[880,.06],[1175,.12]]);shop.msg=r||'Thank you kindly!';needSave=true;}}
@@ -443,7 +444,7 @@ function titleOpts(){
   if(tl.lv==0)return tl.saves.map((d,i)=>'SLOT '+(i+1)+'  '+(d?(d.st.name?d.st.name+' ':'')+(d.max/2)+'H '+fmtTime(d.st.time||0):'- EMPTY -')).concat(['IMPORT SAVE CODE','OPTIONS']);
   if(tl.lv==1)return saveData&&saveData.st.f.won?['CONTINUE','NEW GAME+','BOSS RUSH','COPY SAVE CODE','NEW GAME','BACK']:['CONTINUE','COPY SAVE CODE','NEW GAME','BACK'];
   if(tl.lv==2)return['YES, ERASE IT','NO'];
-  if(tl.lv==3)return['SOUND: '+(musicOn?'ON':'OFF'),'VIBRATION: '+(OPT.haptic===false?'OFF':'ON'),'TIMER: '+(OPT.timer?'ON':'OFF'),'TEXT: '+(OPT.big?'BIG':'NORMAL'),'COLOR ASSIST: '+(OPT.assist?'ON':'OFF'),'CALM MODE: '+(OPT.calm?'ON':'OFF'),'BUTTONS: '+{S:'SMALL',M:'MEDIUM',L:'LARGE'}[OPT.bs],OPT.lang=='es'?'IDIOMA: ESPAÑOL':'LANGUAGE: ENGLISH','CONTROLS','BACK'];
+  if(tl.lv==3)return['SOUND: '+(musicOn?'ON':'OFF'),'MUSIC: '+Math.round(OPT.music*100)+'%','EFFECTS: '+Math.round(OPT.sfx*100)+'%','VIBRATION: '+(OPT.haptic===false?'OFF':'ON'),'TIMER: '+(OPT.timer?'ON':'OFF'),'TEXT: '+(OPT.big?'BIG':'NORMAL'),'COLOR ASSIST: '+(OPT.assist?'ON':'OFF'),'CALM MODE: '+(OPT.calm?'ON':'OFF'),'BUTTONS: '+{S:'SMALL',M:'MEDIUM',L:'LARGE'}[OPT.bs],OPT.lang=='es'?'IDIOMA: ESPAÑOL':'LANGUAGE: ENGLISH','CONTROLS','BACK'];
   return ACTS.map(a=>ACTN[a]+'  '+bindName(a)).concat(['RESET KEYS','BACK']);
 }
 function titleUpdate(){
@@ -451,7 +452,7 @@ function titleUpdate(){
   const o=titleOpts(),n=o.length;
   if(nav('up'))titleSel=(titleSel+n-1)%n;if(nav('down'))titleSel=(titleSel+1)%n;
   const go=(lv,sel)=>{tl.lv=lv;titleSel=sel||0;sfx(760,.05);};
-  if(press.b){if(tl.lv==1||tl.lv==3)go(0,tl.lv==3?4:saveSlot-1);else if(tl.lv==2)go(1,0);else if(tl.lv==4)go(3,8);return;}
+  if(press.b){if(tl.lv==1||tl.lv==3)go(0,tl.lv==3?4:saveSlot-1);else if(tl.lv==2)go(1,0);else if(tl.lv==4)go(3,10);return;}
   if(!(press.a||press.menu))return;
   const sel=titleSel;
   if(tl.lv==0){if(sel==4){go(3);return;}if(sel==3){importSave();return;}saveSlot=sel+1;saveData=tl.saves[sel];if(saveData)go(1);else{sfx(660,.15,'triangle');startNew();}}
@@ -459,10 +460,14 @@ function titleUpdate(){
     if(o2=='CONTINUE'){sfx(660,.15,'triangle');continueGame(saveData);}else if(o2=='NEW GAME+'){sfx(660,.15,'triangle');newGamePlus(saveData);}
     else if(o2=='BOSS RUSH'){sfx(660,.15,'triangle');startRush();}else if(o2=='COPY SAVE CODE')exportSave(saveData);else if(o2=='NEW GAME')go(2,1);else go(0,saveSlot-1);}
   else if(tl.lv==2){if(sel==0){sfx(660,.15,'triangle');startNew();}else go(1,0);}
-  else if(tl.lv==3){if(sel==0)setSound(!musicOn);
-    else if(sel<7){if(sel==1){OPT.haptic=OPT.haptic===false;if(OPT.haptic)buzz(40);}else if(sel==2)OPT.timer=!OPT.timer;else if(sel==3)OPT.big=!OPT.big;else if(sel==4)OPT.assist=!OPT.assist;else if(sel==5)OPT.calm=!OPT.calm;else OPT.bs={S:'M',M:'L',L:'S'}[OPT.bs];
-      try{localStorage.setItem('rcq-timer',OPT.timer?'1':'0');}catch(e){}saveOpt();sfx(880,.05);}
-    else if(sel==7){OPT.lang=OPT.lang=='es'?'en':'es';saveOpt();sfx(880,.05);}
-    else if(sel==8)go(4);else go(0,4);}
-  else{if(sel<ACTS.length){capture=ACTS[sel];sfx(990,.05);}else if(sel==ACTS.length){CUST={};try{localStorage.removeItem('rcq-keys');}catch(e){}sfx(880,.05);}else go(3,8);}
+  else if(tl.lv==3){const o=titleOpts()[sel]||'';
+    if(sel==0)setSound(!musicOn);
+    else if(o.startsWith('MUSIC')){OPT.music=OPT.music>=1?0:Math.round((OPT.music+.2)*10)/10;saveOpt();musicVolume(musicOn);}
+    else if(o.startsWith('EFFECTS')){OPT.sfx=OPT.sfx>=1?0:Math.round((OPT.sfx+.2)*10)/10;saveOpt();sfx(880,.08);}
+    else if(o.startsWith('VIBRATION')){OPT.haptic=OPT.haptic===false;if(OPT.haptic)buzz(40);saveOpt();}
+    else if(o.startsWith('TIMER')){OPT.timer=!OPT.timer;try{localStorage.setItem('rcq-timer',OPT.timer?'1':'0');}catch(e){}saveOpt();}
+    else if(o.startsWith('TEXT')){OPT.big=!OPT.big;saveOpt();}else if(o.startsWith('COLOR')){OPT.assist=!OPT.assist;saveOpt();}else if(o.startsWith('CALM')){OPT.calm=!OPT.calm;saveOpt();}
+    else if(o.startsWith('BUTTONS')){OPT.bs={S:'M',M:'L',L:'S'}[OPT.bs];saveOpt();}else if(o.startsWith('LANGUAGE')||o.startsWith('IDIOMA')){OPT.lang=OPT.lang=='es'?'en':'es';saveOpt();}
+    else if(o=='CONTROLS')go(4);else go(0,4);sfx(880,.05);}
+  else{if(sel<ACTS.length){capture=ACTS[sel];sfx(990,.05);}else if(sel==ACTS.length){CUST={};try{localStorage.removeItem('rcq-keys');}catch(e){}sfx(880,.05);}else go(3,10);}
 }

@@ -302,7 +302,7 @@ function drawMenu(){
   }else if(m.tab==3){
     text('Stories found '+nLore()+'/'+LORE.length,W/2,26,'#fff2a8',8,'center','#080c28');
     for(let i=0;i<11;i++){const j=m.jt+i;if(j>=LORE.length)break;const [id,t]=LORE[j],y=40+i*12,sel=j==m.jc,got=st.lore[id];
-      if(sel)R(8,y-2,W-16,12,'#2c3a8a');text((sel?'> ':'  ')+(got?t:'- - - - - -'),12,y,got?'#ffffff':'#5a6496',8,'left','#080c28');}
+      if(sel)R(8,y-2,W-16,12,'#2c3a8a');text((sel?'> ':'  ')+(got?tr(t):'- - - - - -'),12,y,got?'#ffffff':'#5a6496',8,'left','#080c28');}
     text('A: read   B: next tab',W/2,FH-16,'#aeb7c2',8,'center');
   }else if(m.tab==2){
     drawQuests();
@@ -353,12 +353,12 @@ function drawMenu(){
   }
 }
 MF.E='111100111100111';
-function drawShop(){
+function drawShop(){const SL=shop.list||SHOP;
   const x0=14,y0=HUD+14,w=W-28,h=140;panel(x0,y0,w,h);
-  text('CARYTOWN GOODS',x0+10,y0+9,'#fff2a8',8,'left','#080c28');D(COIN[0].r,x0+w-40,y0+8);mtext(st.coins,x0+w-28,y0+10,'#fff2a8');
-  const top=Math.max(0,Math.min(SHOP.length-7,shop.cur-3));if(top>0)text('^',x0+w-6,y0+18,'#aeb7c2',6,'center');if(top+7<SHOP.length)text('v',x0+w-6,y0+108,'#aeb7c2',6,'center');
-  SHOP.forEach((it,i)=>{if(i<top||i>=top+7)return;const y=y0+24+(i-top)*13,sel=i==shop.cur,why=it.why();if(sel)R(x0+6,y-3,w-12,13,'#2c3a8a');
-    text((sel?'> ':'  ')+it.name,x0+8,y,why?'#7a84b6':'#ffffff',8,'left','#080c28');text(why||String(it.price),x0+w-10,y,why?'#7a84b6':'#fff2a8',8,'right','#080c28');});
+  text(shop.title||'CARYTOWN GOODS',x0+10,y0+9,'#fff2a8',8,'left','#080c28');D(COIN[0].r,x0+w-40,y0+8);mtext(st.coins,x0+w-28,y0+10,'#fff2a8');
+  const top=Math.max(0,Math.min(SL.length-7,shop.cur-3));if(top>0)text('^',x0+w-6,y0+18,'#aeb7c2',6,'center');if(top+7<SL.length)text('v',x0+w-6,y0+108,'#aeb7c2',6,'center');
+  SL.forEach((it,i)=>{if(i<top||i>=top+7)return;const y=y0+24+(i-top)*13,sel=i==shop.cur,why=it.why();if(sel)R(x0+6,y-3,w-12,13,'#2c3a8a');
+    text((sel?'> ':'  ')+tr(it.name),x0+8,y,why?'#7a84b6':'#ffffff',8,'left','#080c28');text(why||String(it.price),x0+w-10,y,why?'#7a84b6':'#fff2a8',8,'right','#080c28');});
   text(shop.msg,x0+w/2,y0+114,'#aeb7c2',8,'center');text('A: buy   B: leave',x0+w/2,y0+127,'#ffffff',8,'center');
 }
 const SKY=['#0c1030','#141a44','#22245a','#3a2a66','#6a3a6e','#a8505e','#e08a58'];
@@ -384,9 +384,9 @@ function draw(){
     if(mode=='title'){
       text('RIVER CITY',W/2+2,26,'#6a1c2c',16,'center');text('RIVER CITY',W/2,24,'#f2c14e',16,'center');
       text('QUEST',W/2+2,48,'#6a1c2c',16,'center');text('QUEST',W/2,46,'#fff2a8',16,'center');
-      text('The Tunnel Under Church Hill',W/2,70,'#e8ecf8',8,'center','#1a1423');
-      const opts=titleOpts(),top=tl.lv>=3?80:88,sp=opts.length>9?10:opts.length>4?11:13;R(14,top-6,W-28,opts.length*sp+8,'rgba(8,10,24,.6)');
-      opts.forEach((o,i)=>{const y=top+i*sp,sel=i==titleSel;if(sel){R(18,y-3,W-36,sp-1,'rgba(8,10,24,.78)');}text((sel?'> ':'  ')+o+(sel?' <':'  '),W/2,y,sel?'#ffffff':'#aeb7c2',8,'center','#1a1423');});
+      if(tl.lv<3)text('The Tunnel Under Church Hill',W/2,70,'#e8ecf8',8,'center','#1a1423');
+      const opts=titleOpts(),top=tl.lv>=3?74:88,sp=opts.length>11?9:opts.length>9?10:opts.length>4?11:13;R(14,top-6,W-28,opts.length*sp+8,'rgba(8,10,24,.6)');
+      opts.forEach((o,i)=>{const y=top+i*sp,sel=i==titleSel;if(sel){R(18,y-3,W-36,sp-1,'rgba(8,10,24,.78)');}text((sel?'> ':'  ')+tr(o)+(sel?' <':'  '),W/2,y,sel?'#ffffff':'#aeb7c2',8,'center','#1a1423');});
       if(tl.msgT>0)tl.msgT--;
       const hint=tl.msgT>0?tl.msg:capture?'Press a key for '+ACTN[capture]+'...':tl.lv==2?'Slot '+saveSlot+' will be erased.':tl.lv==4?'Arrows and Enter always work. Gamepads too.':tl.lv?'B: back':'Gamepad: A, X/B, Start';
       text(hint,W/2,FH-14,capture||tl.lv==2?'#f0a878':'#aeb7c2',8,'center','#1a1423');
@@ -423,6 +423,7 @@ function draw(){
     g.restore();
     drawHUD();
     if(fish&&!dlg)drawFishUI();
+    if(!menu)drawTut();
     if((OPT.timer||st.rush)&&!dlg)text(fmtTime(st.time),W-3,FH-11,'#ffffff',8,'right','#1a1423');
     if(chal&&chal.t!=null){const txt=chal.d.name+'  '+Math.ceil(chal.t/60)+'s  '+chal.got+'/'+chal.need,w=txt.length*8+16,x=(W-w)/2|0;
       R(x,HUD+4,w,16,'rgba(8,10,24,.88)');R(x,HUD+19,w,1,chal.t<300&&(frame>>3)&1?'#e83048':'#f2c14e');text(txt,W/2,HUD+8,'#ffffff',8,'center');}

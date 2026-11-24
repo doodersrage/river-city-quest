@@ -8,6 +8,7 @@ function openSpot(s,cx,cy){let best=null;for(let y=1;y<s.h-1;y++)for(let x=1;x<s
   const d=Math.abs(x-cx)+Math.abs(y-cy);if(!best||d<best[0])best=[d,x,y];}return best;}
 function addNpc(id,def,cx,cy,extra){const s=SC[id],b=openSpot(s,cx,cy);if(!b)return null;const n=Object.assign({},def,{tx:b[1],ty:b[2],x:b[1]*TS+8,y:b[2]*TS+8,hx:b[1]*TS+8,hy:b[2]*TS+8,f:1,t:0,vx:0,vy:0},extra||{});(s.npcs=s.npcs||[]).push(n);return n;}
 addNpc('ow:2,3',{who:'Shelter Volunteer',hat:C3('#e8d28a','#b09a54','#fff0b8'),shirt:C3('#58a850','#2f7a3c','#90d070'),talk:'shelter'},20,17);
+addNpc('ow:3,1',{who:'Market Grocer',hat:C3('#e8d28a','#b09a54','#fff0b8'),shirt:C3('#d8692a','#a04414','#f09458'),talk:'grocer'},16,12);
 addNpc('ow:3,2',{who:'Trail Cyclist',hat:C3('#3ac2e8','#1a8ab0','#8ae0f8'),shirt:C3('#f2c14e','#b88a20','#ffe08a'),talk:'cyclist'},20,10);
 SC['rowhouse:0,0'].name='Your Row House';
 
@@ -98,7 +99,7 @@ function cookMenu(){st.food=st.food||{};st.ingr=st.ingr||{};const I=st.ingr,can=
   say(['What should you cook? '+have],sel=>{const c=can[sel];if(!c)return;for(const [k,n] of Object.entries(c[1]))I[k]-=n;st.food[c[0]]=(st.food[c[0]]||0)+1;(st.f.cooked=st.f.cooked||{})[c[0]]=1;tune([[659,.08],[784,.08],[988,.16]],'triangle');toast('You cooked a '+FOODS[c[0]][0]+'!');needSave=true;},'Stove',can.map(c=>FOODS[c[0]][0]).concat(['Nothing']));}
 let warm=0,zoom=0;
 function eatMenu(){st.food=st.food||{};const have=Object.keys(FOODS).filter(k=>st.food[k]>0);
-  if(!have.length){toast('The basket is empty. Buy food in Carytown or cook at home.');sfx(150,.06);return;}
+  if(!have.length){toast('The basket is empty. Buy food at the 17th Street Market or cook at home.');sfx(150,.06);return;}
   say(['Your picnic basket: '+have.map(k=>FOODS[k][0]+' x'+st.food[k]).join(', ')+'.'],sel=>{const k=have[sel];if(!k)return;st.food[k]--;p.hp=Math.min(p.max,p.hp+FOODS[k][1]);
     if(k=='stew')warm=1800;if(k=='cupcake')zoom=600;tune([[523,.08],[659,.08],[784,.15]],'triangle');burst(p.x,p.y-8,10,['#f8a030','#ffffff'],1.2,2);toast('Mmm. '+FOODS[k][0]+'!');needSave=true;},'Picnic Basket',have.map(k=>FOODS[k][0]).concat(['Not now']));}
 const GARDENS=['ow:0,2','ow:0,-1','ow:4,0','ow:1,-1','ow:3,1'];
@@ -127,7 +128,7 @@ function fridayOnLoad(){const s=cur;s.npcs=(s.npcs||[]).filter(n=>!n.ff);ffNpcs=
 function fridayDecor(){if(!firstFriday()||!(curId=='ow:1,0'||curId=='ow:2,0'))return;if(frame%30==0)parts.push({x:cam.x+20+Math.random()*(W-40),y:cam.y+30+Math.random()*60,vx:(Math.random()-.5)*.2,vy:-.2,life:90,max:90,c:['#f8e060','#f890a0','#8ae0f8'][rnd(3)],s:2});}
 
 /* ---------- the new townspeople ---------- */
-TALK.shelter=n=>{if(st.dog)return['How\'s '+st.dog.name+' doing? Dogs love the parks along the river.'];
+TALK.shelter=n=>{if(st.dog)return['How is your dog doing?','Dogs love the parks along the river.'];
   say(['This pup has been waiting for a home for weeks. Would you like to adopt?'],sel=>{if(sel==4)return;st.dog={name:DOGNAMES[sel]};dogReset();tune(FANFARE);needSave=true;
     say([st.dog.name+' is yours! '+st.dog.name+' will follow you, sniff out hidden stashes, chase small pests and dig up treats now and then.'],null,n.who);},n.who,DOGNAMES.concat(['Not today']));return null;};
 TALK.cyclist=n=>{if(!st.items.bike){const L=give('bike');return['The Virginia Capital Trail starts right here and runs all the way to Jamestown.','I just got a new bike. Take my old one!',...L];}
@@ -137,3 +138,14 @@ TALK.curator=n=>{const got=['p1','p2','p3'].filter(k=>st.got['paint:'+k]).length
   if(got>=3){st.f.gallery=1;st.coins=Math.min(999,st.coins+50);tune(JING);needSave=true;return['You found all three! I can hang the show tonight after all.','Please, take 50 coins. And come back next First Friday.'];}
   if(!st.f.galleryAsk){st.f.galleryAsk=1;needSave=true;for(const k of ['p1','p2'])if(!st.got['paint:'+k]){const b=openSpot(cur,rnd(cur.w),rnd(cur.h));if(b)picks.push({x:b[1]*TS+8,y:b[2]*TS+8,kind:'painting',id:'paint:'+k,life:1e9});}}
   return['Disaster! Three paintings for tonight\'s show went missing on the way over.','Two must be somewhere on Broad Street, and one blew over to Jackson Ward. Find them before the night is over?'+(got?' You have '+got+' of 3.':'')];};
+
+/* ---------- the first five minutes: gentle tips for a new game ---------- */
+const TUT=[['Move with the pad or the arrow keys.',()=>tutF.moved>60],['Walk up to the archivist and press A to talk.',()=>st.items.lantern],
+  ['Press A away from people to swing your paddle.',()=>tutF.swing],['Press B to use the item on B. Right now that is your lantern.',()=>tutF.b],
+  ['Press MENU to see your items, quests and map.',()=>!!menu],['In the MENU, press B to flip tabs until you reach MAP. The star marks your next goal.',()=>menu&&menu.tab==7]];
+let tutF={moved:0,swing:0,b:0};
+function tutTick(){if(st.tut==null||mode!='play')return;if(p.moving)tutF.moved++;if(p.atk>0)tutF.swing=1;
+  const t=TUT[st.tut];if(t&&t[1]()){st.tut++;sfx(1200,.06,'triangle',.03);if(st.tut>=TUT.length){st.tut=null;toast('You\'re all set! Follow the star on your map.');needSave=true;}}}
+function drawTut(){if(st.tut==null||dlg||shop)return;const t=TUT[st.tut];if(!t)return;const ls=wrap(trLong(t[0]),40);const h=8+ls.length*9,Y=HUD+3+(bannerT>0?20:0);
+  R(6,Y,W-12,h,'rgba(8,10,24,.85)');R(6,Y+h-1,W-12,1,'#f2c14e');text('TIP '+(st.tut+1)+'/'+TUT.length,W-10,Y+3,'#f2c14e',6,'right');
+  ls.forEach((l,i)=>text(l,12,Y+3+i*9,'#ffffff',6,'left','#080c28'));}

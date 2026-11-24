@@ -40,3 +40,12 @@ G.dlg=null;G.press.menu=1;G.update();const tabs=new Set();for(let i=0;i<8;i++){t
 // Spanish
 G.menu=null;G.OPT.lang='es';ok(/archivista|Explora|Busca|Lleva|Ayuda|Cuenta/.test(G.goal()),'hints switch to Spanish');G.toast('Challenge abandoned.');G.draw();
 G.mode='title';G.draw();G.OPT.lang='en';ok(/^[A-Z]/.test(G.goal()),'and back to English');G.mode='play';
+// tutorial
+G.mode='title';G.startNew();G.press.a=1;G.update();for(let i=0;i<10&&G.mode!='play';i++){G.press.menu=1;G.update();}
+ok(G.st.tut===0,'a new game starts the tips');let k=0;while(G.dlg&&k++<40){G.press.a=1;G.update();}
+G.keys.right=1;for(let i=0;i<80;i++)G.update();G.keys.right=0;ok(G.st.tut==1,'tip 1 clears after walking');
+G.st.items.lantern=1;G.update();ok(G.st.tut==2,'tip 2 clears after meeting the archivist');
+G.p.atk=5;G.update();G.update();ok(G.st.tut==3,'tip 3 clears after a swing');
+G.p.atk=0;G.p.charging=false;G.st.eq='lantern';G.press.b=1;G.update();G.update();ok(G.st.tut==4,'tip 4 clears after using B');
+G.press.menu=1;G.update();G.update();ok(G.st.tut==5,'tip 5 clears on opening the menu');
+for(let i=0;i<8&&G.st.tut!=null;i++){G.press.b=1;G.update();G.draw();}ok(G.st.tut==null,'tip 6 clears on the map tab, and the tips end');G.press.menu=1;G.update();

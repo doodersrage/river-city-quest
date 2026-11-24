@@ -126,7 +126,8 @@ const TALK={
       st.wx=='rain'?'It\'s raining right now. Go look!':'Wait for a rainy day, then check around the ponds and the river.'];},
   folk(n){n.li=(n.li||0)+1;const c=folkContext();if(c&&n.li%2==0)return[c];return[n.lines[(n.li-1)%n.lines.length]];},
   docent(){return['The eggs in these cases were made for the Russian royal family.','Read the plaque on each case. A Virginian collector left them to the museum.'];},
-  shop(){shop={cur:0,msg:'What can I get you?'};return null;},
+  shop(){shop={cur:0,msg:'What can I get you?',list:SHOP,title:'CARYTOWN GOODS',who:'Shopkeeper'};return null;},
+  grocer(){shop={cur:0,msg:'Fresh from the farms!',list:MARKET,title:'17TH STREET MARKET',who:'Market Grocer'};return null;},
   keeper(){learn('vampire');
     return['Folks say a pale thing crawled out of the tunnel collapse and ran here to hide in a tomb.','The truth is sadder. It\'s in your journal now if you want it.',
       st.f['rub:pyr']?'The pyramid\'s open now. The iron keystone is somewhere inside. Mind the ghosts.':'Rubble seals the pyramid door. Blasting powder from the Belle Isle quarry would clear it.'];},
@@ -152,13 +153,15 @@ const BOSSTXT={arum:['The Titan Arum wilts with a sigh you can smell from across
   raven:['The raven croaks one last word. You can guess which one.','It flaps off through a crack in the brick and is gone.'],
   bell:['The great bell cracks and settles on its beam.','From the top of the tower, the other bells start to ring.']};
 const ING=(k,n)=>()=>{st.ingr=st.ingr||{};st.ingr[k]=(st.ingr[k]||0)+1;return'One '+n+'. You have '+st.ingr[k]+'.';};
-const SHOP=[
-  {name:'Camera',price:25,why:()=>st.items.camera?'SOLD OUT':'',buy(){st.items.camera=1;if(!st.eq)st.eq='camera';return'Snap landmarks to fill your album!';}},
+const MARKET=[
   {name:'Picnic Basket',price:10,why:()=>st.items.basket?'SOLD OUT':'',buy(){st.items.basket=1;st.food=st.food||{};st.food.cupcake=(st.food.cupcake||0)+1;return'A basket, with a cupcake in it!';}},
-  {name:'Carytown Cupcake',price:4,why:()=>!st.items.basket?'???':'',buy(){st.food=st.food||{};st.food.cupcake=(st.food.cupcake||0)+1;return'In the basket it goes.';}},
+  {name:'Cupcake',price:4,why:()=>!st.items.basket?'???':'',buy(){st.food=st.food||{};st.food.cupcake=(st.food.cupcake||0)+1;return'In the basket it goes.';}},
   {name:'Virginia Ham',price:3,why:()=>'',buy:ING('ham','Virginia ham')},
   {name:'Bag of Flour',price:2,why:()=>'',buy:ING('flour','bag of flour')},
   {name:'Bag of Sugar',price:2,why:()=>'',buy:ING('sugar','bag of sugar')},
+];
+const SHOP=[
+  {name:'Camera',price:25,why:()=>st.items.camera?'SOLD OUT':'',buy(){st.items.camera=1;if(!st.eq)st.eq='camera';return'Snap landmarks to fill your album!';}},
   {name:'Braided Rug',price:15,why:()=>st.furn&&st.furn.rug?'SOLD OUT':'',buy(){(st.furn=st.furn||{}).rug=1;return'Delivered to your row house in the Fan.';}},
   {name:'Potted Fern',price:8,why:()=>st.furn&&st.furn.fern?'SOLD OUT':'',buy(){(st.furn=st.furn||{}).fern=1;return'Delivered to your row house in the Fan.';}},
   {name:'Fish Tank',price:30,why:()=>st.furn&&st.furn.tank?'SOLD OUT':'',buy(){(st.furn=st.furn||{}).tank=1;return'Delivered. Fish you catch will swim in it.';}},

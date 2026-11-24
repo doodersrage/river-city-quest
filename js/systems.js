@@ -186,7 +186,7 @@ function drawFishUI(){
 }
 
 /* ---------- options, slots, controls, gamepad ---------- */
-const OPT={timer:false,big:false,assist:false,calm:false,bs:'M'};try{Object.assign(OPT,JSON.parse(localStorage.getItem('rcq-opt')||'{}'));if(localStorage.getItem('rcq-timer')=='1')OPT.timer=true;}catch(e){}
+const OPT={timer:false,big:false,assist:false,calm:false,bs:'M',music:.8,sfx:1};try{Object.assign(OPT,JSON.parse(localStorage.getItem('rcq-opt')||'{}'));if(localStorage.getItem('rcq-timer')=='1')OPT.timer=true;}catch(e){}
 function saveOpt(){try{localStorage.setItem('rcq-opt',JSON.stringify(OPT));}catch(e){}applyBtnSize();}
 function applyBtnSize(){try{const c=document.getElementById('controls');if(c&&c.style)c.style.zoom={S:.85,M:1,L:1.2}[OPT.bs]||1;}catch(e){}}
 const ACTS=['up','down','left','right','a','b','menu'],ACTN={up:'UP',down:'DOWN',left:'LEFT',right:'RIGHT',a:'A (paddle/talk)',b:'B (item)',menu:'MENU'};
@@ -284,7 +284,7 @@ function newGamePlus(d){const keep={cards:d.st.cards||{},fish:d.st.fish||{},ach:
 
 /* ---------- opening: name entry and illustrated intro ---------- */
 const NAMECH='ABCDEFGHIJKLMNOPQRSTUVWXYZ-.';let nm=null,intro=null,credits=null;
-function startNew(){newGame();st.name='RORY';nm={s:'RORY',cur:NAMECH.length+1};mode='name';}
+function startNew(){newGame();st.tut=0;tutF={moved:0,swing:0,b:0};st.name='RORY';nm={s:'RORY',cur:NAMECH.length+1};mode='name';}
 function nameUpdate(){
   const n=NAMECH.length+2,cols=10;
   if(nav('left'))nm.cur=(nm.cur+n-1)%n;if(nav('right'))nm.cur=(nm.cur+1)%n;
