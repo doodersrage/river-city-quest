@@ -32,11 +32,13 @@ html,body{height:100%;margin:0}
 body{background:var(--night);color:var(--fog);font-family:var(--body);display:flex;flex-direction:column;overflow:hidden;
   -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:none}
 header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:calc(8px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) 8px calc(16px + env(safe-area-inset-left));border-bottom:2px solid var(--slate)}
-h1{font-family:var(--display);font-size:11px;letter-spacing:.5px;margin:0;color:var(--lamp);font-weight:400;white-space:nowrap}
+h1{font-family:var(--display);font-size:11px;letter-spacing:.5px;margin:0;color:var(--lamp);font-weight:400;white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis}
 header p{margin:0;font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:none}
 .hbtns{display:flex;gap:8px;flex:none}
 .hb{font-family:var(--display);font-size:8px;color:var(--fog);background:var(--slate);border:2px solid #2c3246;border-radius:14px;padding:8px 10px;touch-action:none}
 .hb[hidden]{display:none}
+@media (max-width:520px){header{gap:8px;padding-left:calc(10px + env(safe-area-inset-left));padding-right:calc(10px + env(safe-area-inset-right))}h1{font-size:8px;flex:1 1 auto}.hbtns{gap:6px}.hb{font-size:7px;padding:8px 8px}.hb .lg{display:none}#snd::before{content:'\266A ';}}
+@media (max-width:340px){h1{display:none}header{justify-content:flex-end}}
 .hb:focus-visible,.btn:focus-visible{outline:3px solid var(--lamp);outline-offset:3px}
 #stage{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:8px 16px}
 canvas{display:block;max-width:100%;max-height:100%;image-rendering:pixelated;border:3px solid var(--slate);border-radius:4px;background:#000;touch-action:none}
@@ -68,7 +70,7 @@ canvas{display:block;max-width:100%;max-height:100%;image-rendering:pixelated;bo
   <p>Arrows or WASD move. Z or Space: A (swing, talk, read; hold for a spin). X: B (item). Enter: menu. N: sound.</p>
   <div class="hbtns">
     <button id="install" class="hb" type="button" hidden>INSTALL</button>
-    <button id="snd" class="hb" type="button" aria-pressed="true">SOUND ON</button>
+    <button id="snd" class="hb" type="button" aria-pressed="true"><span class="lg">SOUND </span>ON</button>
     <button id="menu" class="hb" type="button" aria-label="Open the inventory menu">MENU</button>
   </div>
 </header>

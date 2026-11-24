@@ -1493,7 +1493,7 @@ function draw(){
   ctx.setTransform(S,0,0,S,0,0);flushText();
 }
 const sndBtn=document.getElementById('snd');
-function setSound(on){musicOn=on;try{localStorage.setItem('rcq-sound',on?'1':'0');}catch(e){}if(sndBtn){sndBtn.textContent=on?'SOUND ON':'SOUND OFF';sndBtn.setAttribute('aria-pressed',on?'true':'false');}
+function setSound(on){musicOn=on;try{localStorage.setItem('rcq-sound',on?'1':'0');}catch(e){}if(sndBtn){sndBtn.innerHTML='<span class="lg">SOUND </span>'+(on?'ON':'OFF');sndBtn.setAttribute('aria-label',on?'Sound on':'Sound off');sndBtn.setAttribute('aria-pressed',on?'true':'false');}
   if(typeof musicVolume=='function')musicVolume(on);}
 try{musicOn=localStorage.getItem('rcq-sound')!=='0';}catch(e){}
 if(sndBtn){sndBtn.addEventListener('click',()=>{wake();setSound(!musicOn);});setSound(musicOn);}
