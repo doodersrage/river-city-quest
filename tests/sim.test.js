@@ -68,7 +68,7 @@ startNpc('ow:0,0','flies');ok(G.st.chal===undefined&&G.picks.filter(k=>k.kind=='
 for(const k of G.picks.filter(k=>k.kind=='token')){G.p.x=k.x;G.p.y=k.y;G.update();closeDlg();}ok(G.st.pins.flies,'collecting all fly balls wins the pin');
 startNpc('ow:1,0','bus');const fl=G.picks.find(k=>k.kind=='flag');ok(!!fl,'bus race: finish flag appears');G.p.x=fl.x;G.p.y=fl.y;G.update();closeDlg();ok(G.st.pins.bus,'reaching the flag wins the race');
 startNpc('ow:3,1','rats');let rc=G.enemies.filter(e=>e.chal).length;ok(rc==8,'market rats: 8 rats spawn');
-G.p.inv=99999;for(const e of G.enemies.filter(e=>e.chal)){e.hp=1;e.flash=0;G.p.x=e.x-14;G.p.y=e.y;G.p.dir=3;G.p.atk=0;G.press.a=1;tick(8);closeDlg();}
+G.p.inv=99999;for(let k=0;k<6&&G.enemies.some(e=>e.chal);k++)for(const e of G.enemies.filter(e=>e.chal)){e.hp=1;e.flash=0;G.p.x=e.x-14;G.p.y=e.y;G.p.dir=3;G.p.atk=0;G.p.spin=0;G.press.a=1;tick(8);closeDlg();}
 ok(G.st.pins.rats,'beating all the rats wins ('+G.enemies.filter(e=>e.chal).length+' left)');
 startNpc('ow:3,0','lamps');G.st.eq='lantern';for(const [x,y] of G.cur.lamps){G.p.x=x*T2+8;G.p.y=(y+1)*T2+8;G.p.dir=2;G.p.atk=0;G.press.b=1;G.update();closeDlg();}
 ok(G.st.pins.lamps,'lighting every gas lamp on Church Hill wins');
