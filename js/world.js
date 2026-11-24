@@ -133,7 +133,7 @@ const FOLKC=[[C3('#6a4020','#4a2c14','#8a5a30'),C3('#58a850','#2f7a3c','#90d070'
 let folkN=0;
 const F=(...lines)=>{const c=FOLKC[folkN++%FOLKC.length];return{who:'Local',hat:c[0],shirt:c[1],talk:'folk',lines,wander:true};};
 
-ow(0,0,"Scott's Addition",{base:'p',pal:[STEEL,BRICK,STEEL,BRICK2],rows:[
+ow(0,0,"Scott's Addition",{hs:'ware',base:'p',pal:[STEEL,BRICK,STEEL,BRICK2],rows:[
 'B13 p6 B13','B X12 p6 B13','B X12 p6 B13','B ..?..nn..?.. p6 B13','B .?.n....n.?. p6 B4 D B8','B ..n..?...n.. p6 susasasus`ss B',
 'B ...n.nn.n?.. p6 sasasas@ssss B','B ..?.....?... p6 s2 M s2 l s6 B','B f5 .. f5 @ p5 s12 B','B p31','B p6 ! p17 ! p6','B p10 @ p20','B p31',
 'B s2 l s5 l s4 p4 s4 l s5 l s2 B','B B5 s B6 s p4 s b12 B','B B5 s B6 s p4 s b .10 b B','B B5 s B6 s p4 s b ...,,.!... b B','B B5 s B6 s p4 s b .,,....,,. b B',
@@ -148,14 +148,14 @@ ow(1,0,"Broad Street",{base:'p',pal:[BRICK,CREAM,['#8a8e9c','#62667a','#a8acba']
   npcs:[N('commuter'),F('My grandmother had lunch at the Miller & Rhoads Tea Room every Christmas.','The streetcars are long gone, but the Pulse bus runs right down Broad.')],
   enT:['rat','scooter','scooter','rat'],readsL:['broad','streetcar'],doorsL:[{to:'tearoom:0,0'}],chestsL:['coins50'],
   lm:[{art:'store',x:1,y:1,w:13,h:6,read:'broad',c:'#c8b48c'},{art:'store',x:18,y:1,w:13,h:6,read:'broad',c:'#b0a8a0'},{art:'shelter',x:23,y:13,w:3,h:1}],cars:[{y:10,dir:1,kind:'bus'},{y:12,dir:-1}]});
-ow(2,0,"Jackson Ward",{base:'p',pal:[BRICK,BRICK2],rows:[
+ow(2,0,"Jackson Ward",{hs:'jw',base:'p',pal:[BRICK,BRICK2],rows:[
 'B32','B B8 s2 l s7 X12 B','B B8 s10 X12 B','B B8 s3 @ s6 X12 B','B B4 D B3 s10 X5 D X6 B','B s8 M s7 ? s5 ? s7 B','B s2 t s4 t s4 t s4 t s4 t s7 B',
 'B s4 ? s15 Q s9 B','B s5 @ s13 Y s10 B','p32','p5 ! p20 ! p5','p12 @ p19','p20 ? p11','B s2 l s10 p4 s7 ? s2 l s2 B','B f3 s f8 s p4 s f8 s f3 B',
 'B B12 s p4 s B12 B','B B12 s p4 s B12 B','B B12 s p4 s B12 B','B s5 ? s7 p4 s13 B','B b3 s ` s8 p4 s7 ! s5 B','B $ b2 s10 p4 s13 B','B14 p4 B14'],
   npcs:[N('musician'),N('dancer'),F('They called Second Street the Deuce. Every club on it had a band.','Mrs. Walker\'s house is just down the street. They keep it as a museum.')],
   enT:['rat','scooter','rat'],readsL:['jward','bojangles','bojangles'],doorsL:[{to:'bank:0,0'},{to:'hippo:0,0'}],chestsL:['coins50'],
   lm:[{art:'hippodrome',x:19,y:1,w:12,h:4,read:'jward'}],cars:[{y:9,dir:1}]});
-ow(3,0,"Church Hill",{base:'.',rows:[
+ow(3,0,"Church Hill",{hs:'hill',roof:'tin',pal:[BRICK,['#e8d48a','#b8a45a','#f8e8b0','clap'],['#9ab8a0','#6c8c74','#bcd8c2','clap'],BRICK2,['#8aa0c8','#5e749c','#aec2e4','clap']],base:'.',rows:[
 'T32','T r8 .9 X6 .7 T','T r8 .9 X6 .7 T','T r % r D r4 .9 X6 .3 @ .3 T','T .3 k .3 l .4 M .4 X6 .7 T','T .3 k .13 X2 D X3 .7 T','T .3 k .12 l .13 T',
 'T .3 k .11 x . x . x . ! .8 T','T .15 x . x . x .3 l .6 T','.31 T','. ! .29 T','.9 @ .22','.32','T R13 S4 R13 T',
 'T .4 ,4 .10 @ .11 T','T .3 l .15 b6 .5 T','T .19 b.*..b .5 T','T .5 ! .13 b6 .5 T','T .10 i .2 i .11 M .4 T','T b3 ` .17 l .8 T','T $ b2 .27 T','T14 .4 T14'],
@@ -168,7 +168,7 @@ ow(0,1,"Carytown",{base:'s',awn:true,pal:[['#d8a048','#a87428','#f0c070'],['#5aa
   npcs:[F('I come for the movies at the Byrd. Two dollars, and an organ before the show!','Every summer the whole street smells like watermelon.'),F('Have you seen the eggs at the art museum? Made for a Russian empress!'),N('vendor')],
   enT:['scooter','rat','scooter'],readsL:['carytown'],doorsL:[{to:'vmfa:0,0'},{to:'shop:0,0'},{to:'byrd:0,0'}],chestsL:['coins50'],
   lm:[{art:'vmfa',x:2,y:1,w:11,h:5,read:'faberge'},{art:'byrd',x:19,y:14,w:7,h:3,read:'byrd'}]});
-ow(1,1,"The Fan",{base:'.',pal:[CREAM,['#9ab8a0','#6c8c74','#bcd8c2'],BRICK,['#8aa0c8','#5e749c','#aec2e4']],rows:[
+ow(1,1,"The Fan",{hs:'fan',base:'.',pal:[CREAM,['#9ab8a0','#6c8c74','#bcd8c2'],BRICK,['#8aa0c8','#5e749c','#aec2e4']],rows:[
 'B14 p4 B14','B s5 @ s7 p4 s13 B','B s B5 s B5 s p4 s B5 s B5 s B','B s B5 s B5 s p4 s B5 s B5 s B','B s B5 s B5 s p4 s B5 s B5 s B',
 'B s t s4 M s4 t s p4 s t s4 t s4 t s B','B .3 ! .9 p4 .8 @ .4 B','B s13 p4 s13 B','B s3 l s9 p4 s9 l s3 B',
 'p32','.2 i .3 , Y , .2 i .2 p4 .5 i .8','. ? .12 p4 .5 ! .8','p32','B s3 l s9 p4 s9 l s3 B',
@@ -184,7 +184,7 @@ ow(2,1,"Capitol Square",{base:'.',rows:[
   npcs:[N('archivist'),N('quizguide'),F('The squirrels here are bolder than the legislators.','I eat lunch by the fountain every day. Even in the fog.')],
   enT:[],readsL:['capitol','civilrights'],doorsL:[{to:'capitol:0,0'}],chestsL:['coins50'],
   lm:[{art:'capitol',x:18,y:1,w:10,h:6,read:'capitol'},{art:'belltower',x:5,y:1,w:2,h:4,read:'capital1780'}]});
-ow(3,1,"Shockoe Bottom",{base:'p',pal:[BRICK2,STONE],rows:[
+ow(3,1,"Shockoe Bottom",{hs:'ware',base:'p',pal:[BRICK2,STONE],rows:[
 'B14 p4 B14','B s5 ? s7 p4 s X12 B','B s3 l s9 p4 s X12 B','B s4 B5 s4 p4 s X12 B','B s4 B5 s4 p4 s X12 B','B s4 B5 s4 p4 s X12 B','B s13 p4 s X5 D X6 B',
 'B K30 B','B s13 p4 s M s4 ` s6 B','p31 B','p6 ! p17 ! p6 B','p10 @ p20 B','p5 ? p9 ? p9 ? p5 B','B s13 p4 s3 M s9 B','B s13 p4 s2 X10 s B',
 'B s2 B6 s5 p4 s2 X10 s B','B s2 B6 s5 p4 s3 a s a s @ s a s a s B','B s2 B2 D B3 s5 p4 s13 B','B s7 M s5 p4 s4 ! s8 B','B b3 s4 ? s5 p4 s5 ? s7 B','B $ b2 s10 p4 s5 ` s7 B','B14 p4 B14'],
@@ -210,7 +210,7 @@ ow(2,2,"Belle Isle",{base:'.',rows:[
 'w3 . X6 .16 ! .2 w3','w3 . X6 .11 M .7 w3','w3 . X2 % X3 .19 w3','w3 .2 ? .5 ! .17 w3','w3 .9 r2 .3 ? r2 .9 w3','w14 ~4 w14','w14 ~9 $ r w7','w14 ~4 w14'],
   npcs:[N('kayaker'),N('volunteer')],enT:['crab','goose','crab','crab'],readsL:['belleisle','falls'],doorsL:[{to:'quarry:0,1'},{to:'ruins:0,0'}],chestsL:['coins50'],
   lm:[{art:'ruins',x:4,y:14,w:6,h:3,read:'belleisle'}]});
-ow(3,2,"Rocketts Landing",{base:'n',pal:[BRICK2],rows:[
+ow(3,2,"Rocketts Landing",{hs:'ware',base:'n',pal:[BRICK2],rows:[
 'r14 n4 r14','r n2 B6 n5 n4 n3 B10 r','r n2 B6 n12 B10 r','r n2 B2 D B3 n3 M n8 B10 r','r n5 ! n18 ! n5 r','r n3 l n8 ? n8 l n8 r','r n22 M n7 r',
 'r n4 @ n10 i n2 i n11 r','r n8 ? n12 ? n8 r','n31 r','n10 ! n20 r','n6 ? n12 @ n11 r','n31 r','r n3 ` n26 r','r n4 =2 n3 =2 n19 r',
 'r w4 =2 X7 w2 ~2 w13 r','r w4 =2 X7 w2 ~2 w13 r','r w4 =2 w8 ~6 w10 r','r w4 $ w10 ~2 * ~3 w9 r','r w15 ~6 w9 r','r w30 r','r32'],
@@ -222,7 +222,7 @@ ow(1,3,"Forest Hill Park",{base:'.',pal:[STONE],rows:[
   npcs:[N('ranger'),N('conductor'),F('My great-grandmother rode the roller coaster here for a nickel.','The lake used to freeze over in winter. Everyone went skating.')],
   enT:['squirrel','goose','squirrel'],readsL:['foresthill','!carousel'],doorsL:[{to:'stonehouse:0,0'}],itemsL:[{id:'carkey',kind:'carkey'}],chestsL:['coins50'],
   lm:[{art:'stonehouse',x:4,y:2,w:7,h:4,read:'foresthill'},{art:'trolley',x:4,y:10,w:3,h:1}]});
-ow(2,3,"Manchester",{base:'p',pal:[BRICK,STEEL],rows:[
+ow(2,3,"Manchester",{hs:'ware',base:'p',pal:[BRICK,STEEL],rows:[
 'w14 ~4 w8 f4 w2','w14 ~4 w8 =4 w2','w14 ~4 w8 =4 w2','U3 e U5 e U4 p4 U2 e U5 =4 U2','B s5 M s7 p4 s4 @ s3 M s4 B','B s2 l s5 l s4 p4 s4 l s4 l s3 B',
 'B s2 B6 s5 p4 s B11 s B','B s2 B6 s5 p4 s B11 s B','B s2 B2 D B3 s5 p4 s B4 e B6 s B','p31 B','p6 ! p17 ! p7','p13 @ p18','p32','B s3 q s9 p4 s9 q s3 B',
 'B s2 B6 s5 p4 s B11 s B','B s2 B6 s5 p4 s B11 s B','B s2 B6 s5 p4 s B4 e B6 s B','B s13 p4 s7 ! s5 B','B s3 ` s9 p4 s13 B','B b3 s10 p4 s13 B','B $ b2 s10 p4 s13 B','B32'],
@@ -243,7 +243,7 @@ ow(0,-1,"Bryan Park",{base:'.',rows:['TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT','T......
     F('East of here is the botanical garden. Their glass conservatory has been acting strange lately.','I heard something in there is growing way too fast.'),
     F('Scott\'s Addition is just south, down the path.','Frisbee golf? In this fog? Maybe tomorrow.')],
   enT:['squirrel','goose','squirrel','goose'],readsL:['bryanpark'],chestsL:['coins50']});
-ow(1,-1,"Lewis Ginter Botanical Garden",{base:'.',rows:['TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT','T..............................T','T...BBBBBBBBBB.................T','T...BBBBBBBBBB....,,,,,,,,.....T','T...BBBBBBBBBB....,,,,,,,,.....T','T...BBBBDBBBBB....,,,www,,.....T','T.............M...,,,www,,.....T','T...l....l.........,,,,,,......T','...............@...............T','......!........................T','...............................T','T....ssssssssssssssssssss......T','T....s,,,,,,s..T..s,,,,,s......T','T....s,,!,,,s.....s,,,,,s......T','T....ssssssssssssssssssss......T','T..............................T','T..TT....@.............TT......T','T..TT.......!..........TT..$...T','T..............................T','T.....wwww...........`.........T','T.....wwww.....................T','TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT'],
+ow(1,-1,"Lewis Ginter Botanical Garden",{hs:'glass',base:'.',rows:['TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT','T..............................T','T...BBBBBBBBBB.................T','T...BBBBBBBBBB....,,,,,,,,.....T','T...BBBBBBBBBB....,,,,,,,,.....T','T...BBBBDBBBBB....,,,www,,.....T','T.............M...,,,www,,.....T','T...l....l.........,,,,,,......T','...............@...............T','......!........................T','...............................T','T....ssssssssssssssssssss......T','T....s,,,,,,s..T..s,,,,,s......T','T....s,,!,,,s.....s,,,,,s......T','T....ssssssssssssssssssss......T','T..............................T','T..TT....@.............TT......T','T..TT.......!..........TT..$...T','T..............................T','T.....wwww...........`.........T','T.....wwww.....................T','TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT'],
   npcs:[F('The conservatory doors blew open in the fog, and vines came out after them.','Our gardener left a watering can somewhere inside. Plants in there respond to it. Strongly.'),
     F('Something enormous is blooming under the glass dome. It smells like a dumpster in August.','Bryan Park is west of here.')],
   enT:['squirrel','rat','goose'],readsL:['ginter'],doorsL:[{to:'conserv:0,2'}],chestsL:['coins50']});

@@ -14,9 +14,11 @@ function mtext(s,x,y,c,sh){s=String(s);if(sh!==false){let q=x+1;for(const ch of 
   for(const ch of s){const m=MF[ch];if(m)for(let i=0;i<15;i++)if(m[i]=='1')R(x+i%3,y+(i/3|0),1,1,c);x+=4;}}
 function D(s,x,y,white){g.drawImage(white?s.wht:s.c,Math.round(x),Math.round(y));}
 function shadow(x,y,w){x=Math.round(x);y=Math.round(y);R(x-w,y,w*2,3,'rgba(10,8,24,.3)');R(x-w+2,y-1,w*2-4,5,'rgba(10,8,24,.3)');}
-function panel(x,y,w,h){R(x+1,y,w-2,h,'#f4f4f8');R(x,y+1,w,h-2,'#f4f4f8');
+function panel(x,y,w,h){R(x+1,y,w-2,h,'#1a1a22');R(x,y+1,w,h-2,'#1a1a22');R(x+1,y+1,w-2,1,'#6a6a7a');R(x+1,y+1,1,h-2,'#6a6a7a');R(x+1,y+h-2,w-2,1,'#4a4a58');R(x+w-2,y+1,1,h-2,'#4a4a58');
   const gr=g.createLinearGradient(0,y,0,y+h);gr.addColorStop(0,'#2a3c9c');gr.addColorStop(1,'#0c1440');g.fillStyle=gr;g.fillRect(x+2,y+2,w-4,h-4);
-  R(x+3,y+3,w-6,1,'#6878d0');R(x+3,y+3,1,h-6,'#6878d0');R(x+3,y+h-4,w-6,1,'#080c28');R(x+w-4,y+3,1,h-6,'#080c28');}
+  R(x+3,y+3,w-6,1,'#6878d0');R(x+3,y+3,1,h-6,'#6878d0');R(x+3,y+h-4,w-6,1,'#080c28');R(x+w-4,y+3,1,h-6,'#080c28');
+  if(w>40&&h>20){ironCurl(x+3,y+3,1,1,'#9a9aaa','#f2c14e');ironCurl(x+w-4,y+3,-1,1,'#9a9aaa','#f2c14e');ironCurl(x+3,y+h-4,1,-1,'#9a9aaa','#f2c14e');ironCurl(x+w-4,y+h-4,-1,-1,'#9a9aaa','#f2c14e');
+    if(w>120){const m=x+(w>>1);R(m-2,y,5,1,'#9a9aaa');R(m-1,y-1,3,1,'#9a9aaa');R(m,y-2,1,1,'#f2c14e');}}}
 function paddleAt(an,glow){
   const ox=p.x,oy=p.y-3,cs=Math.cos(an),sn=Math.sin(an);
   for(let r=4;r<=17;r++){const q=r>=13?2:1;R(Math.round(ox+cs*r)-q,Math.round(oy+sn*r)-q,q*2+1,q*2+1,'#1a1423');}
@@ -357,13 +359,10 @@ function drawTitleBg(){
   SKY.forEach((c,i)=>{R(0,i*21,W,21,c);if(i)for(let x=0;x<W;x+=2){R(x,i*21,1,1,SKY[i-1]);R(x+1,i*21-1,1,1,c);}});
   for(let i=0;i<40;i++){const q=HH(i,3,9);if(((frame>>4)+i)%7)R(q%W,(q>>8)%70,1,1,i%5?'#c8d0f0':'#ffffff');}
   R(196,22,14,14,'#fff2c8');R(194,25,18,8,'#fff2c8');R(198,20,10,18,'#fff2c8');R(200,26,3,3,'#e8d8a0');R(205,31,2,2,'#e8d8a0');
-  for(let i=0;i<W;i+=13){const q=HH(i,5,2),h=22+q%34,w=9+(q>>6)%5;R(i,150-h,w,h,'#141226');R(i,150-h,1,h,'#24203c');
-    for(let y=150-h+4;y<146;y+=6)for(let x=i+2;x<i+w-2;x+=3)if(HH(x,y,4)%3==0)R(x,y,2,3,HH(x,y,(frame>>6))%9?'#f8d868':'#a88030');}
-  R(100,96,40,54,'#141226');R(104,90,32,6,'#141226');R(112,84,16,6,'#141226');for(let x=104;x<136;x+=6)R(x,100,2,30,'#2c2848');
-  R(0,134,W,5,'#0c0a18');R(0,133,W,1,'#3a3458');
-  for(let i=-8;i<W;i+=34){R(i,139,7,16,'#0c0a18');for(let k=0;k<5;k++){R(i+7+k,139,1,5-k,'#0c0a18');R(i+33-k,139,1,5-k,'#0c0a18');}}
+  drawSkyline();
   ['#3a2a66','#2a2660','#1c2250','#141a44'].forEach((c,i)=>R(0,150+i*13,W,13,c));
   for(let i=0;i<26;i++){const q=HH(i,8,1),y=152+(q>>8)%46;R(((q%W)+((frame>>2)*(i&1?1:-1))+W*4)%W,y,6+(q>>4)%10,1,i%4?'#6a5a9a':'#f0a878');}
+  drawRiverFront();
   drawFog(.2);
 }
 function draw(){

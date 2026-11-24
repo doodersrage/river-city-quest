@@ -165,11 +165,11 @@ function runJob(){
   const j=jobs[0];if(!j)return false;
   if(j.pre){jobs.shift();const s=SC[j.pre];applyDyn(s);if(cacheGet(s))return true;j.e=null;j.s=s;j.id=s.id;j.fr=0;j.new=true;jobs.unshift(j);delete j.pre;return true;}
   const s=SC[j.id];
-  if(!j.cv){if(j.fr>0&&j.e.cv[j.fr]){jobs.shift();return true;}j.cv=mkCanvas(s.w*TS,s.h*TS);j.y=0;j.ph=0;if(j.fr==0)s.torches=[];}
+  if(!j.cv){if(j.fr>0&&j.e.cv[j.fr]){jobs.shift();return true;}j.cv=mkCanvas(s.w*TS,s.h*TS);decorFor(s);j.y=0;j.ph=0;if(j.fr==0)s.torches=[];}
   const old=g;g=j.cv.getContext('2d');
   if(j.ph==0){const y1=Math.min(s.h,j.y+4);for(let y=j.y;y<y1;y++)for(let x=0;x<s.w;x++)tile(s,s.g[y][x],x,y,j.fr);j.y=y1;if(j.y>=s.h){j.ph=1;j.y=0;}}
   else if(j.ph==1){const y1=Math.min(s.h,j.y+8);for(let y=j.y;y<y1;y++)for(let x=0;x<s.w;x++)shadeTile(s,x,y);j.y=y1;if(j.y>=s.h)j.ph=2;}
-  else{drawLandmarks(s,j.fr);jobs.shift();
+  else{drawLandmarks(s,j.fr);drawDecor(s);jobs.shift();
     if(j.new){applyDyn(s);cachePut(s,sigOf(s),j.cv);}
     else if(j.stale){j.cv=null;j.stale=0;jobs.push(j);}
     else if(CVC.get(j.id)===j.e)j.e.cv[j.fr]=j.cv;}
