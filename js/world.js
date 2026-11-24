@@ -51,6 +51,25 @@ const LORE=[
 ['foresthill',`Forest Hill Park`,`Holden Rhodes built the granite Stone House here in the 1830s. In 1890 a trolley company turned the grounds into an amusement park with a carousel, a roller coaster and a penny arcade inside the house. The rides came down in 1932, and the city bought the land in 1934.`],
 ['manchester',`Manchester`,`Manchester began as a town on the south bank in 1769 and became its own city in 1874. In 1910 it joined Richmond, and part of the deal was a new bridge across the James.`],
 ['mayo',`Mayo's Bridge`,`John Mayo Jr. opened a toll bridge here in 1788, and floods carried it away again and again. The concrete bridge standing today went up after Manchester joined Richmond, and it is the city's oldest highway bridge over the James.`],
+['sciencemuseum',`Science Museum of Virginia`,`The Science Museum fills the old Broad Street Station, a domed train station designed by John Russell Pope that opened in 1919. Passenger trains stopped running here in the 1970s. Now the ticket hall holds exhibits, and the Dome theater shows the night sky.`],
+['vmhc',`Virginia Museum of History & Culture`,`The Virginia Historical Society was founded in 1831. Its museum on Arthur Ashe Boulevard tells the story of Virginia, from the Native peoples who lived here first through the centuries since.`],
+['ashblvd',`Arthur Ashe Boulevard`,`In 2019 Richmond renamed the Boulevard for Arthur Ashe, the tennis champion who grew up here. As a boy he was kept off the city's whites-only courts, so he learned the game at Brook Field, the Black playground where his father worked.`],
+['sauers',`The Sauer's Sign`,`C.F. Sauer started selling vanilla extract in Richmond in 1887. The company's giant lighted sign on West Broad Street, with its blinking bottle, became one of the city's best-loved landmarks.`],
+['raceway',`Richmond Raceway`,`NASCAR has raced in Richmond since the 1950s. Today's track is a three-quarter-mile oval, short enough that fans can see every car on every lap. Drivers call it the Action Track.`],
+['agecroft',`Agecroft Hall`,`Agecroft Hall was built in Lancashire, England, in the late 1400s. In the 1920s a Richmond businessman, Thomas C. Williams Jr., bought it, had it taken apart, shipped it across the Atlantic in crates and rebuilt it above the James in Windsor Farms.`],
+['texasbeach',`Texas Beach`,`Texas Beach is a stretch of sand and boulders in the James River Park System. You reach it on a footbridge over the railroad and the old canal. Nobody seems sure how it got its name.`],
+['vcu',`VCU and the Rams`,`Virginia Commonwealth University formed in 1968 when the Richmond Professional Institute joined the Medical College of Virginia. In 2011 its basketball team, the Rams, started in the brand-new First Four and made it all the way to the Final Four.`],
+['marshall',`John Marshall House`,`John Marshall built this brick house in 1790. He served as Chief Justice of the United States for 34 years, longer than anyone else, and his rulings helped shape the Supreme Court's power.`],
+['bhm',`Black History Museum`,`The Black History Museum & Cultural Center of Virginia now lives in the Leigh Street Armory, built in 1895 for one of Richmond's Black militia units. Later it served as a school. The museum reopened here in 2016.`],
+['jefferson',`The Jefferson Hotel`,`Lewis Ginter opened the Jefferson in 1895. For decades live alligators lived in the marble pools of its lobby. The last of them died in 1948, and bronze alligators keep watch there now.`],
+['canalwalk',`The Canal Walk`,`George Washington pushed for a canal to carry boats from Richmond west toward the Ohio River. The James River and Kanawha Canal never got that far before railroads took over. Its downtown stretch is now the Canal Walk.`],
+['brownsisland',`Brown's Island`,`Brown's Island was once lined with mills and factories. Now it is a park where Richmond throws big outdoor parties, including the Richmond Folk Festival every October and Dominion Riverrock, an outdoor sports and music festival, in May.`],
+['pipeline',`The Pipeline Walk`,`This catwalk runs along the top of a big pipe at the east end of the falls, just above the rapids. From it you can watch great blue herons nesting on the river islands.`],
+['libbyview',`The View That Named Richmond`,`Legend says William Byrd II looked at the bend of the James from this hill and was reminded of the view at Richmond upon Thames, back in England. So he named the new town Richmond.`],
+['leebridge',`The Belle Isle Footbridge`,`The footbridge to Belle Isle hangs from cables under the Lee Bridge, so you walk across the James right under the traffic, with the rapids below your feet.`],
+['hanover',`Hanover Tomatoes`,`Richmonders swear by Hanover tomatoes, grown in the sandy soil of Hanover County just north of the city. Every July a tomato festival celebrates them.`],
+['ukrops',`Ukrop's Rainbow Cookies`,`Ukrop's was the Richmond grocery chain everybody knew. Its bakery's rainbow cookies, three colored layers with chocolate on top, are still a local favorite.`],
+['sallybell',`Sally Bell's Kitchen`,`Sally Bell's Kitchen has been a Richmond bakery since the 1920s. Its famous boxed lunch comes with a sandwich, potato salad, a deviled egg, a cheese wafer and a cupcake, all tied up in a box.`],
 ];
 const LOREM={};LORE.forEach(([id,t,s])=>LOREM[id]={t,s});
 const READX={'!engine':['C&O Engine 231','It sits right where the hill buried it in 1925, rusted and silent.'],
@@ -83,6 +102,9 @@ const AST={
   station:{lit:true,fl:['#c8c0b0','#a8a090','#e0d8c8'],wl:['#b05a40','#7a3a28','#d07a60']},
   mansion:{lit:true,wood:true,fl:['#6a3a2a','#4a2418','#8a5a44'],wl:['#5a7a5a','#3a5a3a','#7a9a7a']},
   boat:{lit:true,wood:true,fl:['#a07848','#7a5834','#c09868'],wl:['#6a5a4a','#4a3e32','#8a7a6a']},
+  hotel:{lit:true,fl:['#c8b890','#a89870','#e4d8b4'],wl:['#e8dcc0','#b4a684','#fbf0d8']},
+  gym:{lit:true,wood:true,fl:['#c89a5a','#a87a3a','#e0b47a'],wl:['#2a2a32','#14141a','#f2c14e']},
+  armory:{lit:true,wood:true,fl:['#8a5a34','#6a4224','#a8744a'],wl:['#b05a40','#7a3a28','#d07a60']},
   arcade:{lit:true,wood:true,fl:['#7a6a5a','#5e5044','#948270'],wl:['#9a9aa0','#6a6a74','#bcbcc4']},
   studio:{lit:true,fl:['#8a8a90','#6a6a70','#a8a8ae'],wl:['#e8e4dc','#b0aca4','#ffffff']}
 };
@@ -135,21 +157,21 @@ const F=(...lines)=>{const c=FOLKC[folkN++%FOLKC.length];return{who:'Local',hat:
 
 ow(0,0,"Scott's Addition",{hs:'ware',base:'p',pal:[STEEL,BRICK,STEEL,BRICK2],rows:[
 'B13 p6 B13','B X12 p6 B13','B X12 p6 B13','B ..?..nn..?.. p6 B13','B .?.n....n.?. p6 B4 D B8','B ..n..?...n.. p6 susasasus`ss B',
-'B ...n.nn.n?.. p6 sasasas@ssss B','B ..?.....?... p6 s2 M s2 l s6 B','B f5 .. f5 @ p5 s12 B','B p31','B p6 ! p17 ! p6','B p10 @ p20','B p31',
+'B ...n.nn.n?.. p6 sasasas@ssss B','B ..?.....?... p6 s2 M s2 l s6 B','B f5 .. f5 @ p5 s12 B','p32','p7 ! p17 ! p6','p11 @ p20','p32',
 'B s2 l s5 l s4 p4 s4 l s5 l s2 B','B B5 s B6 s p4 s b12 B','B B5 s B6 s p4 s b .10 b B','B B5 s B6 s p4 s b ...,,.!... b B','B B5 s B6 s p4 s b .,,....,,. b B',
 'B s13 p4 s b ....bbb... b B','B b3 ` s9 p4 s b ....b*b... b B','B $ b2 s10 p4 s b12 B','B14 p4 B14'],
   npcs:[F('Breweries everywhere you look in Scott\'s Addition. Old factories make good taprooms.','I can hear the crowd at The Diamond from my porch on game nights.'),N('ballplayer'),
     F('This fog rolled in the night the lamps on Church Hill went out. Strange times.','Go easy on the rats. Well, not too easy.')],
   enT:['rat','scooter','rat'],readsL:['scotts'],doorsL:[{to:'taproom:0,0'}],chestsL:['coins50'],lm:[{art:'grandstand',x:1,y:1,w:12,h:2,read:'diamond'}],cars:[{y:10,dir:1}]});
 ow(1,0,"Broad Street",{base:'p',pal:[BRICK,CREAM,['#8a8e9c','#62667a','#a8acba']],rows:[
-'B32','B X13 s $ s2 X13 B','B X13 s4 X13 B','B X13 s ! s2 X13 B','B X13 b4 X13 B','B X13 s4 X13 B','B X6 D X6 s4 X13 B',
+'B32','B X13 s $ s2 X13 B','B X13 s4 X13 B','B X13 s ! s2 X13 B','B X13 b4 X13 B','B X13 s4 X13 B','B X6 D X6 s4 X7 D X5 B',
 'B s2 l s4 t s2 M s3 @ s3 t s4 l s6 B','B s5 q s18 q s5 B','p32','K32','p6 ! p17 ! p7','p32','B s2 l s4 t s3 M s10 X3 s4 ? B','B s6 ` s16 ` s6 B',
 'B B12 s p4 s B12 B','B B12 s p4 s B12 B','B B12 s p4 s B12 B','B B12 s p4 s B12 B','B s2 u s3 u s3 l s2 p4 s2 l s3 u s3 u s2 B','B s3 @ s9 p4 s9 ! s3 B','B14 p4 B14'],
   npcs:[N('commuter'),F('My grandmother had lunch at the Miller & Rhoads Tea Room every Christmas.','The streetcars are long gone, but the Pulse bus runs right down Broad.')],
-  enT:['rat','scooter','scooter','rat'],readsL:['broad','streetcar'],doorsL:[{to:'tearoom:0,0'}],chestsL:['coins50'],
+  enT:['rat','scooter','scooter','rat'],readsL:['broad','streetcar'],doorsL:[{to:'tearoom:0,0'},{to:'jefferson:0,0'}],chestsL:['coins50'],
   lm:[{art:'store',x:1,y:1,w:13,h:6,read:'broad',c:'#c8b48c'},{art:'store',x:18,y:1,w:13,h:6,read:'broad',c:'#b0a8a0'},{art:'shelter',x:23,y:13,w:3,h:1}],cars:[{y:10,dir:1,kind:'bus'},{y:12,dir:-1}]});
 ow(2,0,"Jackson Ward",{hs:'jw',base:'p',pal:[BRICK,BRICK2],rows:[
-'B32','B B8 s2 l s7 X12 B','B B8 s10 X12 B','B B8 s3 @ s6 X12 B','B B4 D B3 s10 X5 D X6 B','B s8 M s7 ? s5 ? s7 B','B s2 t s4 t s4 t s4 t s4 t s7 B',
+'B14 p4 B14','B B8 s2 l s7 X12 B','B B8 s10 X12 B','B B8 s3 @ s6 X12 B','B B4 D B3 s10 X5 D X6 B','B s8 M s7 ? s5 ? s7 B','B s2 t s4 t s4 t s4 t s4 t s7 B',
 'B s4 ? s15 Q s9 B','B s5 @ s13 Y s10 B','p32','p5 ! p20 ! p5','p12 @ p19','p20 ? p11','B s2 l s10 p4 s7 ? s2 l s2 B','B f3 s f8 s p4 s f8 s f3 B',
 'B B12 s p4 s B12 B','B B12 s p4 s B12 B','B B12 s p4 s B12 B','B s5 ? s7 p4 s13 B','B b3 s ` s8 p4 s7 ! s5 B','B $ b2 s10 p4 s13 B','B14 p4 B14'],
   npcs:[N('musician'),N('dancer'),F('They called Second Street the Deuce. Every club on it had a band.','Mrs. Walker\'s house is just down the street. They keep it as a museum.')],
@@ -186,14 +208,14 @@ ow(2,1,"Capitol Square",{base:'.',rows:[
   lm:[{art:'capitol',x:18,y:1,w:10,h:6,read:'capitol'},{art:'belltower',x:5,y:1,w:2,h:4,read:'capital1780'}]});
 ow(3,1,"Shockoe Bottom",{hs:'ware',base:'p',pal:[BRICK2,STONE],rows:[
 'B14 p4 B14','B s5 ? s7 p4 s X12 B','B s3 l s9 p4 s X12 B','B s4 B5 s4 p4 s X12 B','B s4 B5 s4 p4 s X12 B','B s4 B5 s4 p4 s X12 B','B s13 p4 s X5 D X6 B',
-'B K30 B','B s13 p4 s M s4 ` s6 B','p31 B','p6 ! p17 ! p6 B','p10 @ p20 B','p5 ? p9 ? p9 ? p5 B','B s13 p4 s3 M s9 B','B s13 p4 s2 X10 s B',
+'B K30 B','B s13 p4 s M s4 ` s6 B','p32','p6 ! p17 ! p7','p10 @ p21','p5 ? p9 ? p9 ? p6','B s13 p4 s3 M s9 B','B s13 p4 s2 X10 s B',
 'B s2 B6 s5 p4 s2 X10 s B','B s2 B6 s5 p4 s3 a s a s @ s a s a s B','B s2 B2 D B3 s5 p4 s13 B','B s7 M s5 p4 s4 ! s8 B','B b3 s4 ? s5 p4 s5 ? s7 B','B $ b2 s10 p4 s5 ` s7 B','B14 p4 B14'],
   npcs:[F('Main Street Station\'s clock has kept time over Shockoe since 1901.','Trains still stop here. You can ride all the way to Washington.'),N('marketeer')],
   enT:['rat','rat','rat'],readsL:['shockoe','slavetrail','stonehouse'],doorsL:[{to:'station:0,0'},{to:'poe:1,2'}],chestsL:['coins50'],
   lm:[{art:'station',x:19,y:1,w:12,h:6,read:'shockoe'},{art:'market',x:20,y:14,w:10,h:2}]});
 ow(0,2,"Byrd Park & Maymont",{base:'.',pal:[BRICK,CREAM],rows:[
 'T14 .4 T14','T .2 X3 .7 l .4 w11 .2 T','T .2 X3 .11 w4 ? w6 .3 T','T .2 X3 .4 @ .6 w5 ? w5 .3 T','T .2 X3 .12 w4 .*. w4 .2 T','T .2 X3 .11 w2 ? w8 .3 T',
-'T .2 X3 .5 @ .6 w10 ? .2 T','T .2 X D X . M .12 ! w7 .3 T','T .2 S3 .10 i .3 i .4 @ .5 T','T .9 p22','T .9 p22','T .3 ! .5 p22','T .9 p22','T .5 l .10 l .13 T',
+'T .2 X3 .5 @ .6 w10 ? .2 T','T .2 X D X . M .12 ! w7 .3 T','T .2 S3 .10 i .3 i .4 @ .5 T','. .9 p22','. .9 p22','. .3 ! .5 p22','. .9 p22','T .5 l .10 l .13 T',
 'T .2 X6 .22 T','T .2 X6 .8 M .2 ,8 .3 T','T .2 X6 .9 ! . ,3 w2 ,3 .3 T','T .2 X2 D X3 .3 & .7 ,3 w2 ,3 .3 T','T .8 @ .10 ,8 .3 T','T b3 ! .26 T','T $ b2 .27 T','T32'],
   npcs:[N('caretaker'),N('fisher'),N('naturalist'),F('Maymont has bears, you know. Real ones. And a Japanese garden.','The geese here own this park. We just visit.')],
   enT:['goose','squirrel','goose','goose'],readsL:['carillon','maymont'],doorsL:[{to:'carillon:1,2',need:'carkey'},{to:'mansion:0,0'}],
@@ -205,10 +227,10 @@ ow(1,2,"Hollywood Cemetery",{base:'.',rows:[
   npcs:[N('keeper'),N('watchman')],enT:['ghost','ghost','ghost'],readsL:['irondog'],doorsL:[{to:'pyramid:0,1'},{to:'tredegar:0,2'}],chestsL:['coins50'],
   lm:[{art:'pyramid',x:19,y:2,w:5,h:4,read:'pyramid'},{art:'birdcage',x:5,y:8,w:2,h:2,read:'hollywood'}]});
 ow(2,2,"Belle Isle",{base:'.',rows:[
-'w14 =4 w14','w14 =4 w14','w14 =4 w14','w3 .2 ? .23 w3','w3 .5 @ .4 M .3 r7 .5 w3','w3 .14 r2 D r4 .5 w3','w3 .3 T .7 ` .8 ? .5 w3',
+'w14 =4 w14','w14 =4 w14','w14 =4 w14','w3 .2 ? .8 M .14 w3','w3 .5 @ .4 M .3 r7 .5 w3','w3 .14 r2 D r4 .5 w3','w3 .3 T .7 ` .8 ? .5 w3',
 'w3 . T .8 ! .9 ? .5 w3','w3 .10 @ .15 w3','-3 .26 -3','-3 .6 ! .19 -3','-3 .26 -3','-3 .20 ? .5 -3','w3 .26 w3',
 'w3 . X6 .16 ! .2 w3','w3 . X6 .11 M .7 w3','w3 . X2 % X3 .19 w3','w3 .2 ? .5 ! .17 w3','w3 .9 r2 .3 ? r2 .9 w3','w14 ~4 w14','w14 ~9 $ r w7','w14 ~4 w14'],
-  npcs:[N('kayaker'),N('volunteer')],enT:['crab','goose','crab','crab'],readsL:['belleisle','falls'],doorsL:[{to:'quarry:0,1'},{to:'ruins:0,0'}],chestsL:['coins50'],
+  npcs:[N('kayaker'),N('volunteer')],enT:['crab','goose','crab','crab'],readsL:['leebridge','belleisle','falls'],doorsL:[{to:'quarry:0,1'},{to:'ruins:0,0'}],chestsL:['coins50'],
   lm:[{art:'ruins',x:4,y:14,w:6,h:3,read:'belleisle'}]});
 ow(3,2,"Rocketts Landing",{hs:'ware',base:'n',pal:[BRICK2],rows:[
 'r14 n4 r14','r n2 B6 n5 n4 n3 B10 r','r n2 B6 n12 B10 r','r n2 B2 D B3 n3 M n8 B10 r','r n5 ! n18 ! n5 r','r n3 l n8 ? n8 l n8 r','r n22 M n7 r',
@@ -247,11 +269,27 @@ ow(1,-1,"Lewis Ginter Botanical Garden",{hs:'glass',base:'.',rows:['TTTTTTTTTTTT
   npcs:[F('The conservatory doors blew open in the fog, and vines came out after them.','Our gardener left a watering can somewhere inside. Plants in there respond to it. Strongly.'),
     F('Something enormous is blooming under the glass dome. It smells like a dumpster in August.','Bryan Park is west of here.')],
   enT:['squirrel','rat','goose'],readsL:['ginter'],doorsL:[{to:'conserv:0,2'}],chestsL:['coins50']});
-ow(4,0,"Chimborazo",{base:'.',rows:['TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT','T..............................T','T..TT......,,,,,,.......TT.....T','T..TT......,,,M,,.......TT.....T','T..........,,,,,,..............T','T....@.........................T','T.........!.........l..........T','T....bbb...........sssss.......T','T....b$b...........s...s...@...T','T....bbb...........sssss.......T','T..............!...............T','...............................T','..........@....................T','T..............................T','T...TT...........!.......TT....T','T...TT...................TT....T','T..............................T','T......`..........l............T','TrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrT','TwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwT','TwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwT','TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT'],
+ow(4,0,"Chimborazo",{base:'.',rows:['TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT','T..............................T','T..TT......,,,,,,.......TT.....T','T..TT......,,,M,,.......TT.....T','T..........,,,,,,..............T','T....@.........................T','T.........!.........l..........T','T....bbb...........sssss.......T','T....b$b...........s...s...@...T','T....bbb...........sssss.......T','T..............!...............T','...............................T','..........@....................T','T..............................T','T...TT...........!.......TT....T','T...TT...................TT....T','T.......M......................T','T......`..........l............T','TrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrT','TwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwT','TwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwT','TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT'],
   npcs:[F('This hill held one of the biggest military hospitals of the Civil War. Thousands of beds.','Now it\'s a park. Best view of the river bend you\'ll find.'),
     F('Church Hill is right next door, to the west.','Fog looks like a lake from up here.'),
     F('My grandfather walked his dog here every day for fifty years.','Watch the edge of the bluff. It drops straight down.')],
-  enT:['bat','rat','ghost'],readsL:['chimborazo'],chestsL:['coins50']});
+  enT:['bat','rat','ghost'],readsL:['chimborazo','libbyview'],chestsL:['coins50']});
+/* ---------- more of Richmond: the Boulevard, the Raceway, Texas Beach, VCU and the Canal Walk ---------- */
+ow(-1,0,"Arthur Ashe Boulevard",{base:'.',pal:[BRICK,CREAM],rows:["BTTTTTTTTTTTTTppppTTTTTTTTTTTTTB", "B.XXXXXXXXXXX.pppp.XXXXXXXXXXX.B", "B.XXXXXXXXXXX.pppp.XXXXXXXXXXX.B", "B.XXXXXXXXXXX.pppp.XXXXXXXXXXX.B", "B.XXXXXXXXXXX.pppp.XXXXXXXXXXX.B", "B.XXXXXXXXXXX.pppp.XXXXXXXXXXX.B", "B.XXXXXDXXXXX.pppp.XXXXXDXXXXX.B", "BsssssssssssssppppsssssssssssssB", "Bsslssssst@sMsppppsssstssssslssB", "Bppppppppppppppppppppppppppppppp", "Bppppp!ppppppppppppppppppppppppp", "Bpppppppppppppppppppppppp!pppppp", "Bppppppppppppppppppppppppppppppp", "BsslsssssssssstsstsssssssssslssB", "B.XXXXXXXXXX.......XXXXXXXXXXX.B", "B.XXXXXXXXXX.M.....XXXXXXXXXXX.B", "B.XXXXXXXXXX....@..XXXXXXXXXXX.B", "B.XXXXXXXXXX.T.....XXXXXXXXXXX.B", "B.XXXXXXXXXX............@......B", "Bbbb............T...!..........B", "B$bb....`..............T...T...B", "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"],
+  npcs:[F('The Science Museum used to be Broad Street Station. Trains pulled in right where the exhibits are now.','Inside there\'s a giant domed theater. Lie back and the stars fill the whole ceiling.'),F('Smell that? Vanilla. On a warm day the whole Boulevard smells like a bakery.','That sign has been glowing over Broad Street for as long as anybody can remember.'),{who:'Tennis Coach',hat:C3('#f4f4f8','#c8c8d0','#ffffff'),shirt:C3('#3d63c8','#27428e','#7397ee'),talk:'tennis'}],
+  enT:["rat", "scooter", "scooter"],readsL:["ashblvd", "sauers"],doorsL:[{to:"science:0,0"},{to:"vmhc:0,0"}],chestsL:["coins50"],lm:[{art:'scimuseum',x:2,y:1,w:11,h:6,read:'sciencemuseum'},{art:'vmhc',x:19,y:1,w:11,h:6,read:'vmhc'},{art:'sauers',x:2,y:14,w:10,h:5,read:'sauers'},{art:'ashecenter',x:19,y:14,w:11,h:4,read:'ashblvd'}],cars:[{y:10,dir:-1}]});
+ow(-1,-1,"Richmond Raceway",{base:'.',rows:["TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT", "T..XXXXXXXXXXXXXXXXXXXXXXXXXX..T", "T..XXXXXXXXXXXXXXXXXXXXXXXXXX..T", "T..XXXXXXXXXXXXXXXXXXXXXXXXXX..T", "T..XXXXXXXXXXXXXXXXXXXXXXXXXX..T", "T..XXXXXXXXXXXXXXXXXXXXXXXXXX..T", "T..XXXXXXXXXXXXXXXXXXXXXXXXXX..T", "T..XXXXXXXXXXXXXXXXXXXXXXXXXX..T", "T..XXXXXXXXXXXXXXXXXXXXXXXXXX..T", "T...........@.pppp.M...........T", "T.pppppppppppppppppppppppppppp.T", "T.pppppppppppppppppppppppppppp.T", "T.pppppp!ppppppppppppp@ppppppp.T", "T.ppplppppplpppppppplppppplppp.T", "T.pppppppppppppppppppppppppppp.T", "T.ppppp@ppppppppppppppppp!pppp.T", "T.pppppppppppppppppppppppppppp.T", "T.............pppp.............T", "T..T.......!..pppp....T........T", "T...T....T....pppp.........TbbbT", "T.....T.......pppp.......T..b$bT", "TTTTTTTTTTTTTTppppTTTTTTTTTTTTTT"],
+  npcs:[{who:'Race Official',hat:C3('#1a1a24','#0c0c14','#3a3a48'),shirt:C3('#f4f4f8','#c8c8d0','#ffffff'),talk:'racedir'},F('Short track racing! Three-quarters of a mile, and you can see the whole thing from your seat.','My granddaddy came to races here when it was still dirt.'),F('Spring race and fall race. Twice a year this whole lot fills up with campers.','I brought earplugs. You should get some too.')],
+  enT:["scooter", "rat", "goose"],readsL:["raceway"],chestsL:["coins50"],lm:[{art:'speedway',x:3,y:1,w:26,h:8,read:'raceway'}]});
+ow(-1,2,"Texas Beach & Agecroft",{base:'.',pal:[BRICK,CREAM],rows:["TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT", "T..XXXXXXXXXX................b.T", "T..XXXXXXXXXX..,,,,,,,,..T...b$T", "T..XXXXXXXXXX..,,,bb,,,......bbT", "T..XXXXXXXXXX..,,,bb,,,....T...T", "T..XXXXXDXXXX..,,,,,,,,........T", "T.......ppp....................T", "T.......ppp...T..@........T....T", "T.T.....ppp...........!........T", "T.......ppp.....................", "T....ppppppppppppppppppppppppppp", "T....ppppppppppppppppppppppppppp", "T...............................", "TKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKT", "Twwwwwwwwwwwww====wwwwwwwwwwwwwT", "TnnrnnnnnMnnnnnnnnnnnnnnnn!nnnnT", "Tnnnnn@nnnnnn!nnnnnnnn@nnnnrnnnT", "TnnnnnnnnnnrnnnnnnnnnnnnnnnnnnnT", "Twwwww~~wrw~~www~~www~~wwwwwwwwT", "Twwwwwww~www~www~wwwrwww~wwwwwwT", "TwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwT", "TwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwT"],
+  npcs:[F('Agecroft Hall was built in England back when Henry VII was king. Then somebody shipped it here in crates.','I keep the gardens. The roses don\'t know they\'re on the wrong side of the ocean.'),F('Texas Beach! Sand, rocks and the James. Just mind the current.','You get here over a footbridge across the train tracks and the canal. Half the fun.'),F('The water\'s low enough to rock-hop in late summer.','Byrd Park and Maymont are just east, up the trail.')],
+  enT:["goose", "crab", "crab"],readsL:["texasbeach"],doorsL:[{to:"agecroft:0,0"}],chestsL:["coins50"],lm:[{art:'agecroft',x:3,y:1,w:10,h:5,read:'agecroft'}]});
+ow(2,-1,"VCU & Court End",{hs:'jw',base:'s',pal:[BRICK,BRICK2,CREAM],rows:["BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB", "BsXXXXXXXXXXXsppppsssssssssssssB", "BsXXXXXXXXXXXsppppsXXXXXXXXXstsB", "BsXXXXXXXXXXXsppppsXXXXXXXXXsssB", "BsXXXXXXXXXXXsppppsXXXXXXXXXsssB", "BsXXXXXXXXXXXsppppsXXXXXXXXXstsB", "BsXXXXXDXXXXXsppppsXXXXDXXXXsssB", "BsssssssssssssppppsssssssssssssB", "Bsslssssst@sMsppppssstsssssslssB", "BppppppppppppppppppppppppppppppB", "Bpppp!pppppppppppppppppppppppppB", "Bppppppppppppppppppppppppp!ppppB", "Bpppppppppppppppppppp@pppppppppB", "BsslssssssstssppppssstsssssslssB", "BsXXXXXXXXssssppppsXXXXXXXXXXXsB", "BsXXXXXXXXssssppppsXXXXXXXXXXXsB", "BsXXXXXXXXssssppppsXXXXXXXXXXXsB", "BsXXXXXXXXssssppppsXXXXXXXXXXXsB", "Bsssss@sssssssppppsXXXXXDXXXXXsB", "Bsssssssssss!sppppssssssssssbbbB", "Bsssssssssssssppppssssssssssbb$B", "BBBBBBBBBBBBBBppppBBBBBBBBBBBBBB"],
+  npcs:[F('Go Rams! The Siegel Center gets so loud the floor shakes.','They call the defense Havoc. Full-court press, all game long.'),F('I study art at VCU. Half the murals in this city were painted by somebody from my school.','The old Medical College of Virginia buildings are just down the hill.'),{who:"Sally Bell's Kitchen",hat:C3('#f4f4f8','#c8c8d0','#ffffff'),shirt:C3('#d87878','#a84c4c','#f0a0a0'),talk:'sallybell'}],
+  enT:["squirrel", "scooter", "rat"],readsL:["vcu"],doorsL:[{to:"siegel:0,0"},{to:"marshall:0,0"},{to:"bhm:0,0"}],chestsL:["coins50"],lm:[{art:'siegel',x:2,y:1,w:11,h:6,read:'vcu'},{art:'marshall',x:19,y:2,w:9,h:5,read:'marshall'},{art:'sallybell',x:2,y:14,w:8,h:4},{art:'armory',x:19,y:14,w:11,h:5,read:'bhm'}],cars:[{y:10,dir:1}]});
+ow(4,1,"Canal Walk & Brown's Island",{hs:'ware',base:'.',pal:[BRICK2,BRICK],rows:["BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBT", "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBT", "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBT", "BssslsssssssMsssssssssssssslsssT", "BssssssssssssssssssssssssssssssT", "Bwwwwwww==wwwwwwwwwwww==wwwwwwwT", "Bwwwwwww==wwwwwwwwwwww==wwwwwwwT", "BssssssssssssssssssssssssssssssT", "Bssslsssssssssss@slsssssssslsssT", "ppppppppppppppppppppppp........T", "pppppppppp!pppppppppppp........T", "ppppppppppppppppppppppp........T", "ppppppppppppppppppppppp........T", "B..................XXXXXXXXXX..T", "B..T...!......M....XXXXXXXXXX.TT", "B.........T........XXXXXXXXXX..T", "B.....@................@.......T", "Bnnnnnnnnnnnnnnnnnnn!nnnnnnnnnnT", "Bw-----------------------nnnMnww", "Bww~ww~ww~ww~ww~ww~ww~wwwn`nn$ww", "Bwwww~www~www~www~www~wwwwwwwwww", "Bwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww"],
+  npcs:[F('The canal boats run right through downtown. Same canal George Washington wanted dug to the Ohio River.','Watch the bridges. Low clearance!'),F('Head out on the Pipeline walk if you want to see herons. They nest on the islands out there.','It\'s a catwalk on top of a big pipe. Don\'t look down if you get dizzy.'),{who:'Festival Host',hat:C3('#f2c14e','#b88a20','#ffe08a'),shirt:C3('#3ac2e8','#1a8ab0','#8ae0f8'),talk:'festival'}],
+  enT:["rat", "goose", "crab"],readsL:["canalwalk", "brownsisland", "pipeline"],chestsL:["coins50"],lm:[{art:'stage',x:19,y:13,w:10,h:3,read:'brownsisland'}]});
 /* ---------- buildings and caves ---------- */
 room('bank',0,0,'St. Luke Penny Savings Bank',{entry:true,feats:[['V',3,4,10,1]],
   npcs:[{tx:7,ty:3,who:'Teller',hat:C3('#3a3a54','#24243a','#5a5a7a'),shirt:C3('#e8e4dc','#b0aca4','#ffffff'),talk:'teller'}]});
@@ -263,6 +301,20 @@ room('vmfa',0,0,'Virginia Museum of Fine Arts',{entry:true,feats:[['g',3,3],['g'
   npcs:[{tx:4,ty:7,who:'Docent',hat:C3('#e8e4dc','#b0aca4','#ffffff'),shirt:C3('#2e2e3e','#1a1a26','#4a4a5e'),talk:'docent'}]});
 room('libby',0,0,'Cave Under Libby Hill',{entry:true,style:'cave',feats:[['r',3,3],['r',12,6],['r',4,7]],en:[['bat',5,4],['bat',10,5]],chests:[{id:'libby',tx:8,ty:3,item:'hc'}]});
 room('ruins',0,0,'Power Plant Ruins',{entry:true,style:'cave',feats:[['w',2,2,3,2],['w',11,6,3,2],['Z',7,2,3,2]],en:[['crab',5,6],['bat',10,4]],chests:[{id:'ruins',tx:13,ty:2,item:'hc'}]});
+room('science',0,0,'Science Museum of Virginia',{entry:true,style:'station',feats:[['g',3,3],['g',6,3],['g',9,3],['g',12,3],['g',3,6],['g',12,6]],readsT:{g:'sciencemuseum'},
+  npcs:[{tx:8,ty:6,who:'Science Guide',hat:C3('#3ac2e8','#1a8ab0','#8ae0f8'),shirt:C3('#f4f4f8','#c8c8d0','#ffffff'),talk:'sciguide'}]});
+room('vmhc',0,0,'Virginia Museum of History & Culture',{entry:true,style:'capitol',feats:[['g',3,3],['g',7,3],['g',11,3],['g',3,6],['g',11,6]],readsT:{g:'vmhc'},
+  npcs:[{tx:7,ty:6,who:'Historian',hat:C3('#5a5662','#3c3a44','#7a7684'),shirt:C3('#8a3a2a','#5a2418','#a85a44'),talk:'folk',lines:['Virginia\'s story is long and not always kind. We try to tell all of it.','Have you seen Arthur Ashe\'s name on the street signs out front?']}]});
+room('jefferson',0,0,'The Jefferson Hotel',{entry:true,style:'hotel',feats:[['w',6,3,4,2],['Y',3,3],['Y',12,3]],reads:{'3,3':'jefferson','12,3':'jefferson'},
+  npcs:[{tx:11,ty:6,who:'Bellhop',hat:C3('#8a1424','#5a0c18','#b02030'),shirt:C3('#8a1424','#5a0c18','#b02030'),talk:'bellhop'}]});
+room('siegel',0,0,'The Siegel Center',{entry:true,style:'gym',feats:[['h',1,2,4,1],['h',11,2,4,1],['h',1,4,3,1],['h',12,4,3,1]],
+  npcs:[{tx:8,ty:3,who:'Rams Coach',hat:C3('#f2c14e','#b88a20','#ffe08a'),shirt:C3('#1a1a24','#0c0c14','#3a3a48'),talk:'hoops'}]});
+room('marshall',0,0,'John Marshall House',{entry:true,style:'mansion',feats:[['g',3,3],['g',12,3],['V',6,2,4,1]],readsT:{g:'marshall'},
+  npcs:[{tx:7,ty:6,who:'Docent',hat:C3('#e8e4dc','#b0aca4','#ffffff'),shirt:C3('#2e4a8a','#1c2e5a','#4a6ab0'),talk:'folk',lines:['Marshall lived here for more than forty years. He walked to market and carried home his own groceries.','The Court\'s biggest early decisions were written by the man who slept upstairs.']}]});
+room('bhm',0,0,'Black History Museum',{entry:true,style:'armory',feats:[['g',3,3],['g',6,3],['g',9,3],['g',12,3],['g',3,6],['g',12,6]],readsT:{g:'bhm'},
+  npcs:[{tx:8,ty:6,who:'Museum Guide',hat:C3('#2a2a32','#14141a','#4a4a54'),shirt:C3('#f2c14e','#b88a20','#ffe08a'),talk:'folk',lines:['Jackson Ward is right down the street. Maggie Walker\'s bank, the Hippodrome, all of it.','This building has been an armory, a school and now a museum. It has seen a lot of Richmond.']}]});
+room('agecroft',0,0,'Agecroft Hall',{entry:true,style:'poe',feats:[['g',3,3],['g',12,3],['h',5,2,6,1],['O',7,5,2,1]],readsT:{g:'agecroft'},
+  npcs:[{tx:11,ty:6,who:'Tudor Guide',hat:C3('#1a1a24','#0c0c14','#3a3a48'),shirt:C3('#58a850','#2f7a3c','#90d070'),talk:'folk',lines:['Every beam in this hall crossed the ocean in a crate. They numbered the pieces so it would go back together.','The great hall\'s windows came from England too. Old glass, a little wavy.']}]});
 
 
 const FL=(who,c,...lines)=>({who,hat:FOLKC[c][0],shirt:FOLKC[c][1],talk:'folk',lines});

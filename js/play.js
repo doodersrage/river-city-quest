@@ -161,7 +161,7 @@ function collect(k){
     case'part':{st.got[k.id]=1;p.hold={ic:IC.oar,t:90};tune(JING);needSave=true;const n=['oar','pole','tiller'].filter(q=>st.got[q]).length;
       say(['You found the bateau '+k.id+'! ('+n+' of 3)',n<3?'The river historian at Ancarrow\'s Landing will want it.':'That\'s every part! Take them to the historian at Ancarrow\'s Landing.'],null,'Bateau Part');break;}
     case'frog':st.frogs++;sfx(1400,.05,'triangle');if(typeof splashSfx=='function')splashSfx(.4);burst(k.x,k.y,5,['#68b854','#ffffff'],1.2,1);toast(st.frogs>=5&&!st.f.frogsDone?'Five frogs! Take them to the naturalist in Byrd Park.':'Caught a frog! ('+Math.min(st.frogs,5)+'/5)');needSave=true;break;
-    case'tomato':st.ingr=st.ingr||{};st.ingr.tomato=(st.ingr.tomato||0)+1;if(k.day)st.f[k.day]=1;sfx(1000,.05,'triangle');toast('A ripe Hanover tomato! ('+st.ingr.tomato+')');needSave=true;break;
+    case'tomato':learn('hanover');st.ingr=st.ingr||{};st.ingr.tomato=(st.ingr.tomato||0)+1;if(k.day)st.f[k.day]=1;sfx(1000,.05,'triangle');toast('A ripe Hanover tomato! ('+st.ingr.tomato+')');needSave=true;break;
     case'painting':{st.got[k.id]=1;const n=['p1','p2','p3'].filter(q=>st.got['paint:'+q]).length;tune(JING);toast('A lost painting! ('+n+'/3) Bring them to the curator.');needSave=true;break;}
     case'secret':st.got[k.id]=1;st.coins=Math.min(999,st.coins+25);tune([[1047,.06],[1319,.06],[1568,.12]],'triangle');burst(k.x,k.y,10,['#fff2a8','#ffffff','#f2c14e'],1.6,2);toast('A hidden stash! 25 coins. ('+nSecrets()+'/'+Object.keys(SECRETS).length+' secrets)');needSave=true;break;
     case'coin':st.coins=Math.min(999,st.coins+1);sfx(1200,.05);burst(k.x,k.y,3,['#fff2a8'],1,1);break;
@@ -328,7 +328,7 @@ function play(){
     reflectNear(hx,hy,11);
     if(p.atk==10)cutAt(hx,hy);
   }
-  updBlocks();updLife();dogTick();if(warm>0)warm--;if(zoom>0)zoom--;
+  updBlocks();updLife();dogTick();if(typeof rvaTick=='function')rvaTick();if(warm>0)warm--;if(zoom>0)zoom--;
   if(chal&&chal.t!=null&&--chal.t<=0){chalFail();return;}
   for(const e of enemies.slice())updEnemy(e);
   if(dlg||mode!='play')return;
@@ -434,7 +434,7 @@ function shopUpdate(){
   const SL=shop.list||SHOP;if(nav('up'))shop.cur=(shop.cur+SL.length-1)%SL.length;
   if(nav('down'))shop.cur=(shop.cur+1)%SL.length;
   if(press.a){const it=SL[shop.cur],why=it.why();
-    if(why){sfx(150,.08);shop.msg=why=='???'?'You\'d need one of those first.':why=='FULL'?'You can\'t carry more.':why=='NO BOTTLE'?'You need a bottle for that.':'That one\'s gone.';}
+    if(why){sfx(150,.08);shop.msg=why=='???'?'You\'d need one of those first.':why=='FULL'?'You can\'t carry more.':why=='NO BOTTLE'?'You need a bottle for that.':why=='SUMMER'?'Only in summer.':'That one\'s gone.';}
     else if(st.coins<it.price){sfx(150,.08);shop.msg='Not enough coins.';}
     else{st.coins-=it.price;const r=it.buy();tune([[880,.06],[1175,.12]]);shop.msg=r||'Thank you kindly!';needSave=true;}}
 }

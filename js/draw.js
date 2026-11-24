@@ -207,6 +207,7 @@ function drawWorld(){
   for(const e of enemies)act.push([e.y+(FLY[e.type]?6:0),()=>drawEnemy(e)]);
   if(!relight)act.push([p.y,()=>{drawBike();drawPlayer();}]);
   if(dog&&!relight)act.push([dog.y,drawDog]);
+  if(typeof rvaActs=='function'&&!relight)rvaActs(act);
   act.sort((a,b)=>a[0]-b[0]);for(const a of act)a[1]();
   for(const s of shots){const x=Math.round(s.x),y=Math.round(s.y);
     if(s.k=='ball'){R(x-2,y-2,5,5,'#1a1423');R(x-1,y-1,3,3,'#ffffff');R(x,y-1,1,1,'#e83048');}
@@ -262,7 +263,8 @@ function drawToast(){const w=Math.min(W-8,toastMsg.length*8+16),x=(W-w)/2|0,y=FH
 const TABS=['ITEMS','GEAR','QUEST','STORY','CARDS','PHOTO','AWARD','MAP'];
 const SHORT={'ow:0,-1':['BRYAN','PARK'],'ow:1,-1':['GINTER','GARDEN'],'ow:0,0':["SCOTT'S",'ADDITION'],'ow:1,0':['BROAD','STREET'],'ow:2,0':['JACKSON','WARD'],'ow:3,0':['CHURCH','HILL'],'ow:4,0':['CHIMBO-','RAZO'],
   'ow:0,1':['CARYTOWN',''],'ow:1,1':['THE FAN',''],'ow:2,1':['CAPITOL','SQUARE'],'ow:3,1':['SHOCKOE','BOTTOM'],'ow:0,2':['BYRD PK','MAYMONT'],'ow:1,2':['HOLLY-','WOOD'],'ow:2,2':['BELLE','ISLE'],
-  'ow:3,2':['ROCKETTS','LANDING'],'ow:0,3':['PONY','PASTURE'],'ow:1,3':['FOREST','HILL'],'ow:2,3':['MANCHES-','TER'],'ow:3,3':["ANCAR-","ROW'S"]};
+  'ow:3,2':['ROCKETTS','LANDING'],'ow:0,3':['PONY','PASTURE'],'ow:1,3':['FOREST','HILL'],'ow:2,3':['MANCHES-','TER'],'ow:3,3':["ANCAR-","ROW'S"],
+  'ow:-1,-1':['RACEWAY',''],'ow:-1,0':['ASHE','BLVD'],'ow:-1,2':['TEXAS','BEACH'],'ow:2,-1':['VCU',''],'ow:4,1':['CANAL','WALK']};
 const OWKEY={'ow:2,2':'granite','ow:1,2':'iron','ow:3,1':'brick','ow:0,2':'bronze'};
 function drawMenu(){
   const m=menu;
@@ -311,9 +313,9 @@ function drawMenu(){
   }else if(m.tab==6){
     st.ach=st.ach||{};const n=ACH.filter(a=>st.ach[a[0]]).length;text('Awards '+n+'/'+ACH.length,W/2,25,'#fff2a8',8,'center','#080c28');
     const H=Math.ceil(ACH.length/2),ac=m.ac||0;
-    ACH.forEach(([id,name],i)=>{const x=i<H?8:W/2+2,y=36+(i%H)*10,got=st.ach[id];if(i==ac)R(x-2,y-2,W/2-10,10,'#2c3a8a');R(x,y,7,7,got?'#f2c14e':'#26306a');if(got)R(x+2,y+2,3,3,'#fff2a8');
+    ACH.forEach(([id,name],i)=>{const rh=H>13?8:10,x=i<H?8:W/2+2,y=(H>13?34:36)+(i%H)*rh,got=st.ach[id];if(i==ac)R(x-2,y-2,W/2-10,rh,'#2c3a8a');R(x,y,rh-3,rh-3,got?'#f2c14e':'#26306a');if(got)R(x+2,y+2,rh-7,rh-7,'#fff2a8');
       text(name,x+11,y,got?'#ffffff':'#7a84b6',6,'left','#080c28');});
-    const sel=ACH[ac];panel(8,150,W-16,24);text(sel[2]+(st.ach[sel[0]]?'  (done)':''),W/2,158,'#fff2a8',6,'center','#080c28');
+    const sel=ACH[ac];panel(8,154,W-16,22);text(sel[2]+(st.ach[sel[0]]?'  (done)':''),W/2,161,'#fff2a8',6,'center','#080c28');
     let rb=0;try{rb=+localStorage.getItem('rcq-rush')||0;}catch(e){}
     text((rb?'Boss rush best '+fmtTime(rb)+'   ':'')+'B: next tab',W/2,FH-14,'#aeb7c2',6,'center');
   }else if(m.tab==4){
@@ -329,7 +331,7 @@ function drawMenu(){
     text('Cards '+nCards()+'/'+CARDS.length+'   Fish caught '+fc,W/2,FH-16,'#aeb7c2',8,'center');
   }else{
     if(cur.ow){
-      for(const id in SHORT){const s=SC[id];if(!s)continue;const x=7+s.ax*49,y=24+(s.ay+1)*30,here=id==curId,v=st.vis[id],cw=46,ch=28;
+      for(const id in SHORT){const s=SC[id];if(!s)continue;const x=4+(s.ax+1)*42,y=24+(s.ay+1)*30,here=id==curId,v=st.vis[id],cw=40,ch=28;
         R(x,y,cw,ch,here&&(frame>>4)&1?'#fff2a8':'#080a18');R(x+1,y+1,cw-2,ch-2,v?(s.ay==2?'#2f5f96':s.ay==3?'#5a6a3a':s.ay<0?'#4a6a3a':'#3a6a48'):'#1e2446');
         if(v){const [a,b]=SHORT[id];text(a,x+cw/2,y+3,'#ffffff',6,'center','#080c28');if(b)text(b,x+cw/2,y+10,'#ffffff',6,'center','#080c28');}
         else text('?',x+cw/2,y+8,'#4a5486',8,'center');

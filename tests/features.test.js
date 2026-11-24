@@ -31,7 +31,7 @@ G.st.clock=4500;ok(G.dark()==0,'morning is light');
 // weather + frogs
 G.load('ow:0,2');G.st.wx='rain';G.st.wxk=1;G.st.wxT=99999;G.p.hp=99;G.p.max=99;at(16,9,0);for(let i=0;i<400;i++){G.update();G.enemies.length=0;}
 const fr=G.picks.filter(k=>k.kind=='frog');ok(fr.length>0,'frogs come out in the rain ('+fr.length+')');
-const f0=G.st.frogs;const k=fr[0];G.p.x=k.x;G.p.y=k.y;run(1);ok(G.st.frogs==f0+1,'walking into a frog catches it');
+const f0=G.st.frogs;for(let t=0;t<5&&G.st.frogs==f0;t++){const k=G.picks.find(q=>q.kind=='frog');if(!k)break;G.dlg=null;G.p.x=k.x;G.p.y=k.y;run(1);}ok(G.st.frogs==f0+1,'walking into a frog catches it');
 G.st.frogs=5;const nat=G.cur.npcs.find(n=>n.talk=='naturalist');at(nat.tx,nat.ty+1,2);nat.x=nat.tx*T+8;nat.y=nat.ty*T+8;G.press.a=1;run(3);
 ok(G.st.f.frogsDone&&G.st.cards.maymont,'naturalist rewards five frogs with the Maymont card');
 // weather changes over time

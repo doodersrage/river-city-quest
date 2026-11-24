@@ -6,17 +6,19 @@ const MINI={
   bat:{name:'Batting Practice',award:'slugger'},
   pin:{name:'Stone House Pinball',award:'wizard'},
   derby:{name:'Libby Hill Soapbox Derby',award:'derby',gold:15.5,silver:19},
-  trail:{name:'Capital Trail Time Trial',award:'trail',gold:21,silver:26}};
+  trail:{name:'Capital Trail Time Trial',award:'trail',gold:21,silver:26,who:'The cyclist',flag:'trailGold',label:'CAPITAL TRAIL'},
+  race:{name:'Richmond Raceway Dash',award:'flag',gold:14.5,silver:18,who:'The race official',flag:'raceGold',label:'RICHMOND RACEWAY'}};
+MINI.derby.who='The Derby Kid';MINI.derby.flag='derbyGold';MINI.derby.label='LIBBY HILL';
 function startMini(kind){mini={kind,t:0,done:false};mode='mini';sfx(880,.08,'triangle');
   if(kind=='bat')Object.assign(mini,{n:0,hits:0,hr:0,ball:null,swing:0,msg:'Press A to swing',wait:60,log:[]});
   if(kind=='pin')Object.assign(mini,{balls:3,score:0,ball:null,fl:[0,0],flv:[0,0],launch:40,bumps:[[92,60,9],[164,60,9],[128,92,10],[60,104,7],[196,104,7]],lit:[0,0,0,0,0],msg:'',still:0});
-  if(kind=='derby'||kind=='trail'){const tr=kind=='trail',L=tr?4200:3100,obs=[];for(let y=260;y<L-100;y+=(tr?80:90)+rnd(70)){const k=rnd(4);obs.push({x:76+rnd(100),y,k:tr?['goose','jogger','puddle','goose'][k]:['hay','cone','puddle','hay'][k],hit:false});}
+  if(kind=='derby'||kind=='trail'||kind=='race'){const tr=kind=='trail',rc=kind=='race',L=tr?4200:rc?3900:3100,obs=[];for(let y=260;y<L-100;y+=(tr?80:rc?70:90)+rnd(70)){const k=rnd(4);obs.push({x:76+rnd(100),y,k:tr?['goose','jogger','puddle','goose'][k]:rc?['car','car','oil','car'][k]:['hay','cone','puddle','hay'][k],hit:false,v:rc&&k!=2?1.2+Math.random()*1.4:0});}
     Object.assign(mini,{x:128,v:0,y:0,obs,time:0,bump:0,len:L,msg:'Steer with left and right'});}}
 function endMini(lines){const k=mini.kind;mini=null;mode='play';if(lines&&lines.length)say(lines,null,MINI[k].name);needSave=true;}
 function miniUpdate(){const m=mini;m.t++;
   if(press.menu){endMini(['You walk away from the game.']);return;}
-  if(m.kind=='bat')batUpdate(m);else if(m.kind=='pin')pinUpdate(m);else derbyUpdate(m);}
-function drawMiniGame(){const m=mini;if(m.kind=='bat')drawBat(m);else if(m.kind=='pin')drawPin(m);else if(m.kind=='trail')drawTrail(m);else drawDerby(m);
+  if(MINI[m.kind].upd)MINI[m.kind].upd(m);else if(m.kind=='bat')batUpdate(m);else if(m.kind=='pin')pinUpdate(m);else derbyUpdate(m);}
+function drawMiniGame(){const m=mini;if(MINI[m.kind].draw)MINI[m.kind].draw(m);else if(m.kind=='race')drawRace(m);else if(m.kind=='bat')drawBat(m);else if(m.kind=='pin')drawPin(m);else if(m.kind=='trail')drawTrail(m);else drawDerby(m);
   if(m.msg)text(m.msg,W/2,FH-12,'#ffffff',6,'center','#080c28');}
 function miniBest(k,v,lowerBetter){st.mini=st.mini||{};const b=st.mini[k];if(b==null||(lowerBetter?v<b:v>b)){st.mini[k]=v;return true;}return false;}
 
@@ -91,13 +93,13 @@ function drawPin(m){
 function derbyUpdate(m){
   if(m.done)return;
   m.time++;const st0=m.bump>0;if(m.bump>0)m.bump--;
-  m.v=Math.min(st0?1.6:4.2,m.v+.04);m.y+=m.v;
+  m.v=Math.min(st0?1.6:m.kind=='race'?5.2:4.2,m.v+(m.kind=='race'?.05:.04));m.y+=m.v;for(const o of m.obs)if(o.v)o.y+=o.v;
   const dx=keys.right-keys.left;m.x=Math.max(64,Math.min(192,m.x+dx*1.8));
   for(const o of m.obs){if(o.hit)continue;const sy=o.y-m.y;if(sy>120&&sy<150&&Math.abs(o.x-m.x)<14){o.hit=true;
-    if(o.k=='puddle'){m.v*=.6;sfx(400,.1,'triangle',.03);if(typeof splashSfx=='function')splashSfx(.4);}else{m.bump=40;m.v=1;shake=6;buzz(40);sfx(120,.15,'sawtooth',.05);}}}
+    if(o.k=='puddle'||o.k=='oil'){m.v*=.6;sfx(400,.1,'triangle',.03);if(typeof splashSfx=='function')splashSfx(.4);}else{m.bump=40;m.v=1;shake=6;buzz(40);sfx(120,.15,'sawtooth',.05);}}}
   if(m.y>=m.len){m.done=true;const M=MINI[m.kind],s=m.time/60,medal=s<M.gold?'gold':s<M.silver?'silver':'bronze',coins={gold:20,silver:10,bronze:5}[medal];st.coins=Math.min(999,st.coins+coins);
-    const nb=miniBest(m.kind,Math.round(m.time),true);if(medal=='gold')st.f[m.kind=='trail'?'trailGold':'derbyGold']=1;
-    endMini(['Finished in '+fmtTime(m.time)+'! That\'s a '+medal+' medal.',(m.kind=='trail'?'The cyclist':'The Derby Kid')+' hands over '+coins+' coins.'+(nb?' A new best time!':'')]);}
+    const nb=miniBest(m.kind,Math.round(m.time),true);if(medal=='gold')st.f[M.flag]=1;
+    endMini(['Finished in '+fmtTime(m.time)+'! That\'s a '+medal+' medal.',M.who+' hands over '+coins+' coins.'+(nb?' A new best time!':'')]);}
 }
 function drawDerby(m){
   R(0,0,W,FH,'#58a848');const off=Math.floor(m.y)%32;

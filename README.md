@@ -42,7 +42,7 @@ Progress saves automatically in your browser, in one of three save slots. OPTION
 
 ## What's in it
 
-- **19 scrolling neighborhoods**, each a big map you explore in any direction: Bryan Park and Lewis Ginter Botanical Garden up north, Scott's Addition, Broad Street, Jackson Ward, Church Hill, Chimborazo, Carytown and the VMFA, the Fan, Capitol Square, Shockoe Bottom, Byrd Park and Maymont, Hollywood Cemetery, Belle Isle, Rocketts Landing, and south of the river, Pony Pasture, Forest Hill Park, Manchester and Ancarrow's Landing.
+- **24 scrolling neighborhoods**, each a big map you explore in any direction: Richmond Raceway, Bryan Park, Lewis Ginter Botanical Garden and VCU & Court End up north, Arthur Ashe Boulevard, Scott's Addition, Broad Street, Jackson Ward, Church Hill, Chimborazo, Carytown and the VMFA, the Fan, Capitol Square, Shockoe Bottom, the Canal Walk and Brown's Island, Texas Beach and Agecroft, Byrd Park and Maymont, Hollywood Cemetery, Belle Isle, Rocketts Landing, and south of the river, Pony Pasture, Forest Hill Park, Manchester and Ancarrow's Landing.
 - **A Richmond look:** cast-iron porches in Jackson Ward, clapboard houses and tin roofs on Church Hill, bay windows in the Fan, arched-window warehouses in Shockoe, Scott's Addition and Manchester, faded ghost signs and murals on old brick, a tea-green James with granite boulders in the rapids, magnolias and dogwoods, iron scrollwork on the menus, and the real skyline on the title screen.
 - **Landmarks drawn as themselves:** The Diamond's grandstand, the Broad Street department stores, the Hippodrome, St. John's Church, the Capitol and its bell tower, Main Street Station, the 17th Street Market, the Carillon, Maymont House, the granite pyramid, Monroe's tomb, the Belle Isle ruins, a steamboat at Rocketts, Forest Hill's Stone House and an old trolley.
 - **Street life:** townspeople who walk around and chat, buses and cars that stop for you, pigeons that scatter, gas lamps, benches, cafe tables and murals.
@@ -56,7 +56,7 @@ Progress saves automatically in your browser, in one of three save slots. OPTION
 - **Items for the B button:** Gas Lantern, Baseballs, Blasting Powder, the Gold-Bug, Running Shoes, Grappling Hook, Fishing Rod, Watering Can and Ginger Beer. The Cast-Iron Shield and the Kayak work on their own.
 - **A trading quest** across town that ends with a kayak for crossing the whitewater on the James, and a **bateau quest** on the south bank that ends with a Golden Lure.
 - **Eight heart pieces** hidden behind bushes, across water and in the rapids. Four make a heart.
-- **A journal of 47 Richmond stories** from historical markers, statues and people around town: Patrick Henry at St. John's, Maggie L. Walker's bank, Bojangles' traffic light, Sprague's electric streetcars, the VMFA's Faberge eggs, the Carillon, Forest Hill's old amusement park, Mayo's Bridge, the Church Hill Tunnel collapse and more.
+- **A journal of 66 Richmond stories** from historical markers, statues and people around town: Patrick Henry at St. John's, Maggie L. Walker's bank, Bojangles' traffic light, Sprague's electric streetcars, the VMFA's Faberge eggs, the Carillon, Forest Hill's old amusement park, Mayo's Bridge, the Church Hill Tunnel collapse, the Jefferson Hotel's alligators, the view that named Richmond and more.
 - **Chiptune music** for the city, the south bank, nighttime, dungeons, the Tredegar foundry, bosses and the title screen, plus rain, wind and cricket sounds.
 - **Everyday Richmond:** adopt a dog from the shelter in Manchester who follows you, sniffs out stashes, chases pests and digs up treats. Take photos of 19 landmarks for your album. Decorate your row house in the Fan with trophies, cards and furniture, cook at its stove and sleep until morning or evening. Ride a bike from Rocketts and race the Capital Trail time trial. Every in-game Friday night is First Friday on Broad Street, with a gallery hunt.
 - **Español:** the whole game, dialog and journal stories included, can be switched to Spanish in OPTIONS.
@@ -64,7 +64,10 @@ Progress saves automatically in your browser, in one of three save slots. OPTION
 - **First-five-minutes tips:** a new game walks you through moving, talking, the paddle, your B item, the MENU and the map star.
 - **Volume:** separate MUSIC and EFFECTS levels in OPTIONS.
 - **Getting around:** ride the GRTC bus from the map to any neighborhood you've visited. A star on the map marks your next goal, and the QUEST tab tracks every quest.
-- **Mini-games:** batting practice at The Diamond, pinball in the Stone House arcade, and a soapbox derby down Libby Hill.
+- **Mini-games:** batting practice at The Diamond, pinball in the Stone House arcade, a soapbox derby down Libby Hill, Rams free throws in the Siegel Center, tennis at the Ashe Center and a dash around Richmond Raceway.
+- **More places to walk into:** the Science Museum in old Broad Street Station, the Virginia Museum of History & Culture, the Jefferson Hotel (mind the alligator), the John Marshall House, the Black History Museum in the Leigh Street Armory and Agecroft Hall.
+- **Festivals and food:** Dominion Riverrock in May and the Richmond Folk Festival in October on Brown's Island, Hanover tomatoes in July, Sally Bell's box lunches, Ukrop's rainbow cookies and the Sauer's sign glowing over the Boulevard.
+- **Fireflies** on summer nights on Belle Isle and Texas Beach, and the Pipeline walk out over the rapids.
 - **A hidden stash in every neighborhood.** Look for a glint near trees, rocks and bushes.
 - **Seasons by the real calendar:** falling leaves in autumn, holiday lights in the Fan and Carytown in December, azaleas at Bryan Park in spring, runners in the Fan during 10K season, and music from the Folk Festival in October.
 - **Sound:** footsteps that change with the ground, voices for each enemy, and fanfares for big items.
@@ -89,6 +92,7 @@ No build step and no dependencies. Open `index.html` in a browser to play locall
 - `js/es.js`: Spanish menus and the translation helpers
 - `js/es-text.js`: Spanish dialog and journal stories
 - `js/life.js`: the dog, camera and album, your row house, cooking, the bike and First Friday
+- `js/rva.js`: the newer Richmond places, three mini-games, festivals, fireflies and food
 - `js/minigames.js`: batting practice, pinball and the soapbox derby
 - `js/extras.js`: the relighting finale, bus travel, the quest log, secrets, seasons and extra sounds
 - `js/systems.js`: cards, time of day, weather, fishing, the hook, options, story beats, awards, New Game+, boss rush, the opening and sharing
@@ -105,6 +109,7 @@ Run `node tests/run.js` (Node 18 or newer, nothing to install). It loads the gam
 - `features.test.js` and `more-features.test.js`: the newer systems, from weather and fishing to New Game+ and the boss rush
 - `final-act.test.js`: the finale's boss phases and relighting, bus travel, the quest log, secrets, all three mini-games and the seasons
 - `life.test.js`: the dog, photos, home, cooking, the bike and trail, First Friday, Spanish, the market and the tutorial
+- `richmond.test.js`: the newer neighborhoods and buildings, the three new mini-games played by bots, festivals, fireflies and food
 - `names.test.js`: no two scripts declare the same top-level name, since they share one scope
 - `playthrough.test.js`: a bot plays from a new game to the ending, walking through every dungeon door for real and checking the hint at each step
 
